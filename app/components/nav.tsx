@@ -33,7 +33,7 @@ export default function Nav() {
             <nav className="pointer-events-none mx-auto flex max-w-7xl items-center  px-4 py-4 sm:px-6 lg:px-8 ">
                 <Logo />
 
-                {/* <button
+                <button
                     onClick={() => setOpen(v => !v)}
                     className="md:hidden rounded-md p-2 text-white/90 hover:bg-white/10"
                     aria-label="Toggle menu"
@@ -41,7 +41,7 @@ export default function Nav() {
                     <svg width="24" height="24" fill="none" stroke="currentColor">
                         <path strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-                </button> */}
+                </button>
 
                 <div className="hidden md:flex justify-center w-10/12">
                     <NavLinks />
@@ -52,7 +52,7 @@ export default function Nav() {
                             className="text-white text-lg font-semibold"
                             href="#"
                         >
-                            View employer's dashboard
+                            View employer `&apos;`s dashboard
                         </Link>
                     
                     <button className="bg-[#E6F2F9] text-blue-400 w-24 p-2 mx-4 rounded-xl">Sign in </button>
