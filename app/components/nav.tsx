@@ -189,7 +189,7 @@ export default function Nav() {
                             className="mt-2 text-emerald-600 font-semibold"
                             onClick={() => setOpen(false)}
                         >
-                            View the employer's dashboard
+                            View the employer&apos;s dashboard
                         </Link>
                     </div>
                 </div>

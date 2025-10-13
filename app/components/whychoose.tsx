@@ -7,7 +7,7 @@ import placeholder from '../assets/image.png';
 import bluePeople from "../assets/blueIconPeople.svg";
 import verified from '../assets/verified.svg';
 import dashboard from "../assets/dashboardIcon.svg";
-import star from '../assets/tinystar.svg';
+import star from '../assets/tinyStar.svg';
 
 type Card = {
     title: string;
