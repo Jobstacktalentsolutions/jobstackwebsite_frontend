@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import star from '../assets/tinyStar.svg';
 
 type Testimonial = {
     name: string;
@@ -53,8 +54,13 @@ function Stars({ n }: { n: number }) {
     return (
         <div className="flex gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
-                <svg key={i} width="18" height="18" viewBox="0 0 24 24"
-                    className={i < n ? 'fill-yellow-400' : 'fill-slate-400/40'}>
+                <svg
+                    key={i}
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    className={i < n ? 'fill-yellow-400' : 'fill-slate-400/40'}
+                >
                     <path d="M12 .587l3.668 7.431L24 9.748l-6 5.853 1.417 8.262L12 19.771l-7.417 4.092L6 15.601 0 9.748l8.332-1.73z" />
                 </svg>
             ))}
@@ -74,22 +80,20 @@ export default function Testimonials() {
         setProgress(Math.min(100, Math.max(0, ratio * 100)));
     };
 
-
     const scrollByAmount = (dir: 'left' | 'right') => {
         const el = scrollerRef.current;
         if (!el) return;
         const amount = Math.min(640, Math.round(el.clientWidth * 0.9));
         el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
     };
+
     useEffect(() => {
         const el = scrollerRef.current;
         if (!el) return;
 
-        // set initial + on scroll
         updateProgress();
         el.addEventListener('scroll', updateProgress, { passive: true });
 
-        // recalc on resize (layout changes)
         const ro = new ResizeObserver(updateProgress);
         ro.observe(el);
 
@@ -99,51 +103,50 @@ export default function Testimonials() {
         };
     }, []);
 
-
     return (
-        <section className="relative bg-[#1e5b86]">
+        <section className="relative bg-brand">
             <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
 
-            <div className="relative    py-16  ">
-                {/* Heading + CTAs */}
-                <div className="flex justify-between ">
-                    <div className='flex ml-24 flex-col justify-center w-1/4'>
-                        <div>
-                            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white/90 backdrop-blur">
-                                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+                {/* Layout wrapper: stack on mobile, two columns on lg+ */}
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
+                    {/* Left: heading + CTAs */}
+                    <div className="lg:col-span-4">
+                        <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-4 py-2 text-sm text-black">
+                                <Image src={star} alt="star" />
                                 Testimonials
                             </span>
-                      </div>
-                        <h2 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                            What Do Our Clients Say
-                        </h2>
-                        <p className="mt-3 max-w-sm text-white/80">
-                            Don’t just take our word for it. Hear from those who’ve found success.
-                        </p>
 
-                        <div className="mt-6 flex flex-wrap gap-3">
-                            <a href="#jobs" className="rounded-full bg-white px-5 py-3 text-ink shadow hover:shadow-md">Search Jobs</a>
-                            <a href="#post" className="rounded-full border border-white/40 px-5 py-3 text-white hover:bg-white/10">Post a Job</a>
+                            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
+                                What Do Our Clients Say
+                            </h2>
+
+                            <p className="mt-3 max-w-sm text-white/80">
+                                Don’t just take our word for it. Hear from those who’ve found success.
+                            </p>
+
+                            
                         </div>
                     </div>
 
-                    {/* Carousel */}
-                    <div className="relative w-2/3 mx-5">
-                        {/* Gradient edges for nice fade */}
-                        <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#1e5b86] to-transparent px-2" />
-                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#1e5b86] to-transparent" />
+                    {/* Right: carousel */}
+                    <div className="relative lg:col-span-8">
+                        {/* Edge fades (hide on mobile to save paint) */}
+                        <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-10 bg-gradient-to-r from-[#1e5b86] to-transparent sm:block" />
+                        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-10 bg-gradient-to-l from-[#1e5b86] to-transparent sm:block" />
 
                         <div
                             ref={scrollerRef}
-                            className="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth py-4"
+                            className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth py-2 sm:gap-6 sm:py-4"
                             aria-label="Client testimonials"
                         >
                             {DATA.map((t, idx) => (
                                 <article
                                     key={idx}
-                                    className="snap-center shrink-0 rounded-3xl bg-white/5 ring-1 ring-white/10 backdrop-blur-xl
-                             shadow-[0_20px_60px_-15px_rgba(2,6,23,0.45)]
-                             w-[85%] sm:w-[400px] lg:w-[560px] p-6 md:p-7"
+                                    className="snap-center shrink-0 w-[88%] xs:w-[80%] sm:w-[380px] md:w-[460px] lg:w-[520px]
+                             rounded-3xl bg-white/5 p-5 md:p-7 ring-1 ring-white/10 backdrop-blur-xl
+                             shadow-[0_20px_60px_-15px_rgba(2,6,23,0.45)]"
                                 >
                                     <div className="flex items-start gap-4">
                                         <Image
@@ -162,9 +165,7 @@ export default function Testimonials() {
 
                                     <div className="mt-5 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
                                         <Stars n={t.rating} />
-                                        <p className="mt-3 text-white/90">
-                                            “{t.text}”
-                                        </p>
+                                        <p className="mt-3 text-white/90">“{t.text}”</p>
                                     </div>
 
                                     <div className="mt-4 flex items-center gap-2 text-sm text-white/80">
@@ -182,7 +183,7 @@ export default function Testimonials() {
                         </div>
 
                         {/* Controls */}
-                        <div className="mt-4 flex items-center justify-center gap-3">
+                        <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
                             <button
                                 onClick={() => scrollByAmount('left')}
                                 aria-label="Previous"
@@ -191,9 +192,8 @@ export default function Testimonials() {
                                 ‹
                             </button>
 
-                            {/* Track */}
-                            <div className="relative h-1 w-28 overflow-hidden rounded-full bg-white/20">
-                                {/* Thumb that moves */}
+                            {/* Progress track */}
+                            <div className="relative h-1 w-40 overflow-hidden rounded-full bg-white/20 sm:w-56 md:w-72">
                                 <div
                                     className="h-full rounded-full bg-white/70 transition-[width] duration-300 ease-out"
                                     style={{ width: `${progress}%` }}
@@ -208,6 +208,20 @@ export default function Testimonials() {
                                 ›
                             </button>
                         </div>
+                    </div>
+                    <div className="mt-6 flex w-full lg:flex-col gap-3 sm:flex-row">
+                        <a
+                            href="#jobs"
+                            className="w-full rounded-xl bg-white px-5 py-3 text-center font-semibold text-[#2572A7] shadow hover:shadow-md sm:w-auto"
+                        >
+                            Search Jobs
+                        </a>
+                        <a
+                            href="#post"
+                            className="w-full rounded-xl border border-white/40 px-5 py-3 text-center text-white hover:bg-white/10 sm:w-auto"
+                        >
+                            Post a Job
+                        </a>
                     </div>
                 </div>
             </div>

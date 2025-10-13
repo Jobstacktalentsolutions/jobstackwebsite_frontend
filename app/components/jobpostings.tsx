@@ -1,6 +1,7 @@
 // components/JobsFeed.tsx
 'use client';
 
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 
 type Job = {
@@ -9,18 +10,19 @@ type Job = {
     companyAvatar: string;
     verified?: boolean;
     location: string;
-    posted: string;            // e.g. "2 hours ago"
+    posted: string;
     title: string;
     summary: string;
-    tags: string[];            // e.g. ["Remote", "Full-time (8am – 6pm)"]
-    pay?: string;              // e.g. "₦350,000 – ₦500,000/m"
+    tags: string[];
+    pay?: string;
 };
 
 const JOBS: Job[] = [
     {
         id: '1',
         company: 'TechInnovate Ltd.',
-        companyAvatar: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=128&auto=format&fit=crop',
         verified: true,
         location: 'Lagos, Nigeria',
         posted: '2 hours ago',
@@ -33,7 +35,8 @@ const JOBS: Job[] = [
     {
         id: '2',
         company: 'DesignMasters Co.',
-        companyAvatar: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=128&auto=format&fit=crop',
         verified: true,
         location: 'Abuja, Nigeria',
         posted: '1 day ago',
@@ -46,7 +49,8 @@ const JOBS: Job[] = [
     {
         id: '3',
         company: 'Insight Corp.',
-        companyAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=128&auto=format&fit=crop',
         verified: false,
         location: 'Port Harcourt, Nigeria',
         posted: '3 days ago',
@@ -59,7 +63,8 @@ const JOBS: Job[] = [
     {
         id: '4',
         company: 'Tunde Festus',
-        companyAvatar: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=128&auto=format&fit=crop',
         verified: false,
         location: 'Computer Village, Ikeja',
         posted: '1 day ago',
@@ -72,7 +77,8 @@ const JOBS: Job[] = [
     {
         id: '5',
         company: 'Tech Innovations Inc.',
-        companyAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=128&auto=format&fit=crop',
         verified: true,
         location: 'Victoria Island, Lagos',
         posted: '1 week ago',
@@ -85,7 +91,8 @@ const JOBS: Job[] = [
     {
         id: '6',
         company: 'Green Energy Solutions',
-        companyAvatar: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=128&auto=format&fit=crop',
         verified: true,
         location: 'Lekki, Lagos',
         posted: '3 days ago',
@@ -98,7 +105,8 @@ const JOBS: Job[] = [
     {
         id: '7',
         company: 'The Adebayos',
-        companyAvatar: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=128&auto=format&fit=crop',
         verified: false,
         location: 'Surulere, Lagos',
         posted: '1 day ago',
@@ -111,7 +119,8 @@ const JOBS: Job[] = [
     {
         id: '8',
         company: 'Chinonso Ugochukwu',
-        companyAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=128&auto=format&fit=crop',
         verified: true,
         location: 'Victoria Island, Lagos',
         posted: '3 days ago',
@@ -124,7 +133,8 @@ const JOBS: Job[] = [
     {
         id: '9',
         company: 'Olamide Adebayo',
-        companyAvatar: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=128&auto=format&fit=crop',
+        companyAvatar:
+            'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=128&auto=format&fit=crop',
         verified: true,
         location: 'Ikeja, Lagos',
         posted: '1 week ago',
@@ -136,6 +146,7 @@ const JOBS: Job[] = [
     },
 ];
 
+// Helpers
 function Dot() {
     return <span className="mx-2 inline-block h-1 w-1 rounded-full bg-slate-300 align-middle" />;
 }
@@ -148,10 +159,41 @@ function Check() {
     );
 }
 
+function ArrowLeft() {
+    return (
+        <svg width="20" height="20" viewBox="0 0 24 24">
+            <path
+                d="M15 6l-6 6 6 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
+
+function ArrowRight() {
+    return (
+        <svg width="20" height="20" viewBox="0 0 24 24">
+            <path
+                d="M9 18l6-6-6-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
+
+// Job Card
 function JobCard({ job }: { job: Job }) {
     return (
         <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_15px_50px_-25px_rgba(2,6,23,0.2)]">
-            {/* Company row */}
+            {/* Company Row */}
             <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                     <Image
@@ -173,14 +215,12 @@ function JobCard({ job }: { job: Job }) {
             </div>
 
             {/* Title */}
-            <h3 className="mt-3 text-[17px] font-semibold leading-snug text-slate-900">
-                {job.title}
-            </h3>
+            <h3 className="mt-3 text-[17px] font-semibold leading-snug text-slate-900">{job.title}</h3>
 
             {/* Summary */}
             <p className="mt-2 line-clamp-2 text-sm text-slate-600">{job.summary}</p>
 
-            {/* Footer meta */}
+            {/* Footer Meta */}
             <div className="mt-4 flex flex-wrap items-center gap-y-2 text-sm text-slate-600">
                 {job.tags.map((t, i) => (
                     <div key={i} className="flex items-center">
@@ -199,16 +239,59 @@ function JobCard({ job }: { job: Job }) {
     );
 }
 
+// Main Feed
+const PAGE_SIZE = 6;
+
 export default function JobsFeed() {
+    const [page, setPage] = useState(1);
+    const totalPages = Math.ceil(JOBS.length / PAGE_SIZE);
+
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    const currentJobs = useMemo(() => JOBS.slice(start, end), [start, end]);
+
+    const goPrev = () => {
+        if (page > 1) setPage(page - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const goNext = () => {
+        if (page < totalPages) setPage(page + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     return (
         <section className="relative">
             <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-                {/* Grid */}
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {JOBS.map((job) => (
+                    {currentJobs.map((job) => (
                         <JobCard key={job.id} job={job} />
                     ))}
                 </div>
+
+                {/* Pagination */}
+                <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-6">
+                    <button
+                        onClick={goPrev}
+                        disabled={page === 1}
+                        className="flex items-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-base font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        <ArrowLeft /> Prev
+                    </button>
+
+                    <button
+                        onClick={goNext}
+                        disabled={page === totalPages}
+                        className="flex items-center gap-2 rounded-full bg-[#2F76B6] px-8 py-3 text-base font-semibold text-white shadow-[0_12px_30px_-8px_rgba(47,118,182,0.55)] hover:shadow-[0_16px_40px_-12px_rgba(47,118,182,0.6)] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        Next <ArrowRight />
+                    </button>
+                </div>
+
+                <p className="mt-4 text-center text-sm text-slate-500">
+                    Page <span className="font-medium text-slate-700">{page}</span> of{' '}
+                    <span className="font-medium text-slate-700">{totalPages}</span>
+                </p>
             </div>
         </section>
     );

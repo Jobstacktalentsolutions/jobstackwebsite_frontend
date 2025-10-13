@@ -7,7 +7,7 @@ import placeholder from '../assets/image.png';
 import bluePeople from "../assets/blueIconPeople.svg";
 import verified from '../assets/verified.svg';
 import dashboard from "../assets/dashboardIcon.svg";
-
+import star from '../assets/tinystar.svg';
 
 type Card = {
     title: string;
@@ -45,8 +45,8 @@ export default function WhyChooseUs() {
         <section className="relative mx-auto max-w-7xl px-4 pb-20 pt-14 sm:px-6 lg:px-8">
             {/* Pill */}
             <div className="flex justify-center">
-                <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm">
-                    <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white p-4 text-sm text-slate-700 ">
+                  <Image src={star} alt="black star"/>
                     Why Choose Us?
                 </span>
             </div>
@@ -83,11 +83,11 @@ export default function WhyChooseUs() {
 
                         {/* Glass overlay card */}
                         <div className="pointer-events-none absolute inset-x-6 bottom-6 rounded-[1.5rem] border border-white/50 bg-white/10 transition-all duration-500 ease-out">
-                            <div className="pointer-events-auto flex items-center gap-3 p-5 pb-0">
+                            <div className="pointer-events-auto flex flex-col gap-3 p-5 pb-0">
                                 <span className={`grid h-7 w-7 place-items-center rounded-lg ${card.iconBg}`}>
                                     <Image src={card.icon} alt="" />
                                 </span>
-                                <h3 className="text-xl font-semibold text-white drop-shadow">
+                                <h3 className="text-xl font-semibold text-white drop-shadow ">
                                     {card.title}
                                 </h3>
                             </div>

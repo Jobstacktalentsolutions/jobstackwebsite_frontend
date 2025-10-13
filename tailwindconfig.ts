@@ -29,6 +29,9 @@ module.exports = {
       animation: {
         slowBounce: "slowBounce 3s ease-in-out infinite",
       },
+      fontFamily: {
+        sans: ["var(--font-dmSans)", "sans-serif"],
+      },
     },
   },
   plugins: [],

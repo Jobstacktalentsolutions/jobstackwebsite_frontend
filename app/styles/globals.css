@@ -26,5 +26,12 @@ html, body {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 body {
+ font-family: var(--font-dmSans), sans-serif;
   @apply text-slate-800 antialiased;
+}
+.bg-brand{
+  background-color: #1e5b86;
+}
+.bg-brand-two{
+  background-color: #346b92;
 }
