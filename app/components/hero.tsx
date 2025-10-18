@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import star from '../assets/star.svg';
 import roundedStar from '../assets/roundStar.svg';
-import ai_people from '../assets/image.png';
+import ai_people from '../assets/heroimage.png';
 import bluerainbow from '../assets/bluerainbow.svg';
 
 export default function Hero() {
@@ -14,7 +14,7 @@ export default function Hero() {
 
             <div className="relative mx-auto max-w-7xl px-4 pb-0 pt-20 sm:px-6 md:pt-28 lg:px-8 lg:pb-8 lg:pt-32">
                 {/* Headline */}
-                <h1 className="mx-auto max-w-[34rem] text-center text-[28px]/[1.2] font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                <h1 className="mx-auto max-w-9xl text-center text-[28px]/[1.2] font-semibold tracking-tight text-white sm:text-5xl lg:text-5xl">
                     Find Your Dream Job
                     <br className="hidden sm:block" />
                     <span className="sm:hidden"> or </span>
@@ -22,7 +22,7 @@ export default function Hero() {
                 </h1>
 
                 {/* Subcopy */}
-                <p className="mx-auto mt-4 max-w-[32rem] text-center text-[15px]/6 text-white/85 sm:text-lg">
+                <p className="mx-auto mt-4 max-w-xl text-center text-[15px]/6 text-white/85 sm:text-lg">
                     A better way to connect talented people with great opportunities.
                     Whether you&apos;re taking the next step in your career or building
                     your dream team, we&apos;re here to make it happen.

@@ -1,0 +1,107 @@
+"use client";
+
+import Image, { type StaticImageData } from "next/image";
+import Link from "next/link";
+import { Mail, Lock, Eye, EyeOff, AlertCircle, User2 } from "lucide-react";
+import Button from "../../components/button";
+import Input from "../../components/input";
+import logo from "../../assets/coloredlogo.svg";
+import { useEffect, useRef, useState, useMemo } from "react";
+import Carousel from "@/app/components/carousel";
+import welcome from "../../assets/welcomeimage.png";
+import welcome2 from "../../assets/welcomeimagetwo.png";
+import welcome3 from "../../assets/securitywithstaff.png";
+import PasswordField from "@/app/components/passwordField";
+
+export default function SignUp() {
+    const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
+    const [password, setPassword] = useState("");
+    const [pwError, setPwError] = useState<string | undefined>(undefined);
+
+    function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        // TODO: replace with real auth logic
+        const fakeInvalid = true;
+        if (fakeInvalid) setPwError("Incorrect email or password");
+    }
+
+    return (
+        <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
+            {/* Left: Form */}
+            <div className="flex flex-col justify-center px-8 pl-24 py-5 md:pt-30">
+                <div className="mb-8">
+                    <Image src={logo} alt="Jobstack logo" width={150} height={40} />
+                </div>
+
+                <div className="max-w-xl">
+                    <h2 className="text-2xl font-semibold text-slate-900 mb-1 md:pt-18">
+                        Start your journey!
+                    </h2>
+                    <p className="text-gray-400 mb-6 text-medium">
+                        Create your free account in just a minute. Your dream role is closer than you think.
+                    </p>
+
+                    <form className="space-y-4" onSubmit={onSubmit}>
+                        <Input label="Fullname" placeholder="Enter your fullname" iconLeft={<User2 size={16} />} />
+                        <Input label="Email Address" placeholder="Enter email address" iconLeft={<Mail size={16} />} />
+                        <PasswordField
+                            value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                if (pwError) setPwError(undefined); // clear error as user types
+                            }}
+                            error={pwError}
+                        />
+                        <Button className="w-full my-10 text-medium">Create an account</Button>
+
+                        <div className="flex items-center gap-2 mb-10">
+                            <hr className="flex-grow border-slate-200" />
+                            <span className="text-sm text-slate-500">or</span>
+                            <hr className="flex-grow border-slate-200" />
+                        </div>
+                        <div className="flex">
+                            <Button variant="outline" className="w-full">
+                                Sign in with Google
+                            </Button>
+                            <Button variant="outline" className="w-full ml-4">
+                                Sign in with Apple
+                            </Button>
+                        </div>
+                        <p className="text-center text-sm text-slate-500">
+                            Already have an account?{" "}
+                            <Link href="/auth/login" className="text-blue-600 hover:underline">
+                                Sign in
+                            </Link>
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            {/* Right: Carousel */}
+            <div className="relative order-first pt-10 md:order-none md:h-full">
+                <div className="relative h-[300px] mr-5 md:h-[750px]">
+                    <Carousel images={IMAGES} interval={5000} />
+
+                    {/* Testimonial card (bottom overlay, fixed) */}
+                    <div className="absolute inset-x-6 bottom-6 md:inset-x-10 z-50 pointer-events-none">
+                        <div className="mx-auto max-w-2xl rounded-2xl bg-white/70 p-5 backdrop-blur-md shadow-lg">
+                            <div className="mb-1 flex items-center gap-3">
+                                <div className="h-8 w-8 shrink-0 rounded-full bg-slate-300" />
+                                <div className="text-sm">
+                                    <p className="font-medium">Amina B.</p>
+                                    <p className="text-slate-600">Project Manager at TechFlow NG</p>
+                                </div>
+                                <div className="ml-auto text-blue-700">★★★★☆</div>
+                            </div>
+                            <p className="text-sm text-slate-700">
+                                After being laid off, I was struggling. Within two weeks on this platform, I had three
+                                solid interviews. I now work as a Project Manager at a top fintech company. This
+                                platform didn’t just give me a job; it gave me a career path.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

@@ -37,7 +37,7 @@ export default function Footer() {
                     </div>
 
                     {/* Link columns */}
-                    <nav className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+                    <nav className="md:col-span-7 grid grid-cols-1 text-center sm:grid-cols-3 gap-4 sm:gap-8">
                         <div>
                             <h3 className="text-sm font-semibold text-slate-900">Company</h3>
                             <ul className="mt-4 space-y-3 text-sm">
