@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Briefcase, ChevronRight, Plus } from "lucide-react";
+import heroimage from "@/app/assets/heroimage.png"
 
 export default function CTA() {
     return (
@@ -39,7 +40,7 @@ export default function CTA() {
                         <div className="flex justify-center md:justify-end">
                             <div className="relative aspect-[4/5] w-72 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-slate-200">
                                 <Image
-                                    src="/hero.png" // put your image in /public/hero.png
+                                    src={heroimage} // put your image in /public/hero.png
                                     alt="Smiling professional"
                                     fill
                                     className="object-cover"

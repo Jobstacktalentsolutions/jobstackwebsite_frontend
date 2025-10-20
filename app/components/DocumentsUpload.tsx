@@ -2,10 +2,23 @@
 
 import React, { useState, useRef } from "react";
 
+type UploadResponse = {
+    // adjust the shape as your API returns
+    success: boolean;
+    fileUrls?: string[];
+    [key: string]: unknown;
+};
+
+type UploadError = {
+    message: string;
+    code?: number;
+    [key: string]: unknown;
+};
+
 type DocumentUploadProps = {
     apiEndpoint: string; // URL where to POST the file(s)
-    onSuccess?: (response: any) => void;
-    onError?: (error: any) => void;
+    onSuccess?: (response: UploadResponse) => void;
+    onError?: (error: UploadError) => void;
     maxFileSizeMB?: number;
     acceptedFormats?: string; // e.g. ".pdf,.docx,.png"
 };
@@ -24,20 +37,18 @@ export default function DocumentUpload({
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setErrorMessage(null);
-        if (e.target.files) {
-            const files = e.target.files;
-            // validate size
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (file.size > maxFileSizeMB * 1024 * 1024) {
-                    setErrorMessage(
-                        `File “${file.name}” exceeds the maximum size of ${maxFileSizeMB} MB.`
-                    );
-                    return;
-                }
+        const files = e.target.files;
+        if (!files) return;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > maxFileSizeMB * 1024 * 1024) {
+                setErrorMessage(
+                    `File “${file.name}” exceeds the maximum size of ${maxFileSizeMB} MB.`
+                );
+                return;
             }
-            setSelectedFiles(files);
         }
+        setSelectedFiles(files);
     };
 
     const handleUpload = async () => {
@@ -47,7 +58,6 @@ export default function DocumentUpload({
         }
         setUploading(true);
         const formData = new FormData();
-        // if you support multiple, loop
         Array.from(selectedFiles).forEach((file) => {
             formData.append("documents", file);
         });
@@ -60,16 +70,19 @@ export default function DocumentUpload({
             if (!response.ok) {
                 throw new Error(`Upload failed (${response.status})`);
             }
-            const data = await response.json();
+            const data = (await response.json()) as UploadResponse;
             setUploading(false);
             setSelectedFiles(null);
-            inputRef.current && (inputRef.current.value = "");
+            if (inputRef.current) inputRef.current.value = "";
             onSuccess && onSuccess(data);
-        } catch (error) {
+        } catch (error: unknown) {
             setUploading(false);
-            const errMsg = error instanceof Error ? error.message : "Upload failed";
-            setErrorMessage(errMsg);
-            onError && onError(error);
+            let err: UploadError = { message: "Upload failed" };
+            if (error instanceof Error) {
+                err = { message: error.message };
+            }
+            setErrorMessage(err.message);
+            onError && onError(err);
         }
     };
 

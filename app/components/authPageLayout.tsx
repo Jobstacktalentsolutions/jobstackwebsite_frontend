@@ -1,122 +1,67 @@
 "use client";
 
-import React from "react";
-import AuthPageLayout from "@/app/components/authPageLayout";
-import Input from "@/app/components/input";
-import Button from "@/app/components/button";
+import Image, { type StaticImageData } from "next/image";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
-export type ProfileSetupProps = {
+import logo from "../assets/coloredlogo.svg";
+import Carousel from "@/app/components/carousel";
+import welcome from "../assets/welcomeimage.png";
+import welcome2 from "../assets/welcomeimagetwo.png";
+import welcome3 from "../assets/securitywithstaff.png";
+import PasswordField from "@/app/components/passwordField";
+import Link from "next/link";
+
+export type authPageProps = {
     heading: string;
     subtext: string;
-    onSkip?: () => void;
-    onContinue: (data: {
-        jobTitle: string;
-        preferredLocation: string;
-        jobType: string;
-        cvFile?: File;
-    }) => void;
+    message: React.ReactNode;
 };
 
-const ProfileSetup: React.FC<ProfileSetupProps> = ({
+export default function ForgotPassword({
     heading,
     subtext,
-    onSkip,
-    onContinue,
-}) => {
-    const [jobTitle, setJobTitle] = React.useState("");
-    const [preferredLocation, setPreferredLocation] = React.useState("");
-    const [jobType, setJobType] = React.useState("");
-    const [cvFile, setCvFile] = React.useState<File | null>(null);
+    message,
+}: authPageProps) {
+    const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
+    const router = useRouter();
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setCvFile(e.target.files[0]);
-        }
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onContinue({ jobTitle, preferredLocation, jobType, cvFile: cvFile || undefined });
+    const goBack = () => {
+        router.back();
     };
 
     return (
-        <AuthPageLayout
-            heading={heading}
-            subtext={subtext}
-            skipButton={onSkip}
-            /* assumes your layout supports a “skipButton” prop for “Skip for now” */
-            message={
-                <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
-                    <div>
-                        <label htmlFor="jobTitle" className="block text-gray-900 font-medium text-lg mb-1">
-                            Job Title
-                        </label>
-                        <Input
-                            id="jobTitle"
-                            placeholder="e.g. Baker, Project Manager, Designer..."
-                            value={jobTitle}
-                            onChange={(e) => setJobTitle(e.target.value)}
-                            className="w-full"
-                        />
-                    </div>
+        <div className="flex min-h-screen flex-col md:flex-row w-full my-10 ">
+            {/* Left Column */}
+            <div className="px-12   flex flex-col w-1/2">
+                <button
+                    type="button"
+                    onClick={goBack}
+                    className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-20"
+                >
+                    <ArrowLeft size={20} />
+                    <span>Back</span>
+                </button>
 
-                    <div>
-                        <label htmlFor="preferredLocation" className="block text-gray-900 font-medium text-lg mb-1">
-                            Preferred Location(s)
-                        </label>
-                        <Input
-                            id="preferredLocation"
-                            placeholder="Lagos, Oyo, Abuja, etc"
-                            value={preferredLocation}
-                            onChange={(e) => setPreferredLocation(e.target.value)}
-                            className="w-full"
-                        />
-                    </div>
+                <div className="mb-10">
+                    <Link href="/"><Image src={logo} alt="Page logo " width={150} height={40}/> </Link>
+                </div>
 
-                    <div>
-                        <label htmlFor="jobType" className="block text-gray-900 font-medium text-lg mb-1">
-                            Job Type
-                        </label>
-                        <select
-                            id="jobType"
-                            value={jobType}
-                            onChange={(e) => setJobType(e.target.value)}
-                            className="block w-full rounded-md border border-gray-300 py-2 px-3 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">Select job type</option>
-                            <option value="full-time">Full-time</option>
-                            <option value="part-time">Part-time</option>
-                            <option value="contract">Contract</option>
-                        </select>
-                    </div>
+                <div className="max-w-xl">
+                    <h1 className="text-2xl font-semibold text-slate-900 mb-2">
+                        {heading}
+                    </h1>
+                    <p className="text-gray-400 mb-8 text-base">{subtext}</p>
+                    <div>{message}</div>
+                </div>
+            </div>
 
-                    <div>
-                        <label htmlFor="cvFile" className="block text-gray-900 font-medium text-lg mb-1">
-                            Upload your CV (optional, but highly encouraged)
-                        </label>
-                        <input
-                            id="cvFile"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={handleFileChange}
-                            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
-                        />
-                        {cvFile && (
-                            <p className="mt-2 text-gray-500 text-sm">
-                                Selected file: {cvFile.name}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="mt-8">
-                        <Button type="submit" className="w-full py-3 text-base font-semibold">
-                            Continue
-                        </Button>
-                    </div>
-                </form>
-            }
-        />
+            {/* Right Column */}
+            <div className="hidden md:block relative order-first   w-1/2 md:order-none bg-white px-10 overflow-hidden">
+                <div className="w-full h-[300px] md:h-[700px]">
+                    <Carousel images={IMAGES} interval={5000} />
+                </div>
+            </div>
+        </div>
     );
-};
-
-export default ProfileSetup;
+}

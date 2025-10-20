@@ -1,31 +1,31 @@
-"use client"
-import React, { useState } from 'react'
+"use client";
+
+import React, { useState } from "react";
 import AuthPageLayout from "@/app/components/authPageLayout";
-import PasswordField from '@/app/components/passwordField';
-import Button from '@/app/components/button';
-import SuccessModal from '@/app/components/sucessModal';
+import PasswordField from "@/app/components/passwordField";
+import Button from "@/app/components/button";
+import SuccessModal from "@/app/components/sucessModal";  // make sure this path/name is correct
 
-const CreateNewPassword = () => {
+const CreateNewPassword: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
-
-    
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [pwError, setPwError] = useState<string | undefined>(undefined);
 
     const handleCloseModal = () => {
         setOpenModal(false);
     };
 
     const goToLogin = () => {
-        // e.g. router.push("/auth/login");
+        // navigate to login page here if using next/router or next/navigation
         handleCloseModal();
     };
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [pwError, setPwError] = useState<string | undefined>(undefined);
 
-    function onSubmit(e: React.FormEvent) {
+    const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-    setOpenModal(true);
-        // Simple validation: check both fields are filled and match
+        setPwError(undefined);  // clear error at start
+
+        // validation: ensure both fields filled
         if (!password || !confirmPassword) {
             setPwError("Both password fields are required");
             return;
@@ -36,15 +36,13 @@ const CreateNewPassword = () => {
             return;
         }
 
-        // TODO: replace with real auth logic
-        const fakeInvalid = false;
-        if (fakeInvalid) {
-            setPwError("Something went wrong, please try again");
-        } else {
-            setPwError(undefined);
-            // proceed to submit password to backend
-        }
-    }
+        // If all good: open modal
+        setOpenModal(true);
+
+        // TODO: call your backend API here to actually update the password
+        // After successful response, openModal is shown
+        // On failure, set error message instead of opening
+    };
 
     return (
         <AuthPageLayout
@@ -52,7 +50,7 @@ const CreateNewPassword = () => {
             subtext="Almost there! Please create a new, strong password for your account."
             message={
                 <>
-                    <h3>New Password</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">New Password</h3>
                     <form className="space-y-4" onSubmit={onSubmit}>
                         <PasswordField
                             label="Password"
@@ -73,7 +71,9 @@ const CreateNewPassword = () => {
                             showHints={false}
                             error={pwError}
                         />
-                        <Button className="w-full my-10 text-medium">Submit</Button>
+                        <Button type="submit" className="w-full py-4 text-base font-medium">
+                            Submit
+                        </Button>
                     </form>
                     <SuccessModal
                         open={openModal}
@@ -85,6 +85,6 @@ const CreateNewPassword = () => {
             }
         />
     );
-}
+};
 
 export default CreateNewPassword;

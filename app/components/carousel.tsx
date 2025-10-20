@@ -45,7 +45,7 @@ export default function Carousel({
 
     return (
         <div
-            className={cn("fixed h-full w-[900px] overflow-hidden", className)}
+            className={cn("fixed h-full w-[750px] overflow-hidden", className)}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
             aria-roledescription="carousel"
@@ -61,7 +61,7 @@ export default function Carousel({
                             src={src}
                             alt={`Slide ${i + 1}`}
                             fill
-                            sizes="(min-width:768px) 50vw, 100vw"
+                            sizes="(min-width:600px) 50vw, 100vw"
                             className=" rounded-3xl object-cover [object-position:50%_20%]"
                             priority={i === 0}
                         />

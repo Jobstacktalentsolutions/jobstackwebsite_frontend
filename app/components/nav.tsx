@@ -66,13 +66,13 @@ export default function Nav() {
     return (
         <header className="absolute inset-x-0 top-0 z-50 border-b border-white/20">
             <nav
-                className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8"
+                className="mx-auto flex max-w-7xl items-center  justify-between py-4 sm:px-6 lg:px-8"
                 aria-label="Primary"
             >
                 <Logo />
 
                 {/* Desktop nav (center) */}
-                <div className="hidden md:flex md:flex-1 md:justify-center">
+                <div className="hidden  md:flex md:justify-center ">
                     <DesktopLinks />
                 </div>
 
@@ -86,6 +86,12 @@ export default function Nav() {
                         className="rounded-xl bg-[#E6F2F9] px-4 py-2 text-blue-500 font-semibold"
                     >
                         Sign up
+                    </Link>
+                    <Link
+                        href="/auth/login"
+                        className="rounded-xl bg-[#E6F2F9] px-4 py-2 text-blue-500 font-semibold"
+                    >
+                        Log in
                     </Link>
                 </div>
 
