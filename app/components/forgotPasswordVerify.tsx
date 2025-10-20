@@ -4,11 +4,12 @@ import { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Button from "@/app/components/button";
 import Carousel from "@/app/components/carousel";
-import Image from 'next/image'
+import Image from "next/image";
 import welcome from "@/app/assets/welcomeimage.png";
 import welcome2 from "@/app/assets/welcomeimagetwo.png";
 import welcome3 from "@/app/assets/securitywithstaff.png";
 import logo_second from "@/app/assets/logo_second.svg";
+
 export type ForgotPasswordVerifyProps = {
     heading: string;
     message: React.ReactNode;
@@ -40,22 +41,19 @@ export default function ForgotPasswordVerify({
 
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
-    // countdown
+    // countdown timer
     useEffect(() => {
         if (timeLeft <= 0) return;
         const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
         return () => clearTimeout(t);
     }, [timeLeft]);
 
-    // helpers
     const filled = code.every((c) => c !== "");
     const codeString = code.join("");
 
     const handleChange = (value: string, index: number) => {
         if (!/^\d?$/.test(value)) return;
-
         setError(null);
-
         const updated = [...code];
         updated[index] = value;
         setCode(updated);
@@ -66,18 +64,27 @@ export default function ForgotPasswordVerify({
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    const handleKeyDown = (
+        e: React.KeyboardEvent<HTMLInputElement>,
+        index: number
+    ) => {
         if (e.key === "Backspace" && !code[index] && index > 0) {
             inputsRef.current[index - 1]?.focus();
             inputsRef.current[index - 1]?.select();
         }
-        if (e.key === "ArrowLeft" && index > 0) inputsRef.current[index - 1]?.focus();
-        if (e.key === "ArrowRight" && index < 5) inputsRef.current[index + 1]?.focus();
+        if (e.key === "ArrowLeft" && index > 0) {
+            inputsRef.current[index - 1]?.focus();
+        }
+        if (e.key === "ArrowRight" && index < 5) {
+            inputsRef.current[index + 1]?.focus();
+        }
     };
 
-    // paste support (paste all 6 at once)
     const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-        const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+        const text = e.clipboardData
+            .getData("text")
+            .replace(/\D/g, "")
+            .slice(0, 6);
         if (!text) return;
         const arr = Array(6)
             .fill("")
@@ -92,8 +99,12 @@ export default function ForgotPasswordVerify({
     const handleResend = async () => {
         if (isResending || timeLeft > 0) return;
         setIsResending(true);
-        // TODO: call API to resend
-        await new Promise((r) => setTimeout(r, 700));
+        // If onResend prop provided, call it; else mock
+        if (onResend) {
+            await onResend();
+        } else {
+            await new Promise((r) => setTimeout(r, 700));
+        }
         setTimeLeft(60);
         setIsResending(false);
     };
@@ -106,17 +117,19 @@ export default function ForgotPasswordVerify({
             return;
         }
 
-        // Demo behaviour to mirror your mock (245012 succeeds)
-        const isValid = codeString === "245012";
-
-        // TODO: swap with real API: await verifyCode(codeString)
-        await new Promise((r) => setTimeout(r, 400));
+        let isValid = false;
+        if (onVerify) {
+            isValid = await onVerify(codeString);
+        } else {
+            // mock for demo
+            await new Promise((r) => setTimeout(r, 400));
+            isValid = codeString === "245012";
+        }
 
         if (isValid) {
             setShowSuccess(true);
         } else {
             setError("That code doesn’t look right. Please try again.");
-            // shake focus back to first
             inputsRef.current[0]?.focus();
         }
     };
@@ -124,7 +137,7 @@ export default function ForgotPasswordVerify({
     return (
         <div className="grid min-h-screen grid-cols-1 md:grid-cols-2 bg-white">
             {/* LEFT – form */}
-            <div className="flex  justify-center px-6 py-10 md:px-12">
+            <div className="flex justify-center px-6 py-10 md:px-12">
                 <div className="w-full max-w-xl">
                     {/* Header */}
                     <div className="mb-4">
@@ -141,19 +154,16 @@ export default function ForgotPasswordVerify({
                         </button>
 
                         <div className="mt-10 mb-20">
-                            <Image src={logo_second} alt="logo" />  
-                   </div>
-                        <div className="">
-                            <h1 className="text-3xl font-semibold tracking-tight">Check your inbox</h1>
-                            <p className="mt-2  text-xl text-gray-400">
-                                We&rsquo;ve a 6-digit code sent a code to your email. 
-<br/>Enter the code below
-                            </p>
-                            
-                       </div>
+                            <Image src={logo_second} alt="logo" />
+                        </div>
+
+                        <div>
+                            <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
+                            <p className="mt-2 text-xl text-gray-400">{message}</p>
+                        </div>
                     </div>
 
-                    {/* Inputs */}
+                    {/* Code inputs */}
                     <div className="flex gap-3">
                         {code.map((digit, i) => {
                             const base =
@@ -164,7 +174,9 @@ export default function ForgotPasswordVerify({
                             return (
                                 <input
                                     key={i}
-                                    ref={(el) => (inputsRef.current[i] = el)}
+                                    ref={(el) => {
+                                        inputsRef.current[i] = el;
+                                    }}
                                     type="text"
                                     inputMode="numeric"
                                     maxLength={1}
@@ -180,7 +192,7 @@ export default function ForgotPasswordVerify({
                     </div>
 
                     {/* Helper row */}
-                    <div className="mt-4 flex flex-col  justify-between gap-3 text-sm text-slate-600">
+                    <div className="mt-4 flex flex-col justify-between gap-3 text-sm text-slate-600">
                         <div className="text-gray-400 text-sm">
                             Didn’t receive your code?{" "}
                             <button
@@ -192,8 +204,8 @@ export default function ForgotPasswordVerify({
                                 Resend
                             </button>
                         </div>
-                        <div className="flex">
-                           <p className="mr-2">Expires in {" "} </p>
+                        <div>
+                            <p className="inline-block mr-2">Expires in&nbsp;</p>
                             <span className="font-medium text-blue-700">
                                 0:{String(timeLeft).padStart(2, "0")}
                             </span>
@@ -207,7 +219,7 @@ export default function ForgotPasswordVerify({
                         </p>
                     )}
 
-                    {/* Verify */}
+                    {/* Verify button */}
                     <Button
                         onClick={handleVerify}
                         disabled={!filled}
@@ -218,24 +230,27 @@ export default function ForgotPasswordVerify({
                 </div>
             </div>
 
-            {/* RIGHT – carousel + testimonial overlay */}
+            {/* RIGHT – carousel + overlay */}
             <div className="relative order-first h-[280px] md:order-none md:h-auto">
                 <Carousel images={IMAGES} interval={5000} />
-                {/* Testimonial card (bottom overlay like your mock) */}
+                {/* Testimonial card */}
                 <div className="pointer-events-none absolute inset-x-6 bottom-6 md:inset-x-10">
                     <div className="mx-auto max-w-2xl rounded-2xl bg-white/70 p-5 backdrop-blur-md shadow-lg">
                         <div className="mb-1 flex items-center gap-3">
                             <div className="h-8 w-8 shrink-0 rounded-full bg-slate-300" />
                             <div className="text-sm">
                                 <p className="font-medium">Amina B.</p>
-                                <p className="text-slate-600">Project Manager at TechFlow NG</p>
+                                <p className="text-slate-600">
+                                    Project Manager at TechFlow NG
+                                </p>
                             </div>
                             <div className="ml-auto text-blue-700">★★★★☆</div>
                         </div>
                         <p className="text-sm text-slate-700">
-                            After being laid off, I was struggling. Within two weeks on this platform, I had three
-                            solid interviews. I now work as a Project Manager at a top fintech company. This
-                            platform didn’t just give me a job; it gave me a career path.
+                            After being laid off, I was struggling. Within two weeks on this
+                            platform, I had three solid interviews. I now work as a Project
+                            Manager at a top fintech company. This platform didn’t just give
+                            me a job; it gave me a career path.
                         </p>
                     </div>
                 </div>
@@ -250,7 +265,12 @@ export default function ForgotPasswordVerify({
                 >
                     <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
                         <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-blue-50">
-                            <svg width="32" height="32" viewBox="0 0 24 24" className="text-blue-600">
+                            <svg
+                                width="32"
+                                height="32"
+                                viewBox="0 0 24 24"
+                                className="text-blue-600"
+                            >
                                 <path
                                     fill="currentColor"
                                     d="M9.55 17.6L4.9 12.95l1.4-1.4l3.25 3.25l7.2-7.2l1.4 1.4z"
@@ -258,41 +278,34 @@ export default function ForgotPasswordVerify({
                             </svg>
                         </div>
                         <h2 className="text-center text-lg font-semibold">
-                            You have successfully verified your mail!
+                            {successTitle ?? "Verification successful!"}
                         </h2>
 
                         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <Button
-                                variant="secondary"
-                                onClick={() => {
-                                    // navigate to dashboard
-                                    window.location.href = "/dashboard";
-                                }}
-                                className="w-full"
-                            >
-                                View dashboard
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    // continue profile setup
-                                    window.location.href = "/onboarding/profile";
-                                }}
-                                className="w-full"
-                            >
-                                Continue setup
-                            </Button>
+                            {onViewDashboard && (
+                                <Button
+                                    variant="secondary"
+                                    onClick={onViewDashboard}
+                                    className="w-full"
+                                >
+                                    View dashboard
+                                </Button>
+                            )}
+                            {onContinueSetup && (
+                                <Button onClick={onContinueSetup} className="w-full">
+                                    Continue setup
+                                </Button>
+                            )}
                         </div>
 
                         <button
                             aria-label="Close"
                             className="absolute right-4 top-4 rounded-full p-2 text-slate-500 hover:bg-slate-100"
-                            onClick={() => setShowSuccess(false)}
+                            onClick={handleClose => setShowSuccess(false)}
                         >
                             ×
                         </button>
                     </div>
                 </div>
             )}
-        </div>
-    );
-}
+        </div> 
