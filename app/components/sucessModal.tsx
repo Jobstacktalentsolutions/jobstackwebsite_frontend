@@ -1,97 +1,43 @@
-"use client";
-
-import React from "react";
-import Dialog from "@mui/material/Dialog";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CloseIcon from "@mui/icons-material/Close";
-
-interface SuccessModalProps {
+// SuccessModal.tsx
+type SuccessModalProps = {
     open: boolean;
     onClose: () => void;
-    onAction: () => void;
-    title?: string;
-    actionLabel?: string;
-    message?: React.ReactNode;
-}
-
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-    "& .MuiPaper-root": {
-        borderRadius: 16,
-        padding: theme.spacing(4),
-        width: "100%",
-        maxWidth: 500,
-    },
-}));
+    message: string;
+    onLogin?: () => void;     // added
+};
 
 export default function SuccessModal({
     open,
     onClose,
-    onAction,
-    title = "Password Reset Successful!",
-    actionLabel = "Log in",
     message,
+    onLogin,
 }: SuccessModalProps) {
+    if (!open) return null;
     return (
-        <StyledDialog open={open} onClose={onClose}>
-            {/* Close button */}
-            <IconButton
-                onClick={onClose}
-                aria-label="close"
-                sx={{
-                    position: "absolute",
-                    right: 16,
-                    top: 16,
-                    border: "1px solid currentColor",
-                }}
-            >
-                <CloseIcon />
-            </IconButton>
-
-            {/* Check icon */}
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 3 }}>
-                <Box sx={{
-                    width: 80, height: 80, borderRadius: "50%",
-                    backgroundColor: "#E6F2FA", display: "flex",
-                    alignItems: "center", justifyContent: "center"
-                }}>
-                    <CheckCircleIcon sx={{ fontSize: 48, color: "#206B9C" }} />
-                </Box>
-            </Box>
-
-            {/* Title */}
-            <Typography variant="h6" align="center" sx={{ fontWeight: 600, mb: 2 }}>
-                {title}
-            </Typography>
-
-            {/* Optional message */}
-            {message && (
-                <Typography variant="body1" align="center" sx={{ mb: 4, color: "text.secondary" }}>
-                    {message}
-                </Typography>
-            )}
-
-            {/* Action button */}
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Button
-                    variant="contained"
-                    onClick={onAction}
-                    sx={{
-                        minWidth: 200, py: 1.5, textTransform: "none", backgroundColor: "#206B9C",
-                        color: "#FFFFFF",
-                        "&:hover": {
-                            backgroundColor: "#18576d",
-                        }
-                    }}
-
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-xl">
+                <button
+                    aria-label="Close"
+                    className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+                    onClick={onClose}
+                >
+                    ×
+                </button>
+                <div className="grid place-items-center gap-4">
+                    <svg width="32" height="32" viewBox="0 0 24 24" className="text-blue-600">
+                        <path fill="currentColor" d="M9.55 17.6L4.9 12.95l1.4-1.4l3.25 3.25l7.2-7.2l1.4 1.4z" />
+                    </svg>
+                    <h2 className="text-center text-lg font-semibold">{message}</h2>
+                    {onLogin && (
+                        <button
+                            onClick={onLogin}
+                            className="w-full mt-2 rounded-xl bg-blue-600 py-3 text-white text-base font-medium hover:bg-blue-700"
                         >
-                        { actionLabel }
-                </Button>
-        </Box>
-        </StyledDialog >
+                            Log in
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
