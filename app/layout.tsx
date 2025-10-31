@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AppToaster from "@/app/components/toaster";
 import { Geist, Geist_Mono,  DM_Sans } from "next/font/google";
 import "./styles/globals.css"
 
@@ -34,6 +35,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${dmSans.variable}`}
       >
         {children}
+        <AppToaster />
       </body>
     </html>
   );

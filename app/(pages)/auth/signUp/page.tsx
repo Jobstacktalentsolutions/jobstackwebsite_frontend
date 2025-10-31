@@ -8,6 +8,7 @@ import Input from "@/app/components/input";
 import { useState } from "react";
 import PasswordField from "@/app/components/passwordField";
 import { jsRegister } from "@/app/api/auth-jobseeker.api";
+import { toastSuccess, toastError } from "@/app/lib/toast";
 import type { JobSeekerRegistrationDto } from "@/app/types/jobseeker.type";
 import { useRouter } from "next/navigation";
 
@@ -34,12 +35,14 @@ const [email, setEmail] = useState("");
         lastName,
 phoneNumber: phone,
       };
-      await jsRegister(payload);
-      router.push("/auth/signUp/verify");
+      const res = await jsRegister(payload);
+      toastSuccess("Verification code sent to your email");
+      router.push(`/auth/signUp/verify?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Unable to create account";
       setPwError(errorMessage);
+      toastError(errorMessage);
     } finally {
       setSubmitting(false);
     }

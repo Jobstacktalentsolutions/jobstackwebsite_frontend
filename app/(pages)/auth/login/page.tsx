@@ -14,6 +14,7 @@ import welcome2 from "../../../assets/welcomeimagetwo.png";
 import welcome3 from "../../../assets/securitywithstaff.png";
 import PasswordField from "@/app/components/passwordField";
 import { jsLogin } from "@/app/api/auth-jobseeker.api";
+import { toastError, toastSuccess } from "@/app/lib/toast";
 import type { LoginDto } from "@/app/types/auth.type";
 import { useRouter } from "next/navigation";
 
@@ -32,11 +33,13 @@ export default function LoginPage() {
     try {
       const payload: LoginDto = { email, password };
       await jsLogin(payload);
+      toastSuccess("Signed in successfully");
       router.push("/");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Incorrect email or password";
       setPwError(errorMessage);
+      toastError(errorMessage);
     } finally {
       setSubmitting(false);
     }

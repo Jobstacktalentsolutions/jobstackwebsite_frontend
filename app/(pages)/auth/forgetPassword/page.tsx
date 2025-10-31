@@ -12,6 +12,7 @@ import welcome from "@/app/assets/welcomeimage.png";
 import welcome2 from "@/app/assets/welcomeimagetwo.png";
 import welcome3 from "@/app/assets/securitywithstaff.png";
 import { jsSendPasswordResetCode } from "@/app/api/auth-jobseeker.api";
+import { toastError, toastSuccess } from "@/app/lib/toast";
 import { useRouter } from "next/navigation";
 
 export default function ForgotPassword() {
@@ -27,11 +28,13 @@ export default function ForgotPassword() {
     setSubmitting(true);
     try {
       await jsSendPasswordResetCode({ email });
+      toastSuccess("Reset code sent to your email");
       router.push(
         `/auth/forgetPassword/verify?email=${encodeURIComponent(email)}`
       );
     } catch {
       setError("Failed to send reset code");
+      toastError("Failed to send reset code");
     } finally {
       setSubmitting(false);
     }
