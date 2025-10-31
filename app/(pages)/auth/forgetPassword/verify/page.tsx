@@ -1,10 +1,9 @@
-// app/auth/forgetPassword/verify/page.tsx
-
 import VerifyClient from "./VerifyClient";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
-    // You can fetch the email from server context/session if needed
-    const email = "user@example.com";
+    const params = useSearchParams();
+    const email = params.get("email") ?? "";
 
     return (
         <VerifyClient

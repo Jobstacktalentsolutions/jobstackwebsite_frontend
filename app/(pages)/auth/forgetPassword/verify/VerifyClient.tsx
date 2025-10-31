@@ -2,6 +2,8 @@
 "use client";
 
 import ForgotPasswordVerify from "@/app/components/forgotPasswordVerify";
+import { jsConfirmPasswordResetCode, jsSendPasswordResetCode } from "@/app/api/auth-jobseeker.api";
+import { useRouter } from "next/navigation";
 
 type VerifyClientProps = {
     heading: string;
@@ -10,13 +12,21 @@ type VerifyClientProps = {
 };
 
 export default function VerifyClient({ heading, message, email }: VerifyClientProps) {
+    const router = useRouter();
+
     const handleVerify = async (code: string) => {
-        // TODO: call API to verify code + email
-        return code === "245012";  // demo
+        try {
+            const res = await jsConfirmPasswordResetCode({ email, code });
+            const token = res.resetToken;
+            router.push(`/auth/forgetPassword/createNewPassword?token=${encodeURIComponent(token)}`);
+            return true;
+        } catch {
+            return false;
+        }
     };
 
     const handleResend = async () => {
-        // TODO: call API to resend code to email
+        await jsSendPasswordResetCode({ email });
     };
 
     return (

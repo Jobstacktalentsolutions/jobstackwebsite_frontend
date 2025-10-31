@@ -2,30 +2,37 @@
 
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Mail } from "lucide-react";
 import Button from "../../components/button";
 import Input from "../../components/input";
 import logo from "../../assets/coloredlogo.svg";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useState } from "react";
 import Carousel from "@/app/components/carousel";
 import welcome from "../../assets/welcomeimage.png";
 import welcome2 from "../../assets/welcomeimagetwo.png";
 import welcome3 from "../../assets/securitywithstaff.png";
-import PasswordField from "@/app/components/passwordField";
+import { jsSendPasswordResetCode } from "@/app/api/auth-jobseeker.api";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPassword() {
+    const router = useRouter();
     const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState<string | undefined>(undefined);
+    const [submitting, setSubmitting] = useState(false);
 
-    const [pwError, setPwError] = useState<string | undefined>(undefined);
-
-
-
-    function onSubmit(e: React.FormEvent) {
+    async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-        // TODO: replace with real auth logic
-        const fakeInvalid = true;
-        if (fakeInvalid) setPwError("Incorrect email or password");
+        setError(undefined);
+        setSubmitting(true);
+        try {
+            await jsSendPasswordResetCode({ email });
+            router.push(`/auth/forgetPassword/verify?email=${encodeURIComponent(email)}`);
+        } catch {
+            setError("Failed to send reset code");
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return (
@@ -42,19 +49,18 @@ export default function ForgotPassword() {
                         Great to see you again. Pick up right where you left off.
                     </p>
 
-                    <form className="space-y-4" onSubmit={onSubmit}>
-                        <Input label="Email Address" placeholder="Enter email address" iconLeft={<Mail size={16} />} />
-                        <PasswordField
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                if (pwError) setPwError(undefined); // clear error as user types
-                            }}
-                            error={pwError}
-                            showHints
-
+<form className="space-y-4" onSubmit={onSubmit}>
+                        <Input 
+                            label="Email Address" 
+                            placeholder="Enter email address" 
+                            iconLeft={<Mail size={16} />} 
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
-                        <Button className="w-full my-10 text-medium">Create an account</Button>
+                        {error && <p className="text-sm text-red-500">{error}</p>}
+                        <Button disabled={submitting} className="w-full my-10 text-medium">{submitting ? "Sending..." : "Send reset code"}</Button>
 
                         <div className="flex items-center gap-2 mb-10">
                             <hr className="flex-grow border-slate-200" />

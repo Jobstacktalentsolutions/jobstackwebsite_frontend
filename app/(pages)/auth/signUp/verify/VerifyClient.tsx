@@ -1,6 +1,7 @@
 "use client";
 
 import ForgotPasswordVerify from "@/app/components/forgotPasswordVerify";
+import { jsVerifyEmail, jsSendVerificationEmail } from "@/app/api/auth-jobseeker.api";
 
 interface Props {
     heading: string;
@@ -10,12 +11,16 @@ interface Props {
 
 export default function VerifyClient({ heading, message, email }: Props) {
     const handleVerify = async (code: string) => {
-        // call your API or logic
-        return code === "245012";
+        try {
+            await jsVerifyEmail({ email, code });
+            return true;
+        } catch {
+            return false;
+        }
     };
 
     const handleResend = async () => {
-        // call your API resend endpoint
+        await jsSendVerificationEmail({ email });
     };
 
     return (

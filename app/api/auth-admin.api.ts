@@ -9,66 +9,59 @@ import type {
   PasswordResetRequestDto,
   RefreshTokenDto,
 } from "@/app/types/auth.type";
-import type { RecruiterRegistrationDto } from "@/app/types/recruiter.type";
 
-const base = "/auth/recruiter" as const;
+const base = "/auth/admin" as const;
 
 function authHeader(accessToken?: string) {
   return accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined;
 }
 
-export async function rcRegister(dto: RecruiterRegistrationDto) {
-  const { data } = await httpClient.post<AuthResult>(`${base}/register`, dto);
-  return data;
-}
-
-export async function rcLogin(dto: LoginDto) {
+export async function adminLogin(dto: LoginDto) {
   const { data } = await httpClient.post<AuthResult>(`${base}/login`, dto);
   return data;
 }
 
-export async function rcRefresh(dto: RefreshTokenDto) {
+export async function adminRefresh(dto: RefreshTokenDto) {
   const { data } = await httpClient.post<AuthResult>(`${base}/refresh`, dto);
   return data;
 }
 
-export async function rcLogout(accessToken?: string) {
+export async function adminLogout(accessToken?: string) {
   await httpClient.delete(`${base}/logout`, { headers: authHeader(accessToken) });
 }
 
-export async function rcSendVerificationEmail(dto: EmailVerificationRequestDto) {
+export async function adminSendVerificationEmail(dto: EmailVerificationRequestDto) {
   const { data } = await httpClient.post(`${base}/send-verification-email`, dto);
   return data as { sent: boolean; waitTime?: number; message?: string };
 }
 
-export async function rcVerifyEmail(dto: EmailVerificationConfirmDto) {
+export async function adminVerifyEmail(dto: EmailVerificationConfirmDto) {
   const { data } = await httpClient.post(`${base}/verify-email`, dto);
   return data as { message?: string };
 }
 
-export async function rcSendPasswordResetCode(dto: PasswordResetRequestDto) {
+export async function adminSendPasswordResetCode(dto: PasswordResetRequestDto) {
   const { data } = await httpClient.post(`${base}/send-password-reset-code`, dto);
   return data as { sent: boolean; waitTime?: number; message?: string };
 }
 
-export async function rcConfirmPasswordResetCode(dto: PasswordResetConfirmCodeDto) {
+export async function adminConfirmPasswordResetCode(dto: PasswordResetConfirmCodeDto) {
   const { data } = await httpClient.post(`${base}/confirm-password-reset-code`, dto);
   return data as { resetToken: string; expiresAt: string | Date };
 }
 
-export async function rcResetPassword(dto: PasswordResetDto) {
+export async function adminResetPassword(dto: PasswordResetDto) {
   const { data } = await httpClient.post(`${base}/reset-password`, dto);
   return data as { message?: string };
 }
 
 export default {
-  rcRegister,
-  rcLogin,
-  rcRefresh,
-  rcLogout,
-  rcSendVerificationEmail,
-  rcVerifyEmail,
-  rcSendPasswordResetCode,
-  rcConfirmPasswordResetCode,
-  rcResetPassword,
+  adminLogin,
+  adminRefresh,
+  adminLogout,
+  adminSendVerificationEmail,
+  adminVerifyEmail,
+  adminSendPasswordResetCode,
+  adminConfirmPasswordResetCode,
+  adminResetPassword,
 };

@@ -4,44 +4,56 @@ import React, { useState } from "react";
 import AuthPageLayout from "@/app/components/authPageLayout";
 import PasswordField from "@/app/components/passwordField";
 import Button from "@/app/components/button";
-import SuccessModal from "@/app/components/sucessModal";  // make sure this path/name is correct
+import SuccessModal from "@/app/components/sucessModal";
+import { useSearchParams, useRouter } from "next/navigation";
+import { jsResetPassword } from "@/app/api/auth-jobseeker.api";
 
 const CreateNewPassword: React.FC = () => {
+    const params = useSearchParams();
+    const router = useRouter();
+    const resetToken = params.get("token") ?? "";
+
     const [openModal, setOpenModal] = useState(false);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [pwError, setPwError] = useState<string | undefined>(undefined);
+    const [submitting, setSubmitting] = useState(false);
 
     const handleCloseModal = () => {
         setOpenModal(false);
     };
 
     const goToLogin = () => {
-        // navigate to login page here if using next/router or next/navigation
+        router.push("/auth/login");
         handleCloseModal();
     };
 
-    const onSubmit = (e: React.FormEvent) => {
+    const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setPwError(undefined);  // clear error at start
+        setPwError(undefined);
 
-        // validation: ensure both fields filled
         if (!password || !confirmPassword) {
             setPwError("Both password fields are required");
             return;
         }
-
         if (password !== confirmPassword) {
             setPwError("Passwords do not match");
             return;
         }
+        if (!resetToken) {
+            setPwError("Invalid or missing reset token");
+            return;
+        }
 
-        // If all good: open modal
-        setOpenModal(true);
-
-        // TODO: call your backend API here to actually update the password
-        // After successful response, openModal is shown
-        // On failure, set error message instead of opening
+        setSubmitting(true);
+        try {
+            await jsResetPassword({ resetToken, newPassword: password });
+            setOpenModal(true);
+        } catch {
+            setPwError("Failed to reset password");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -71,8 +83,8 @@ const CreateNewPassword: React.FC = () => {
                             showHints={false}
                             error={pwError}
                         />
-                        <Button type="submit" className="w-full py-4 text-base font-medium">
-                            Submit
+                        <Button type="submit" disabled={submitting} className="w-full py-4 text-base font-medium">
+                            {submitting ? "Submitting..." : "Submit"}
                         </Button>
                     </form>
                     <SuccessModal
