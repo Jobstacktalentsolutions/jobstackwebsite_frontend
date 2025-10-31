@@ -7,6 +7,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
     iconLeft?: React.ReactNode;
     iconRight?: React.ReactNode;
     error?: string;
+    valueItem?: string;
 };
 
 export default function Input({
@@ -16,6 +17,7 @@ export default function Input({
     iconRight,
     error,
     className,
+    valueItem,
     ...props
 }: InputProps) {
     const generatedId = React.useId();          // ✅ always called
@@ -39,6 +41,7 @@ export default function Input({
 
                 <input
                     id={inputId}
+                    value={valueItem}
                     className={cn(
                         "h-12 w-full rounded-xl bg-transparent px-4 text-[15px] text-slate-800 placeholder:text-slate-400 focus:outline-none",
                         !!iconLeft && "pl-10",

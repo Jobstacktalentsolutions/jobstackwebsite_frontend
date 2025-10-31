@@ -1,21 +1,16 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Image, { type StaticImageData } from "next/image";
+import { type StaticImageData } from "next/image";
 import Button from "@/app/components/button";
-import Carousel from "@/app/components/carousel";
-
-// Optional assets (fallbacks). You can override via props.
-import welcome from "@/app/assets/welcomeimage.png";
-import welcome2 from "@/app/assets/welcomeimagetwo.png";
-import welcome3 from "@/app/assets/securitywithstaff.png";
-import logo_second from "@/app/assets/logo_second.svg";
-
+import SuccessModal from "@/app/components/sucessModal";
+import AuthPageLayout from '@/app/components/authPageLayout';
 type Props = {
     /** Main title (H1) – make this vary per page */
     heading: string;
     /** Sub message under the title – ReactNode lets you inject spans/links */
-    message: React.ReactNode;
+    text: React.ReactNode;
 
     /** Email to display (optional if you already put it inside message) */
     email?: string;
@@ -43,19 +38,29 @@ type Props = {
     onContinueSetup?: () => void;
 };
 
-export default function OtpVerification({
+export default function OtpVerification(
+    {
     heading,
-    message,
+    text,
     email,
     onVerify,
     onResend,
-    logoSrc = logo_second,
-    images = [welcome, welcome2, welcome3],
+  
     otpLength = 6,
     successTitle = "You have successfully verified your mail!",
     onViewDashboard = () => (window.location.href = "/dashboard"),
     onContinueSetup = () => (window.location.href = "/onboarding/profile"),
 }: Props) {
+    const [showModal, setShowModal] = useState(false);
+    const router = useRouter();
+
+    const handleSuccess = () => {
+        setShowModal(true);
+    };
+
+    const handleLoginRedirect = () => {
+        router.push("/auth/login?next=/dashboard");
+    }
     const [code, setCode] = useState<string[]>(Array(otpLength).fill(""));
     const [timeLeft, setTimeLeft] = useState(60);
     const [isResending, setIsResending] = useState(false);
@@ -114,7 +119,7 @@ export default function OtpVerification({
         setIsResending(true);
         try {
             if (onResend) await onResend();
-            // fallback mock
+            //  fallback mock
             if (!onResend) await new Promise((r) => setTimeout(r, 600));
             setTimeLeft(60);
         } finally {
@@ -134,7 +139,7 @@ export default function OtpVerification({
             if (onVerify) {
                 ok = await onVerify(codeString);
             } else {
-                // fallback demo logic to mirror your mock
+                //  fallback demo logic to mirror your mock
                 await new Promise((r) => setTimeout(r, 400));
                 ok = codeString === "245012";
             }
@@ -149,48 +154,30 @@ export default function OtpVerification({
     };
 
     return (
-        <div className="grid min-h-screen grid-cols-1 md:grid-cols-2 bg-white">
-            {/* LEFT – form */}
-            <div className="flex justify-center px-6 py-10 md:px-12">
-                <div className="w-full max-w-xl">
-                    {/* Back + Logo */}
-                    <div className="mb-8">
-                        <button
-                            type="button"
-                            aria-label="Go back"
-                            className="mb-6 inline-flex items-center gap-2 text-slate-600 hover:text-slate-900"
-                            onClick={() => history.back()}
-                        >
-                            <span className="inline-block h-5 w-5 rounded-full border border-slate-300 text-center leading-[18px]">
-                                ‹
-                            </span>
-                            Back
-                        </button>
 
-                        <div className="mt-10 mb-20">
-                            <Image src={logoSrc} alt="logo" />
-                        </div>
-
-                        <div>
-                            <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
-                            <p className="mt-2 text-xl font-medium text-gray-400">
-                                {message ?? (
-                                    <>
-                                        We sent a 6-digit verification code
-                                        {email ? (
-                                            <>
-                                                {" "}
-                                                to <span className="text-blue-600">{email}</span>. Please enter it below to
-                                                continue.
-                                            </>
-                                        ) : (
-                                            ". Please enter it below to continue."
-                                        )}
-                                    </>
-                                )}
-                            </p>
-                        </div>
+        <AuthPageLayout heading={heading}
+            message={
+                <>
+                    <div>
+                        <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
+                        <p className="mt-2 text-xl font-medium text-gray-400">
+                            {text ?? (
+                                <>
+                                    We sent a 6-digit verification code
+                                    {email ? (
+                                        <>
+                                            {" "}
+                                            to <span className="text-blue-600">{email}</span>. Please enter it below to
+                                            continue.
+                                        </>
+                                    ) : (
+                                        ". Please enter it below to continue."
+                                    )}
+                                </>
+                            )}
+                        </p>
                     </div>
+
 
                     {/* Inputs */}
                     <div className="flex gap-3">
@@ -249,62 +236,23 @@ export default function OtpVerification({
                     >
                         Verify
                     </Button>
-                </div>
-            </div>
 
-            {/* RIGHT – carousel + testimonial overlay */}
-            <div className="relative order-first h-[280px] md:order-none md:h-auto">
-                <Carousel images={images} interval={5000} />
 
-                <div className="pointer-events-none absolute inset-x-6 bottom-6 md:inset-x-10">
-                    <div className="mx-auto max-w-2xl rounded-2xl bg-white/70 p-5 backdrop-blur-md shadow-lg">
-                        <div className="mb-1 flex items-center gap-3">
-                            <div className="h-8 w-8 shrink-0 rounded-full bg-slate-300" />
-                            <div className="text-sm">
-                                <p className="font-medium">Amina B.</p>
-                                <p className="text-slate-600">Project Manager at TechFlow NG</p>
-                            </div>
-                            <div className="ml-auto text-blue-700">★★★★☆</div>
-                        </div>
-                        <p className="text-sm text-slate-700">
-                            After being laid off, I was struggling. Within two weeks on this platform, I had three
-                            solid interviews. I now work as a Project Manager at a top fintech company. This
-                            platform didn’t just give me a job; it gave me a career path.
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            {/* SUCCESS MODAL */}
-            {showSuccess && (
-                <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" role="dialog" aria-modal="true">
-                    <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-                        <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-blue-50">
-                            <svg width="32" height="32" viewBox="0 0 24 24" className="text-blue-600">
-                                <path fill="currentColor" d="M9.55 17.6L4.9 12.95l1.4-1.4l3.25 3.25l7.2-7.2l1.4 1.4z" />
-                            </svg>
-                        </div>
-                        <h2 className="text-center text-lg font-semibold">{successTitle}</h2>
 
-                        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <Button variant="secondary" onClick={onViewDashboard} className="w-full">
-                                View dashboard
-                            </Button>
-                            <Button onClick={onContinueSetup} className="w-full">
-                                Continue setup
-                            </Button>
-                        </div>
 
-                        <button
-                            aria-label="Close"
-                            className="absolute right-4 top-4 rounded-full p-2 text-slate-500 hover:bg-slate-100"
-                            onClick={() => setShowSuccess(false)}
-                        >
-                            ×
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
+                    {/* SUCCESS MODAL */}
+                    {showSuccess && (
+                        <SuccessModal open={showModal}
+                            onClose={() => setShowModal(false)}
+                            message="Account created successfully! Please log in to continue."
+                            onLogin={handleLoginRedirect} />
+                    )}
+                </>
+
+            }
+        />
+
     );
+
 }

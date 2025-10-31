@@ -9,7 +9,7 @@ type PasswordFieldProps = {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     label?: string;
     error?: string;
-    showHints?: boolean; // default true for create/reset flows; set false on login
+    showHints?: boolean;
     placeholder?: string;
     name?: string;
     id?: string;
@@ -27,6 +27,10 @@ export default function PasswordField({
 }: PasswordFieldProps) {
     const [show, setShow] = useState(false);
 
+    // ✅ dynamic label text based on prop
+    const labelText =
+        label.toLowerCase().includes('confirm') ? 'Confirm  password' : 'Password';
+
     const rules = useMemo(
         () => [
             { key: 'len', label: '8 characters', pass: value.length >= 8 },
@@ -40,14 +44,24 @@ export default function PasswordField({
 
     return (
         <div>
+            {/* ✅ Styled Label */}
+            {label && (
+                <label htmlFor={id} className="block text-lg font-medium text-gray-900 mb-2">
+                    {labelText}
+                </label>
+            )}
+
             <Input
                 id={id}
                 name={name}
-                label={label}
                 type={show ? 'text' : 'password'}
                 value={value}
                 onChange={onChange}
-                placeholder={placeholder}
+                placeholder={
+                    label.toLowerCase().includes('confirm')
+                        ? 'Re-enter your password'
+                        : placeholder
+                }
                 iconLeft={<Lock size={16} />}
                 iconRight={
                     <button
@@ -62,7 +76,8 @@ export default function PasswordField({
                 error={error}
             />
 
-            {showHints && (
+            {/* ✅ Hide password hints for confirm password */}
+            {showHints && !label.toLowerCase().includes('confirm') && (
                 <div className="mt-2 flex flex-wrap gap-2">
                     {rules.map((r) => (
                         <span
@@ -73,7 +88,6 @@ export default function PasswordField({
                                     : 'inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm border-slate-300 text-slate-400'
                             }
                         >
-                            {/* blue check badge when passed (matches your mock) */}
                             {r.pass && (
                                 <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#1F5B86] text-white">
                                     <Check size={12} strokeWidth={3} />

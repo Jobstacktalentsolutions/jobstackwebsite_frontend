@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  min-height: 100%;
+    scroll-behavior: smooth;
+}
+@keyframes slow-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.slow-bounce {
+  animation: slow-bounce 3s ease-in-out infinite;
+}
+
+/* Hide default scrollbar in the carousel while preserving scroll */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+body {
+ font-family: var(--font-dmSans), sans-serif;
+  @apply text-slate-800 antialiased;
+}
+.bg-brand{
+  background-color: #1e5b86;
+}
+.bg-brand-two{
+  background-color: #346b92;
+}

@@ -1,20 +1,70 @@
+"use client";
 
-import VerifyClient from "./VerifyClient";
+import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { api } from "@/app/lib/api/client";
+import OtpVerification from "@/app/components/verificationCode";
 
 export default function VerifyEmailPage() {
-    const email = "tofumnijohnson@gmail.com";
+    const router = useRouter();
+    const sp = useSearchParams();
+    const initialEmail = sp.get("email") || "";
+
+    const [email, setEmail] = useState(initialEmail);
+    const [loading, setLoading] = useState(false);
+    const [resending, setResending] = useState(false);
+    const [err, setErr] = useState<string>("");
+
+    const getErrorMessage = (e: unknown) =>
+        e instanceof Error ? e.message : "Something went wrong";
+
+    // Called by OtpVerification when user submits the 6-digit code
+    const onVerify = async (code: string): Promise<boolean> => {
+        setErr("");
+        setLoading(true);
+        try {
+            await api.verifyEmail(email, code);
+            router.push("/success");
+            return true; // ✅ Indicate success
+        } catch (e: unknown) {
+            setErr(getErrorMessage(e));
+            return false; // ✅ Indicate failure
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Called by OtpVerification when user taps "Resend code"
+    const resend = async () => {
+        setErr("");
+        setResending(true);
+        try {
+            await api.sendVerification(email);
+            // You can swap this alert for a toast in your UI system
+            alert("Verification code resent.");
+        } catch (e: unknown) {
+            setErr(getErrorMessage(e) || "Failed to resend code");
+        } finally {
+            setResending(false);
+        }
+    };
 
     return (
-        <VerifyClient
-            heading="Check your e--inbox"
+        <OtpVerification
+            heading="Verify your email"
             message={
-                <>
-                    We sent a 6-digit verification code to{" "}
-                    <span className="text-blue-600">{email}</span>. Please enter it below to continue.
-                </>
+                <span>
+                    We sent a 6-digit verification code to <b>{email || "your email"}</b>. Enter it below.
+                </span>
             }
-            email={email}
-           
+            email={email || undefined}
+            onVerify={onVerify} 
+            onResend={resend}       // ✅ uses /send-verification-email
+            otpLength={6}
+            successTitle="Email verified!"
+            onViewDashboard={() => router.push("/auth/login")}
+            onContinueSetup={() => router.push("/auth/login")}
+            
         />
     );
 }

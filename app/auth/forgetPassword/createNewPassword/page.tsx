@@ -50,10 +50,10 @@ const CreateNewPassword: React.FC = () => {
             subtext="Almost there! Please create a new, strong password for your account."
             message={
                 <>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">New Password</h3>
+
                     <form className="space-y-4" onSubmit={onSubmit}>
                         <PasswordField
-                            label="Password"
+                           
                             value={password}
                             onChange={(e) => {
                                 setPassword(e.target.value);
@@ -61,8 +61,9 @@ const CreateNewPassword: React.FC = () => {
                             }}
                             error={pwError}
                         />
+                      
                         <PasswordField
-                            label="Confirm Password"
+                           label="Confirm Password"
                             value={confirmPassword}
                             onChange={(e) => {
                                 setConfirmPassword(e.target.value);
