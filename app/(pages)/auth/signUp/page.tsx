@@ -1,15 +1,11 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import AuthPageLayout from "@/app/components/authPageLayout";
-import { Mail, User2 } from "lucide-react";
+import { Mail, User2, Phone } from "lucide-react";
 import Button from "@/app/components/button";
 import Input from "@/app/components/input";
 import { useState } from "react";
-import welcome from "../../../assets/welcomeimage.png";
-import welcome2 from "../../../assets/welcomeimagetwo.png";
-import welcome3 from "../../../assets/securitywithstaff.png";
 import PasswordField from "@/app/components/passwordField";
 import { jsRegister } from "@/app/api/auth-jobseeker.api";
 import type { JobSeekerRegistrationDto } from "@/app/types/jobseeker.type";
@@ -17,9 +13,9 @@ import { useRouter } from "next/navigation";
 
 export default function SignUp() {
   const router = useRouter();
-  const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [pwError, setPwError] = useState<string | undefined>(undefined);
   const [submitting, setSubmitting] = useState(false);
@@ -36,12 +32,14 @@ export default function SignUp() {
         password,
         firstName,
         lastName,
-        phoneNumber: "08000000000", // TODO: collect real phone
+phoneNumber: phone,
       };
       await jsRegister(payload);
       router.push("/auth/signUp/verify");
     } catch (err: any) {
-      setPwError("Unable to create account");
+      const errorMessage =
+        err?.response?.data?.message || "Unable to create account";
+      setPwError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -70,6 +68,15 @@ export default function SignUp() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Input
+                label="Phone Number"
+                placeholder="Enter phone number"
+                iconLeft={<Phone size={16} />}
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 required
               />
               <PasswordField

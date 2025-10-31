@@ -34,7 +34,9 @@ export default function LoginPage() {
       await jsLogin(payload);
       router.push("/");
     } catch (err: any) {
-      setPwError("Incorrect email or password");
+      const errorMessage =
+        err?.response?.data?.message || "Incorrect email or password";
+      setPwError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -43,12 +45,12 @@ export default function LoginPage() {
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
       {/* Left: Form */}
-      <div className="flex flex-col justify-center px-8 pl-24 py-5 md:pt-21">
+      <div className="flex flex-col justify-center px-6 md:px-12 lg:px-24 py-8">
         <div className="mb-8">
           <Image src={logo} alt="Jobstack logo" width={150} height={40} />
         </div>
 
-        <div className="max-w-xl">
+        <div className="max-w-xl mx-auto w-full">
           <h2 className="text-2xl font-semibold text-slate-900 mb-1 md:pt-18">
             Welcome Back!
           </h2>
@@ -109,12 +111,9 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right: Carousel */}
-      <div
-        className="relative order-first 
-             pt-10  md:order-none md:h-full "
-      >
-        <div className="relative  h-[300px] mr-5  md:h-[750px]">
+      {/* Right: Carousel - Hidden on mobile */}
+      <div className="hidden md:block relative md:h-full">
+        <div className="relative h-[750px]">
           <Carousel images={IMAGES} interval={5000} />
           {/* Testimonial card (bottom overlay like your mock) */}
           <div className="pointer-events-none absolute inset-x-6 bottom-6 md:inset-x-10">
