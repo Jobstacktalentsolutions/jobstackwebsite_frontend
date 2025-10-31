@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/app/lib/api/client";
 import OtpVerification from "@/app/components/verificationCode";
 
+<<<<<<< HEAD:app/auth/signUp/verify/page.tsx
 export default function VerifyEmailPage() {
     const router = useRouter();
     const sp = useSearchParams();
@@ -48,6 +49,10 @@ export default function VerifyEmailPage() {
             setResending(false);
         }
     };
+=======
+export default function VerifyEmailPage({ searchParams }: { searchParams: { email?: string } }) {
+    const email = searchParams.email ?? "";
+>>>>>>> 5510026d33b37d0b53a5e176b7791a380e43c674:app/(pages)/auth/signUp/verify/page.tsx
 
     return (
         <OtpVerification

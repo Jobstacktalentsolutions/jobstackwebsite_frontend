@@ -204,21 +204,21 @@ export default function OtpVerification(
                     </div>
 
                     {/* Helper row */}
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
-                        <div className="text-gray-400">
-                            Didn’t receive your code?{" "}
+                    <div className="mt-4 text-sm text-slate-600">
+                        {timeLeft > 0 ? (
+                            <div>
+                                Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
+                            </div>
+                        ) : (
                             <button
                                 type="button"
                                 onClick={handleResend}
-                                disabled={timeLeft > 0 || isResending}
-                                className="font-medium text-blue-400 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={isResending}
+                                className="font-medium text-blue-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                Resend
+                                Resend code
                             </button>
-                        </div>
-                        <div className="text-slate-600">
-                            Expires in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
-                        </div>
+                        )}
                     </div>
 
                     {/* Error */}

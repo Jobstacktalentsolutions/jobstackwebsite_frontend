@@ -78,11 +78,11 @@ export default function Nav() {
 
                 {/* Right actions (desktop) */}
                 <div className="hidden md:flex md:flex-none items-center gap-4">
-                    <Link className="text-white font-medium" href="#">
+                    <Link className="text-white font-medium" href="/dashboard/employers">
                        View employer&rsquo;s dashboard
                     </Link>
                     <Link
-                        href="/auth/signUp"
+                        href="/auth/signUp?persona=jobseeker"
                         className="rounded-xl bg-[#E6F2F9] px-4 py-2 text-blue-500 font-semibold"
                     >
                         Sign up

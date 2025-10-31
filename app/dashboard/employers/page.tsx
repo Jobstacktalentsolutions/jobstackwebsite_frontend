@@ -9,6 +9,7 @@ import tech from '../../assets/tech.svg';
 import house from '../../assets/house.svg';
 import office from '../../assets/office.svg';
 import { Hospital } from "lucide-react";
+import Link from "next/link";
 export default function Page() {
     const industries = [
         [cake, 'For Restaurants & Hotels', "List your role requirements in minutes. It's free to get started."],
@@ -40,7 +41,7 @@ export default function Page() {
                             <a href="#" className="font-semibold text-emerald-200">Employers</a>
                         </nav>
                         <div className="hidden items-center gap-3 md:flex">
-                            <button className="rounded-full border border-white/60 px-5 py-2 text-sm font-medium hover:bg-white/10">Sign in</button>
+                            <Link href="/auth/signUp?persona=employer" className="rounded-full border border-white/60 px-5 py-2 text-sm font-medium hover:bg-white/10">Sign in</Link>
                         </div>
                     </div>
                 </div>
