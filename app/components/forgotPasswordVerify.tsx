@@ -33,9 +33,9 @@ export default function ForgotPasswordVerify({
 }: ForgotPasswordVerifyProps) {
   const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
 
-  const [code, setCode] = useState<string[]>(Array(6).fill(""));
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [isResending, setIsResending] = useState(false);
+const [code, setCode] = useState<string[]>(Array(6).fill(""));
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [isResending, setIsResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -94,16 +94,16 @@ export default function ForgotPasswordVerify({
   };
 
   const handleResend = async () => {
-    if (isResending || timeLeft > 0) return;
-    setIsResending(true);
-    // If onResend prop provided, call it; else mock
-    if (onResend) {
-      await onResend();
-    } else {
-      await new Promise((r) => setTimeout(r, 700));
-    }
-    setTimeLeft(60);
-    setIsResending(false);
+        if (isResending || timeLeft > 0) return;
+        setIsResending(true);
+        // If onResend prop provided, call it; else mock
+        if (onResend) {
+            await onResend();
+        } else {
+            await new Promise((r) => setTimeout(r, 700));
+        }
+        setTimeLeft(60);
+        setIsResending(false);
   };
 
   const handleVerify = async () => {
@@ -181,7 +181,6 @@ export default function ForgotPasswordVerify({
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleChange(e.target.value, i)}
-                  placeholder="0"
                   onKeyDown={(e) => handleKeyDown(e, i)}
                   onPaste={handlePaste}
                   className={`${base} ${normal} ${errored}`}
@@ -190,26 +189,23 @@ export default function ForgotPasswordVerify({
             })}
           </div>
 
-          {/* Helper row */}
-          <div className="mt-4 flex flex-col justify-between gap-3 text-sm text-slate-600">
-            <div className="text-gray-400 text-sm">
-              Didn’t receive your code?{" "}
-              <button
-                type="button"
-                onClick={handleResend}
-                disabled={timeLeft > 0 || isResending}
-                className="font-medium text-blue-400 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Resend
-              </button>
-            </div>
-            <div>
-              <p className="inline-block mr-2">Expires in&nbsp;</p>
-              <span className="font-medium text-blue-700">
-                0:{String(timeLeft).padStart(2, "0")}
-              </span>
-            </div>
-          </div>
+                    {/* Helper row */}
+                    <div className="mt-4 text-sm text-slate-600">
+                        {timeLeft > 0 ? (
+                            <div>
+                                Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handleResend}
+                                disabled={isResending}
+                                className="font-medium text-blue-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Resend code
+                            </button>
+                        )}
+                    </div>
 
           {/* Error message */}
           {error && (

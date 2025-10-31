@@ -13,8 +13,8 @@ import welcome from "../../../assets/welcomeimage.png";
 import welcome2 from "../../../assets/welcomeimagetwo.png";
 import welcome3 from "../../../assets/securitywithstaff.png";
 import PasswordField from "@/app/components/passwordField";
-import { jsLogin } from "@/app/api/auth-jobseeker.api";
-import { toastError, toastSuccess } from "@/app/lib/toast";
+import { jsLogin, jsSendVerificationEmail } from "@/app/api/auth-jobseeker.api";
+import { toastError, toastSuccess, toastInfo } from "@/app/lib/toast";
 import type { LoginDto } from "@/app/types/auth.type";
 import { useRouter } from "next/navigation";
 
@@ -38,6 +38,14 @@ export default function LoginPage() {
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Incorrect email or password";
+
+      if (/verify\s+your\s+email/i.test(errorMessage)) {
+        try { await jsSendVerificationEmail({ email }); } catch {}
+        toastInfo("Please verify your email to continue");
+        router.push(`/auth/signUp/verify?email=${encodeURIComponent(email)}`);
+        return;
+      }
+
       setPwError(errorMessage);
       toastError(errorMessage);
     } finally {

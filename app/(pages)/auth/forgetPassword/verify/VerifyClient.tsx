@@ -3,8 +3,8 @@
 
 import ForgotPasswordVerify from "@/app/components/forgotPasswordVerify";
 import { jsConfirmPasswordResetCode, jsSendPasswordResetCode } from "@/app/api/auth-jobseeker.api";
-import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 import { useRouter } from "next/navigation";
+import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 
 type VerifyClientProps = {
     heading: string;
@@ -19,8 +19,12 @@ export default function VerifyClient({ heading, message, email }: VerifyClientPr
         try {
             const res = await jsConfirmPasswordResetCode({ email, code });
             const token = res.resetToken;
+            if (!token) {
+                toastError("Could not start password reset. Please request a new code.");
+                return false;
+            }
             toastSuccess("Code verified");
-            router.push(`/auth/forgetPassword/createNewPassword?token=${encodeURIComponent(token)}`);
+            router.push(`/auth/forgetPassword/createNewPassword?resetToken=${encodeURIComponent(token)}`);
             return true;
         } catch {
             toastError("Invalid code");
