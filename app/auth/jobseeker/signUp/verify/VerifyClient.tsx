@@ -107,7 +107,8 @@ export default function VerifyClient({ heading, email }: Props) {
   return (
     <AuthPageLayout
       heading={heading}
-      subtext={`We sent a 6-digit code to ${email}. Please enter it below to continue.`}
+      subtext={`We sent a 6-digit code to ${email}. 
+         Please enter it below to continue.`}
       message={
         <>
           {/* Code inputs */}

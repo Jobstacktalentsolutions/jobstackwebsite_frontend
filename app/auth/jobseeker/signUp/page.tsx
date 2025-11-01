@@ -209,12 +209,10 @@ export default function SignUp() {
             </div>
 
             <div className="flex w-full justify-center">
-              <Button type="button" className="flex mx-4 justify-center p-2 rounded-lg border-gray-500 border-[1px]">Google
+              <button type="button" className="flex mx-4 justify-center p-2 rounded-lg border-gray-500 border-[1px]">Google
                 {/* <Image src={google} alt="google icon" /> */}
-              </Button>
-              <Button type="button" className="flex justify-center border-gray-500 p-2 rounded-lg border-[1px]">Apple
-                {/* <Image src={} alt=""/> */}
-              </Button>
+              </button>
+              
             </div>
 
             <p className="text-center text-sm text-slate-500">

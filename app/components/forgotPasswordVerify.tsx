@@ -7,18 +7,10 @@ import Carousel from "@/app/components/carousel";
 import Image from "next/image";
 import AuthPageLayout from "../components/authPageLayout";
 import logo_second from "@/app/assets/logo_second.svg";
-
+import welcome from "@/app/assets/welcomeimage.png";
+import welcome2 from "@/app/assets/welcomeimagetwo.png";
+import welcome3 from "@/app/assets/securitywithstaff.png";
 export type ForgotPasswordVerifyProps = {
-<<<<<<< HEAD
-    heading: string;
-    message: React.ReactNode | string;
-    email?: string;
-    onVerify?: (code: string) => Promise<boolean>;
-    onResend?: () => Promise<void>;
-    successTitle?: string;
-    onContinueSetup?: () => void;
-    onViewDashboard?: () => void;
-=======
   heading: string;
   message: React.ReactNode;
   email?: string;
@@ -27,7 +19,6 @@ export type ForgotPasswordVerifyProps = {
   successTitle?: string;
   onContinueSetup?: () => void;
   onViewDashboard?: () => void;
->>>>>>> 5510026d33b37d0b53a5e176b7791a380e43c674
 };
 
 export default function ForgotPasswordVerify({
@@ -40,11 +31,7 @@ export default function ForgotPasswordVerify({
   onContinueSetup,
   onViewDashboard,
 }: ForgotPasswordVerifyProps) {
-<<<<<<< HEAD
-
-=======
   const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
->>>>>>> 5510026d33b37d0b53a5e176b7791a380e43c674
 
 const [code, setCode] = useState<string[]>(Array(6).fill(""));
     const [timeLeft, setTimeLeft] = useState(60);
@@ -126,16 +113,6 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
       return;
     }
 
-<<<<<<< HEAD
-
-        let isValid = false;
-        if (onVerify) {
-            isValid = await onVerify(codeString);
-        } else {
-            await new Promise((r) => setTimeout(r, 400));
-            isValid = codeString === "245012";
-        }
-=======
     let isValid = false;
     if (onVerify) {
       isValid = await onVerify(codeString);
@@ -144,7 +121,6 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
       await new Promise((r) => setTimeout(r, 400));
       isValid = codeString === "245012";
     }
->>>>>>> 5510026d33b37d0b53a5e176b7791a380e43c674
 
     if (isValid) {
       setShowSuccess(true);
@@ -154,112 +130,16 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
     }
   };
 
-<<<<<<< HEAD
-    return (
-        <AuthPageLayout heading={heading} subtext={message} message={
-            <div className="flex flex-col justify-center px-6  md:px-12">
-
-
-
-                {/* Code inputs */}
-                <div className="flex gap-3 w-full relative">
-                    {code.map((digit, i) => {
-                        const base =
-                            "h-12 w-12 md:w-12 md:h-14 rounded-lg border text-center text-xl font-medium outline-none transition-all";
-                        const normal =
-                            "border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100";
-                        const errored = error ? "border-red-400 ring-2 ring-red-100" : "";
-                        const bg = digit ? "bg-white" : "bg-gray-300 focus:bg-white";
-
-                        return (
-                            <input
-                                key={i}
-                                ref={(el) => {
-                                    inputsRef.current[i] = el;
-                                }}
-                                type="text"
-                                inputMode="numeric"
-                                maxLength={1}
-                                value={digit}
-                                onChange={(e) => handleChange(e.target.value, i)}
-                                placeholder=""
-                                onKeyDown={(e) => handleKeyDown(e, i)}
-                                onPaste={handlePaste}
-                                className={`${base} ${normal} ${errored} ${bg}`}
-                            />
-                        );
-                    })}
-                </div>
-
-
-
-                {/* Helper row */}
-                <div className="mt-4 flex flex-col justify-between gap-3 text-sm text-slate-600">
-                    <div className="text-gray-400 text-sm">
-                        Didn’t receive your code?{" "}
-                        <button
-                            type="button"
-                            onClick={handleResend}
-                            disabled={timeLeft > 0 || isResending}
-                            className="font-medium text-blue-400 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            Resend
-                        </button>
-                    </div>
-                    <div className="flex justify-center my-3">
-                        <p className="inline-block mr-2">Expires in&nbsp;</p>
-                        <span className="font-medium text-blue-700">
-                            0:{String(timeLeft).padStart(2, "0")}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Error message */}
-                {error && (
-                    <p className="mt-3 text-sm text-red-600" role="alert">
-                        {error}
-                    </p>
-                )}
-
-                {/* Verify button */}
-                <Button
-                    onClick={handleVerify}
-                    disabled={!filled}
-                    className={`mt-6 w-full rounded-xl py-4 text-base transition-colors duration-200 ${filled
-                        ? "bg-[#2572A7] text-white"
-                        : "bg-[#2572A7]/60 text-white cursor-not-allowed"
-                        }`}
-                >
-                    Verify
-                </Button>
-
-            </div>
-
-
-        } />
-    );
-}  // <-- end component
-=======
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2 bg-white">
       {/* LEFT – form */}
       <div className="flex items-center justify-center px-6 py-10 md:px-12">
         <div className="w-full max-w-xl">
           {/* Header */}
-          <div className="mb-4">
-            <button
-              type="button"
-              aria-label="Go back"
-              className="mb-6 inline-flex items-center gap-2 text-slate-600 hover:text-slate-900"
-              onClick={() => history.back()}
-            >
-              <span className="inline-block h-5 w-5 rounded-full border border-slate-300 text-center leading-[18px]">
-                ‹
-              </span>
-              Back
-            </button>
+          <div >
+          
 
-            <div className="mt-10 mb-20">
+            <div className="mb-10">
               <Image src={logo_second} alt="logo" />
             </div>
 
@@ -302,7 +182,7 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
                     <div className="mt-4 text-sm text-slate-600">
                         {timeLeft > 0 ? (
                             <div>
-                                Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
+                                Didn&apos;t receive the code? Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
                             </div>
                         ) : (
                             <button
@@ -413,4 +293,3 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
     </div>
   );
 }
->>>>>>> 5510026d33b37d0b53a5e176b7791a380e43c674

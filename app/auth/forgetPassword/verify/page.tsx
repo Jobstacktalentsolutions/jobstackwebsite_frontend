@@ -11,7 +11,7 @@ export default function Page({ searchParams }: { searchParams: { email?: string 
           <p>
             {" "}
             We sent a 6-digit verification code to{" "}
-            <span className="text-blue-600">{email}</span>. Please enter it
+            <span className="text-blue-600">{email}</span>. <br/>Please enter it
             below to continue.
           </p>
         </>

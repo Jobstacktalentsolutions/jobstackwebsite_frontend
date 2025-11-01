@@ -82,7 +82,7 @@ export default function Nav() {
                        View employer&rsquo;s dashboard
                     </Link>
                     <Link
-                        href="/auth/signUp?persona=jobseeker"
+                        href="/auth/jobseeker/signUp"
                         className="rounded-xl bg-[#E6F2F9] px-4 py-2 text-blue-500 font-semibold"
                     >
                         Sign up

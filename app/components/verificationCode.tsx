@@ -1,5 +1,5 @@
 "use client";
-
+import TimeSlot from '../components/timeLeft'
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { type StaticImageData } from "next/image";
@@ -40,17 +40,17 @@ type Props = {
 
 export default function OtpVerification(
     {
-    heading,
-    text,
-    email,
-    onVerify,
-    onResend,
-  
-    otpLength = 6,
-    successTitle = "You have successfully verified your mail!",
-    onViewDashboard = () => (window.location.href = "/dashboard"),
-    onContinueSetup = () => (window.location.href = "/onboarding/profile"),
-}: Props) {
+        heading,
+        text,
+        email,
+        onVerify,
+        onResend,
+
+        otpLength = 6,
+        successTitle = "You have successfully verified your mail!",
+        onViewDashboard = () => (window.location.href = "/dashboard"),
+        onContinueSetup = () => (window.location.href = "/onboarding/profile"),
+    }: Props) {
     const [showModal, setShowModal] = useState(false);
     const router = useRouter();
 
@@ -70,11 +70,7 @@ export default function OtpVerification(
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
     // countdown
-    useEffect(() => {
-        if (timeLeft <= 0) return;
-        const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
-        return () => clearTimeout(t);
-    }, [timeLeft]);
+   
 
     const filled = code.every((c) => c !== "");
     const codeString = code.join("");
@@ -207,7 +203,7 @@ export default function OtpVerification(
                     <div className="mt-4 text-sm text-slate-600">
                         {timeLeft > 0 ? (
                             <div>
-                                Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
+                                Didn&apos;t receive code? Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
                             </div>
                         ) : (
                             <button
@@ -216,10 +212,12 @@ export default function OtpVerification(
                                 disabled={isResending}
                                 className="font-medium text-blue-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                Resend code
+                                Didn&apos;t receive code? Resend code
                             </button>
                         )}
+
                     </div>
+                    <TimeSlot timeLeft={timeLeft} setTimeLeft={setTimeLeft} />
 
                     {/* Error */}
                     {error && (
