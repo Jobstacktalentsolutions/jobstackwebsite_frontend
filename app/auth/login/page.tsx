@@ -1,17 +1,15 @@
 "use client";
-
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Mail } from "lucide-react";
 import Button from "@/app/components/button";
 import Input from "@/app/components/input";
-
-import logo from "../../../assets/coloredlogo.svg";
-import { useState } from "react";
+import logo from "@/app/assets/coloredlogo.svg";
 import Carousel from "@/app/components/carousel";
-import welcome from "../../../assets/welcomeimage.png";
-import welcome2 from "../../../assets/welcomeimagetwo.png";
-import welcome3 from "../../../assets/securitywithstaff.png";
+import welcome from "@/app/assets/welcomeimage.png";
+import welcome2 from "@/app/assets/welcomeimagetwo.png";
+import welcome3 from "@/app/assets/securitywithstaff.png";
 import PasswordField from "@/app/components/passwordField";
 import { jsLogin, jsSendVerificationEmail } from "@/app/api/auth-jobseeker.api";
 import { toastError, toastSuccess, toastInfo } from "@/app/lib/toast";
@@ -35,7 +33,7 @@ export default function LoginPage() {
       await jsLogin(payload);
       toastSuccess("Signed in successfully");
       router.push("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage =
         err?.response?.data?.message || "Incorrect email or password";
 
