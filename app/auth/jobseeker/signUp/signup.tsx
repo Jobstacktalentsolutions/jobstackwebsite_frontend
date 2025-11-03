@@ -73,7 +73,7 @@ export default function SignUp() {
       };
       const res = await jsRegister(payload);
       toastSuccess("Verification code sent to your email");
-      router.push(`/auth/signUp/verify?email=${encodeURIComponent(email)}`);
+      router.push(`/auth/employer/signUp/verify?email=${encodeURIComponent(email)}`);
     } catch (err: unknown) {
       const errorMessage =
         err?.response?.data?.message || "Unable to create account";

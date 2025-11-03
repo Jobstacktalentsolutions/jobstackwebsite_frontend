@@ -28,13 +28,6 @@ export default function SignUp() {
     const [err, setErr] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
-    // Jobseeker fields
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-
-
-
     // Employer fields
     const [name, setName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -43,18 +36,7 @@ export default function SignUp() {
 
     const router = useRouter();
 
-    const { heading, subtext } = useMemo(() => {
-        if (persona === "employer") {
-            return {
-                heading: "Start hiring today",
-                subtext: "Create your employer account to post roles and manage applicants in minutes.",
-            };
-        }
-        return {
-            heading: "Start your journey",
-            subtext: "Create your free account in just a minute. Your dream role is closer than you think.",
-        };
-    }, [persona]);
+    
 
     async function onSubmit(e: React.FormEvent) {
 
@@ -73,7 +55,7 @@ export default function SignUp() {
             };
             const res = await jsRegister(payload);
             toastSuccess("Verification code sent to your email");
-            router.push(`/auth/signUp/verify?email=${encodeURIComponent(email)}`);
+            router.push(`/auth/employer/signUp/verify?email=${encodeURIComponent(email)}`);
         } catch (err: unknown) {
             const errorMessage =
                 err?.response?.data?.message || "Unable to create account";
@@ -91,38 +73,7 @@ export default function SignUp() {
                 subtext="Create your free account in just a minute. Your dream role is closer than you think."
                 message={
                     <form className="space-y-4" onSubmit={onSubmit}>
-                        {persona === "jobseeker" ? (
-                            <>
-                                <Input
-                                    label="Firstname:"
-                                    placeholder="Enter your first name"
-                                    iconLeft={<User2 size={16} />}
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                />
-                                <Input
-                                    label="Lastname:"
-                                    placeholder="Enter your last name"
-                                    iconLeft={<User2 size={16} />}
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                />
-                                <Input
-                                    label="Email Address"
-                                    placeholder="Enter email address"
-                                    iconLeft={<Mail size={16} />}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                                <Input
-                                    label="Phone Number"
-                                    placeholder="e.g., +2348063008035"
-                                    iconLeft={<Phone size={16} />}
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                />
-                            </>
-                        ) : (
+                       
                             <>
                                 <Input
                                     label="Name"
@@ -175,7 +126,7 @@ export default function SignUp() {
                                     onChange={(e) => setPhoneNumber(e.target.value)}
                                 />
                             </>
-                        )}
+                       
 
                         <PasswordField
                             label="Password"

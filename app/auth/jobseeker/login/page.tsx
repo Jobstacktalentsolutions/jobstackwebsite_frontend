@@ -42,7 +42,7 @@ export default function LoginPage() {
       if (/verify\s+your\s+email/i.test(errorMessage)) {
         try { await jsSendVerificationEmail({ email }); } catch {}
         toastInfo("Please verify your email to continue");
-        router.push(`/auth/signUp/verify?email=${encodeURIComponent(email)}`);
+        router.push(`/auth/employer/signUp/verify?email=${encodeURIComponent(email)}`);
         return;
       }
 
