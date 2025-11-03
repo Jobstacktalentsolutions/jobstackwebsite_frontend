@@ -21,7 +21,16 @@ html, body {
   animation: slow-bounce 3s ease-in-out infinite;
 }
 
+.border{
+border: red, 2px solid;
+}
+.text-blue{
+  color:#2572A7;
 
+}
+.bg-blue{
+  background-color: #2572A7;
+}
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 

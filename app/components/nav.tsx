@@ -64,9 +64,9 @@ export default function Nav() {
     );
 
     return (
-        <header className="absolute inset-x-0 top-0 z-50 border-b border-white/20">
+        <header className="absolute inset-x-0 top-0 bg-blue z-50 border-b border-white/20">
             <nav
-                className="mx-auto flex max-w-7xl items-center  justify-between py-4 sm:px-6 lg:px-8"
+                className="mx-auto flex max-w-7xl items-center  justify-between py-4 sm:px-6 lg:px-8 "
                 aria-label="Primary"
             >
                 <Logo />
@@ -77,19 +77,19 @@ export default function Nav() {
                 </div>
 
                 {/* Right actions (desktop) */}
-                <div className="hidden md:flex md:flex-none items-center gap-4">
-                    <Link className="text-white font-medium" href="/dashboard/employers">
-                       View employer&rsquo;s dashboard
+                <div className="hidden w-1/3  md:flex md:flex-end justify-end items-center gap-4 ">
+                    <Link className="text-green-500 font-medium" href="/dashboard/employers">
+                       Employer&rsquo;s dashboard
                     </Link>
                     <Link
                         href="/auth/jobseeker/signUp"
-                        className="rounded-xl bg-[#E6F2F9] px-4 py-2 text-blue-500 font-semibold"
+                        className="rounded-lg bg-[#E6F2F9] px-5 py-3 text-blue font-semibold"
                     >
                         Sign up
                     </Link>
                     <Link
                         href="/auth/login"
-                        className="rounded-xl bg-[#E6F2F9] px-4 py-2 text-blue-500 font-semibold"
+                        className="rounded-lg bg-[#E6F2F9] px-5 py-3 text-blue font-semibold"
                     >
                         Log in
                     </Link>

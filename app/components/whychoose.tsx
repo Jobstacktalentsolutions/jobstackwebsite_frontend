@@ -45,15 +45,15 @@ export default function WhyChooseUs() {
         <section className="relative mx-auto max-w-7xl px-4 pb-20 pt-14 sm:px-6 lg:px-8">
             {/* Pill */}
             <div className="flex justify-center">
-                <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white p-4 text-sm text-slate-700 ">
+                <span className="inline-flex items-center gap-2 rounded-full border-[1px] border-black/10 bg-white p-4 text-sm text-slate-700 ">
                     <Image src={star} alt="black star" />
                     Why Choose Us?
                 </span>
             </div>
 
             {/* Heading */}
-            <h2 className="mt-6 text-center text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-                Better Connections, Better Results
+            <h2 className="mt-6 text-center text-3xl font-semibold tracking-tight line leading-norm text-slate-900 sm:text-4xl capitalize">a
+                Smarter connections between <br >jobseekers and employers
             </h2>
             <p className="mt-3 text-center text-slate-500">
                 Your Partner in Career and Hiring Success.
@@ -66,7 +66,7 @@ export default function WhyChooseUs() {
                         key={i}
                         className="relative rounded-[2rem] bg-slate-200 overflow-hidden transform transition-all duration-500 ease-out hover:scale-110 hover:shadow-2xl"
                     >
-                        {/* Background image (cropped) */}
+                        {/* Background image (cr    opped) */}
                         <div className="relative h-[460px] w-full">
                             <Image
                                 src={card.image}
@@ -82,13 +82,13 @@ export default function WhyChooseUs() {
                         </div>
 
                         {/* Glass overlay card */}
-                        <div className="pointer-events-none absolute inset-x-6 bottom-6 rounded-[1.5rem] border border-white/50 bg-white/10 transition-all duration-500 ease-out">
+                        <div className="pointer-events-none absolute inset-x-6 bottom-6 rounded-[1.5rem] border-[1px] border-white/50 bg-white/10 transition-all duration-500 ease-out">
                             <div className="pointer-events-auto flex flex-col gap-3 p-5 pb-0">
                                 <span className={`grid h-7 w-7 place-items-center rounded-lg `}>
                                     <Image src={card.icon} alt="" />
                                 </span>
                                 <h3 className="text-xl font-semibold text-white drop-shadow ">
-                                    {card.title}
+                                    {card.title}    
                                 </h3>
                             </div>
                             <p className="mt-2 px-5 text-sm text-white/90">{card.desc}</p>

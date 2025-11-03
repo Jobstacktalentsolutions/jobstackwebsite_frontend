@@ -12,7 +12,8 @@ export default function Hero() {
             {/* Decorative top border */}
             <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
 
-            <div className="relative mx-auto max-w-7xl px-4 pb-0 pt-20 sm:px-6 md:pt-28 lg:px-8 lg:pb-8 lg:pt-32">
+            <div className="relative mx-auto max-w-7xl px-4 pb-0 pt-20 sm:px-6 md:pt-28 lg:px-8 
+            lg:pt-32">
                 {/* Headline */}
                 <h1 className="mx-auto max-w-9xl text-center text-[28px]/[1.2] font-semibold tracking-tight text-white sm:text-5xl lg:text-5xl">
                     Find Your Dream Job
@@ -32,39 +33,40 @@ export default function Hero() {
                 <div className="mt-6 flex items-center justify-center gap-3">
                     <Link
                         href="#"
-                        className="rounded-[18px] bg-white px-6 py-3 text-center text-[16px] font-semibold text-[#2572A7] shadow hover:shadow-md"
+                        className="rounded-[12px] bg-white px-6 py-3 text-center text-[16px] font-semibold text-[#2572A7] shadow hover:shadow-md"
                     >
                         Search Jobs
                     </Link>
                     <Link
                         href="#"
-                        className="rounded-[18px] border border-white/70 px-6 py-3 text-center text-[16px] font-semibold text-white hover:bg-white/10"
+                        className="rounded-[12px] border-[1px] border-white/70 px-6 py-3 text-center text-[16px] font-semibold text-white hover:bg-white/10"
                     >
                         Post a Job
                     </Link>
                 </div>
 
                 {/* Visual area */}
-                <div className="relative mt-8 md:mt-16">
+                <div className="relative mt-8 md:mt-0 ">
                     {/* Gradient backdrop (hidden on mobile) */}
                     <div
                         aria-hidden
-                        className="pointer-events-none absolute inset-x-0 -bottom-6 hidden h-[420px] sm:block md:h-[520px]"
+                        className="md:flex justify-center pointer-events-none absolute inset-x-0 -bottom-102 hidden w-full sm:block "
                     >
                         <Image
                             src={bluerainbow}
                             alt="blue gradient rainbow"
-                            fill
+                            width={700} height={0}
                             className="object-contain object-bottom"
                         />
                     </div>
 
                     {/* People image */}
-                    <div className="relative bottom-0 mx-auto h-[380px] w-full max-w-[620px] sm:h-[380px] md:h-[440px] lg:h-[480px]">
+                    <div className="relative  mt-10 mx-auto h-[350px] w-[500px] sm:h-[380px] md:h-[420px] bottom-[20px] left-10
+                    ">
                         <Image
                             src={ai_people}
                             alt="Black man and woman in corporate attire"
-                            fill
+                            width={500} height={200}
                             priority
                             className="relative z-20 object-contain object-bottom"
                         />
@@ -90,7 +92,7 @@ export default function Hero() {
                             </p>
                         </div>
 
-                        <div className="absolute right-3 bottom-35 z-20 w-[230px] rounded-2xl bg-white p-4 shadow-card sm:hidden">
+                        <div className="absolute right-3 bottom-3 z-20 w-[230px] rounded-2xl bg-white p-4 shadow-card sm:hidden">
                             <div className="flex -space-x-2">
                                 {[
                                     'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=256&auto=format&fit=crop',
@@ -115,7 +117,7 @@ export default function Hero() {
                     </div>
 
                     {/* DESKTOP/TABLET floating cards (use your previous positions) */}
-                    <div className="hidden md:mt-0 md:pointer-events-none md:absolute md:left-6 md:top-10 md:block">
+                    <div className="hidden md:mt-0 md:pointer-events-none md:absolute md:left-6 bottom-20  md:block border-2 border-red-500 ">
                         <div className="w-full max-w-xs rounded-2xl bg-white p-5 shadow-card md:animate-[slow-bounce]">
                             <div className="text-2xl font-semibold">4.5</div>
                             <div className="mt-2 flex gap-1">
@@ -137,7 +139,7 @@ export default function Hero() {
                         </div>
                     </div>
 
-                    <div className="hidden md:mt-0 md:pointer-events-none md:absolute md:right-6 md:top-0 md:block">
+                    <div className="hidden md:mt-0 md:pointer-events-none md:absolute md:right-6 md:bottom-75 md:block">
                         <div className="w-full max-w-xs rounded-2xl bg-white p-5 shadow-card md:animate-[slow-bounce]">
                             <div className="flex -space-x-2">
                                 {[
