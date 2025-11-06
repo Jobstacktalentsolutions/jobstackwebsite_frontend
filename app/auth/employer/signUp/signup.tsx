@@ -31,7 +31,8 @@ export default function SignUp() {
     const [loading, setLoading] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
     // Employer fields
-    const [name, setName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [firstName, setFirstName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
     const [businessType, setBusinessType] = useState<"Company" | "Individual" | "Small business">("Company");
 
@@ -78,11 +79,18 @@ export default function SignUp() {
 
                         <>
                             <Input
-                                label="Name"
-                                placeholder="Enter your name"
+                                label="First name"
+                                placeholder="Enter your first name"
                                 iconLeft={<User2 size={16} />}
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                            <Input
+                                label="Last name"
+                                placeholder="Enter your last name"
+                                iconLeft={<User2 size={16} />}
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
                             />
                             <Input
                                 label="Company Email"
@@ -122,7 +130,7 @@ export default function SignUp() {
                                         <input
                                             type="radio"
                                             name="businessType"
-                                            value="individual"
+                                            value="small business"
                                             checked={businessType === "Small business"}
                                             onChange={() => setBusinessType("Small business")}
                                         />
