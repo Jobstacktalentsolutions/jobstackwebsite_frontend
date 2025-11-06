@@ -1,7 +1,7 @@
 "use client";
 
 import AuthPageLayout from "@/app/components/AuthPageLayout";
-import { jsVerifyEmail } from "@/app/api/auth-jobseeker.api";
+import { rcVerifyEmail } from "@/app/api/auth-recruiter.api";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 import Button from "@/app/components/button";
 import { useEffect, useRef, useState } from "react";
@@ -75,16 +75,14 @@ export default function VerifyClient({ heading, email }: Props) {
   const handleVerify = async () => {
     try {
       setError(null);
-      const ok = await jsVerifyEmail({ email, code: codeString });
-      if (ok) {
-        toastSuccess("Email verified successfully");
-      } else {
-        // In case the API returns falsy without throwing
-        setError("Invalid or expired code.");
-        toastError("Verification failed");
-      }
-    } catch (e) {
-      setError("Invalid or expired code.");
+      await rcVerifyEmail({ email, code: codeString });
+      toastSuccess("Email verified successfully");
+      // Redirect to login or dashboard after successful verification
+      window.location.href = "/auth/employer/login";
+    } catch (e: any) {
+      const errorMessage =
+        e?.response?.data?.message || "Invalid or expired code.";
+      setError(errorMessage);
       toastError("Verification failed");
     }
   };
@@ -93,8 +91,10 @@ export default function VerifyClient({ heading, email }: Props) {
     try {
       setIsResending(true);
       setError(null);
-      const { jsSendVerificationEmail } = await import("@/app/api/auth-jobseeker.api");
-      await jsSendVerificationEmail({ email });
+      const { rcSendVerificationEmail } = await import(
+        "@/app/api/auth-recruiter.api"
+      );
+      await rcSendVerificationEmail({ email });
       toastInfo("Verification email resent");
       setTimeLeft(60); // restart timer
     } catch (e) {
@@ -140,10 +140,7 @@ export default function VerifyClient({ heading, email }: Props) {
           {/* Helper row */}
           <div className="mt-4 text-sm text-slate-600">
             {timeLeft > 0 ? (
-              <div>
-                Didn&apos;t receive code?  Resend in{" "}
-
-              </div>
+              <div>Didn&apos;t receive code? Resend in </div>
             ) : (
               <button
                 type="button"

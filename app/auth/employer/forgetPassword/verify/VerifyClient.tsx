@@ -3,9 +3,9 @@
 
 import ForgotPasswordVerify from "@/app/components/forgotPasswordVerify";
 import {
-  jsConfirmPasswordResetCode,
-  jsSendPasswordResetCode,
-} from "@/app/api/auth-jobseeker.api";
+  rcConfirmPasswordResetCode,
+  rcSendPasswordResetCode,
+} from "@/app/api/auth-recruiter.api";
 import { useRouter } from "next/navigation";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 
@@ -24,7 +24,7 @@ export default function VerifyClient({
 
   const handleVerify = async (code: string) => {
     try {
-      const res = await jsConfirmPasswordResetCode({ email, code });
+      const res = await rcConfirmPasswordResetCode({ email, code });
       const token = res.resetToken;
       if (!token) {
         toastError(
@@ -46,7 +46,7 @@ export default function VerifyClient({
   };
 
   const handleResend = async () => {
-    await jsSendPasswordResetCode({ email });
+    await rcSendPasswordResetCode({ email });
     toastInfo("We resent the code to your email");
   };
 

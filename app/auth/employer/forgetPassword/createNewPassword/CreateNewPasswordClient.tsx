@@ -6,7 +6,7 @@ import PasswordField from "@/app/components/passwordField";
 import Button from "@/app/components/button";
 import SuccessModal from "@/app/components/sucessModal";
 import { useRouter } from "next/navigation";
-import { jsResetPassword } from "@/app/api/auth-jobseeker.api";
+import { rcResetPassword } from "@/app/api/auth-recruiter.api";
 import { toastSuccess, toastError } from "@/app/lib/toast";
 
 type Props = { resetToken: string };
@@ -48,7 +48,7 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
 
     setSubmitting(true);
     try {
-      await jsResetPassword({ resetToken, newPassword: password });
+      await rcResetPassword({ resetToken, newPassword: password });
       toastSuccess("Password reset successfully");
       setOpenModal(true);
     } catch {
@@ -65,7 +65,9 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
       subtext="Almost there! Please create a new, strong password for your account."
       message={
         <>
-          <h3 className="text-[14px] font-light text-gray-900 mb-2">New Password</h3>
+          <h3 className="text-[14px] font-light text-gray-900 mb-2">
+            New Password
+          </h3>
           <form className="space-y-4" onSubmit={onSubmit}>
             <PasswordField
               label="Password"
@@ -86,7 +88,11 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
               showHints={false}
               error={pwError}
             />
-            <Button type="submit" disabled={submitting} className="w-full py-4 text-base font-medium">
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-4 text-base font-medium"
+            >
               {submitting ? "Submitting..." : "Submit"}
             </Button>
           </form>
