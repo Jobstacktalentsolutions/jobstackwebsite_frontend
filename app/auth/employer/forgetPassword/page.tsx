@@ -31,7 +31,7 @@ export default function ForgotPassword() {
       await jsSendPasswordResetCode({ email });
       toastSuccess("Reset code sent to your email");
       router.push(
-        `/auth/forgetPassword/verify?email=${encodeURIComponent(email)}`
+        `/auth/employer/forgetPassword/verify?email=${encodeURIComponent(email)}`
       );
     } catch {
       setError("Failed to send reset code");
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
           <p className="text-center text-sm text-slate-500">
             Don’t have an account?{" "}
             <Link
-              href="/auth/signUp"
+              href="/auth/employer/signUp"
               className="text-blue-600 hover:underline"
             >
               Sign up

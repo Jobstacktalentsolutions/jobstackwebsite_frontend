@@ -37,13 +37,13 @@ async function post<T = Json>(path: string, body: Json): Promise<T> {
 }
 
 export const api = {
-  register: (input: {
+  login: (input: {
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     phoneNumber: string;
-  }) => post("/auth/jobseeker/register", input),
+  }) => post("/auth/jobseeker/login", input),
 
   sendVerification: (email: string) =>
     post("/auth/jobseeker/send-verification-email", { email }),

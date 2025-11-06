@@ -58,8 +58,8 @@ export default function ForgotPassword({
             </div>
 
             {/* Right Column */}
-        <div className="hidden  md:w-1/2 md:block order-first   md:order-none bg-white">
-                <div className="w-full h-[300px] md:h-screen">
+        <div className="hidden md:w-1/2 md:block order-first   md:order-none bg-white">
+          <div className="w-full fixed  h-[300px] md:h-screen">
                    
 
             <Carousel
