@@ -3,15 +3,9 @@
 import { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Button from "@/app/components/button";
-import Carousel from "@/app/components/carousel";
-import Image from "next/image";
-import AuthPageLayout from "../components/authPageLayout";
-import logo_second from "@/app/assets/logo_second.svg";
-import welcome from "@/app/assets/welcomeimage.png";
-import welcome2 from "@/app/assets/welcomeimagetwo.png";
-import welcome3 from "@/app/assets/securitywithstaff.png";
+
 export type ForgotPasswordVerifyProps = {
-  heading: string;
+
   message: React.ReactNode;
   email?: string;
   onVerify?: (code: string) => Promise<boolean>;
@@ -22,7 +16,7 @@ export type ForgotPasswordVerifyProps = {
 };
 
 export default function ForgotPasswordVerify({
-  heading,
+ 
   message,
   email,
   onVerify,
@@ -31,11 +25,11 @@ export default function ForgotPasswordVerify({
   onContinueSetup,
   onViewDashboard,
 }: ForgotPasswordVerifyProps) {
-  const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
 
-const [code, setCode] = useState<string[]>(Array(6).fill(""));
-    const [timeLeft, setTimeLeft] = useState(60);
-    const [isResending, setIsResending] = useState(false);
+
+  const [code, setCode] = useState<string[]>(Array(6).fill(""));
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [isResending, setIsResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -94,15 +88,15 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
   };
 
   const handleResend = async () => {
-        if (isResending || timeLeft > 0) return;
-        setIsResending(true);
-        if (onResend) {
-            await onResend();
-        } else {
-            await new Promise((r) => setTimeout(r, 700));
-        }
-        setTimeLeft(60);
-        setIsResending(false);
+    if (isResending || timeLeft > 0) return;
+    setIsResending(true);
+    if (onResend) {
+      await onResend();
+    } else {
+      await new Promise((r) => setTimeout(r, 700));
+    }
+    setTimeLeft(60);
+    setIsResending(false);
   };
 
   const handleVerify = async () => {
@@ -131,25 +125,16 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
   };
 
   return (
-    <div className="grid min-h-screen grid-cols-1 md:grid-cols-2 bg-white">
+    <div className=" bg-white">
       {/* LEFT – form */}
-      <div className="flex items-center justify-center px-6 py-10 md:px-12">
+      <div className="flex items-center justify-center ">
         <div className="w-full max-w-xl">
           {/* Header */}
-          <div >
           
-
-            <div className="mb-10">
-              <Image src={logo_second} alt="logo" />
-            </div>
-
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight">
-                {heading}
-              </h1>
               <p className="mt-2 text-xl text-gray-400">{message}</p>
             </div>
-          </div>
+          
 
           {/* Code inputs */}
           <div className="flex gap-3">
@@ -178,23 +163,23 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
             })}
           </div>
 
-                    {/* Helper row */}
-                    <div className="mt-4 text-sm text-slate-600">
-                        {timeLeft > 0 ? (
-                            <div>
-                                Didn&apos;t receive the code? Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
-                            </div>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={handleResend}
-                                disabled={isResending}
-                                className="font-medium text-blue-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                Resend code
-                            </button>
-                        )}
-                    </div>
+          {/* Helper row */}
+          <div className="mt-4 text-sm text-slate-600">
+            {timeLeft > 0 ? (
+              <div>
+                Didn&apos;t receive the code? Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={isResending}
+                className="font-medium text-blue-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Resend code
+              </button>
+            )}
+          </div>
 
           {/* Error message */}
           {error && (
@@ -211,30 +196,6 @@ const [code, setCode] = useState<string[]>(Array(6).fill(""));
           >
             Verify
           </Button>
-        </div>
-      </div>
-
-      {/* RIGHT – carousel + overlay - Hidden on mobile */}
-      <div className="hidden md:block relative md:h-auto">
-        <Carousel images={IMAGES} interval={5000} />
-        {/* Testimonial card */}
-        <div className="pointer-events-none absolute inset-x-6 bottom-6 md:inset-x-10">
-          <div className="mx-auto max-w-2xl rounded-2xl bg-white/70 p-5 backdrop-blur-md shadow-lg">
-            <div className="mb-1 flex items-center gap-3">
-              <div className="h-8 w-8 shrink-0 rounded-full bg-slate-300" />
-              <div className="text-sm">
-                <p className="font-medium">Amina B.</p>
-                <p className="text-slate-600">Project Manager at TechFlow NG</p>
-              </div>
-              <div className="ml-auto text-blue-700">★★★★☆</div>
-            </div>
-            <p className="text-sm text-slate-700">
-              After being laid off, I was struggling. Within two weeks on this
-              platform, I had three solid interviews. I now work as a Project
-              Manager at a top fintech company. This platform didn’t just give
-              me a job; it gave me a career path.
-            </p>
-          </div>
         </div>
       </div>
 

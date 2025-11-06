@@ -42,22 +42,24 @@ const cards: Card[] = [
 
 export default function WhyChooseUs() {
     return (
-        <section className="relative mx-auto max-w-7xl px-4 pb-20 pt-14 sm:px-6 lg:px-8">
+        <section className="relative mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
             {/* Pill */}
-            <div className="flex justify-center">
-                <span className="inline-flex items-center gap-2 rounded-full border-[1px] border-black/10 bg-white p-4 text-sm text-slate-700 ">
-                    <Image src={star} alt="black star" />
-                    Why Choose Us?
-                </span>
-            </div>
+            <div className="my-30">
+                <div className="flex justify-center ">
+                    <span className="inline-flex items-center gap-2 rounded-full border-[1px] border-black/10 bg-white p-4 text-sm text-slate-700 ">
+                        <Image src={star} alt="black star" />
+                        Why Choose Us?
+                    </span>
+                </div>
 
-            {/* Heading */}
-            <h2 className="mt-6 text-center text-3xl font-semibold tracking-tight line leading-norm text-slate-900 sm:text-4xl capitalize">a
-                Smarter connections between <br >jobseekers and employers
-            </h2>
-            <p className="mt-3 text-center text-slate-500">
-                Your Partner in Career and Hiring Success.
-            </p>
+                {/* Heading */}
+                <h2 className="mt-6 text-center sm:text-4xl md:text-5xl font-medium tracking-normal line leading-14 text-slate-900  capitalize">
+                    Smarter connections between  <br /> jobseekers and employers
+                </h2>
+                <p className="mt-3 text-center font-extralight text-slate-500">
+                    Your Partner in Career and Hiring Success.
+                </p>
+           </div>
 
             {/* Cards */}
             <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import AuthPageLayout from "@/app/components/authPageLayout";
+import AuthPageLayout from "@/app/components/AuthPageLayout";
 import { Mail, User2, Phone, Building2 } from "lucide-react";
 import Button from "@/app/components/button";
 import Input from "@/app/components/input";
@@ -69,7 +69,7 @@ export default function SignUp() {
         password,
         firstName,
         lastName,
-        phoneNumber: phoneNumber ,
+        phoneNumber: phoneNumber,
       };
       const res = await jsRegister(payload);
       toastSuccess("Verification code sent to your email");
@@ -212,7 +212,7 @@ export default function SignUp() {
               <button type="button" className="flex mx-4 justify-center p-2 rounded-lg border-gray-500 border-[1px]">Google
                 {/* <Image src={google} alt="google icon" /> */}
               </button>
-              
+
             </div>
 
             <p className="text-center text-sm text-slate-500">

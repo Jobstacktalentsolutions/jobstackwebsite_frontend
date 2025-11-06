@@ -1,26 +1,23 @@
 import { ArrowUp, Circle } from "lucide-react";
 import Link from "next/link";
+import logo from '../assets/logo_second.svg'
+import Image from "next/image";
 
 const linkStyle =
     "text-slate-600 hover:text-slate-900 transition-colors";
 
 export default function Footer() {
     return (
-        <footer className="bg-white" id="site-footer">
-            <div className="mx-auto max-w-6xl px-4 pb-12 pt-14">
+        <footer className="bg-white my-20" id="site-footer">
+            <div className="mx-auto max-w-6xl px-4 py-25">
                 <div className="grid gap-10 md:grid-cols-12">
                     {/* Brand / about */}
                     <div className="md:col-span-5">
                         <div className="flex items-center gap-2">
                             {/* Simple “three-circles” logo */}
-                            <div className="flex -space-x-2">
-                                <Circle className="h-6 w-6 text-sky-500" />
-                                <Circle className="h-6 w-6 text-teal-500" />
-                                <Circle className="h-6 w-6 text-indigo-500" />
+                            <div>
+                                <Image src={ logo} alt="logo icon"/>
                             </div>
-                            <span className="text-xl font-semibold text-slate-900">
-                                Jobstack
-                            </span>
                         </div>
 
                         <p className="mt-4 max-w-md text-sm leading-6 text-slate-600">

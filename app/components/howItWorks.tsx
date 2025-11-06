@@ -1,7 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-
+import tinystar from "../assets/tinyStar.svg";
+import howitworks from '../assets/howitworks.png'
+import HiringProcess from '@/app/components/hiringprocess'
+import Directions from "@/app/assets/directions.svg"
+import Review from '@/app/assets/review.svg';
+import HireIcon from '@/app/assets/hireIcon.svg';
 /**
  * HowItWorks – Pixel-match to reference
  * - Sticky rounded image on the left
@@ -16,17 +21,17 @@ export default function HowItWorks() {
             {
                 title: "Post Your Role",
                 desc: "List your job requirements in minutes. It's free to get started.",
-                icon: <IconDoc />,
+                icon: <Directions/>,
             },
             {
                 title: "Review Quality Matches",
                 desc: "Our platform filters and shortlists candidates who fit your needs.",
-                icon: <IconFilter />,
+                icon: <Review />,
             },
             {
                 title: "Connect & Hire",
                 desc: "Message candidates, schedule interviews, and make offers—all in one place.",
-                icon: <IconBag />,
+                icon: <Image src={HireIcon} alt="hireIcon"/>,
             },
         ],
         []
@@ -71,56 +76,15 @@ export default function HowItWorks() {
     }, []);
 
     return (
-        <section className="bg-white">
-            <div className="mx-auto max-w-[1100px] px-6 py-16 md:px-10 md:py-24">
-                <div className="grid grid-cols-12 items-start gap-10">
-                    {/* IMAGE */}
-                    <div className="col-span-12 md:col-span-6">
-                        <div className="sticky top-24 overflow-hidden rounded-[2rem]">
-                            <Image
-                                src="https://images.unsplash.com/photo-1542744094-24638eff58bb?q=80&w=1600&auto=format&fit=crop"
-                                alt="Analyst with futuristic UI"
-                                width={1400}
-                                height={1000}
-                                className="h-[460px] w-full object-cover"
-                                priority
-                            />
-                        </div>
-                    </div>
-
-                    {/* CENTER RAIL – 3 discrete segments with filling blue line */}
-                    <div className="relative col-span-1 hidden md:flex md:flex-col md:items-center md:gap-14">
-                        {[0, 1, 2].map((i) => (
-                            <div key={i} className="relative h-[140px] w-[6px] rounded-full bg-[#e5e7eb]">
-                                <div
-                                    className="absolute left-0 top-0 w-[6px] rounded-full bg-[#1e5b86] transition-[height] duration-300"
-                                    style={{ height: `${Math.round((progress[i] || 0) * 100)}%` }}
-                                />
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* STEPS */}
-                    <div className="col-span-12 md:col-span-5">
-                        <ul ref={scrollRef} className="max-h-[520px] overflow-y-auto scroll-smooth snap-y snap-mandatory">
-                            {steps.map((s, i) => (
-                                <li
-                                    key={i}
-                                    ref={(el) => (refs.current[i] = el)}
-                                    className="snap-start py-12 first:pt-4 last:pb-4"
-                                >
-                                    <div className="flex items-start gap-4">
-                                        <IconTile active={active === i}>{s.icon}</IconTile>
-                                        <div>
-                                            <h3 className="text-[20px] font-semibold text-slate-900">{s.title}</h3>
-                                            <p className="mt-2 max-w-[560px] text-[15px] leading-6 text-slate-600">{s.desc}</p>
-                                        </div>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+        <section className="bg-white font-sans">
+            <div className="flex flex-col items-center my-30">
+                <div className="border px-4 py-3 rounded-full border-gray-400 flex"> <Image src={tinystar} alt='tiny black  star' className="mr-2"/> <p>How it works</p></div>
+                <h1 className="font-light text-5xl -tracking-normal my-5">Better Talents, Better Results</h1>
+                <p className="capitalize ">Streamline your hiring process in 3 steps</p>
+            </div>
+              <div className="flex  w-full justify-evenly items-center">
+                <Image src={howitworks} alt='' width={500} className="h-1/2" />
+                <div className=""><HiringProcess /></div>
             </div>
         </section>
     );
@@ -139,27 +103,4 @@ function IconTile({ children, active }: { children: React.ReactNode; active?: bo
     );
 }
 
-function IconDoc() {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <path d="M14 2v6h6" />
-            <path d="M16 13H8M16 17H8M10 9H8" />
-        </svg>
-    );
-}
-function IconFilter() {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 3H2l8 9v7l4 2v-9z" />
-        </svg>
-    );
-}
-function IconBag() {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 7h12l1 13H5L6 7Z" />
-            <path d="M9 7V6a3 3 0 0 1 6 0v1" />
-        </svg>
-    );
-}
+

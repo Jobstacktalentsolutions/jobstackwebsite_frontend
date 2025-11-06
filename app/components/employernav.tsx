@@ -78,17 +78,17 @@ export default function Nav() {
 
                 {/* Right actions (desktop) */}
                 <div className="hidden w-1/3  md:flex md:flex-end justify-end items-center gap-4 ">
-                    <Link className="text-green-500 font-medium" href="/dashboard/employers">
-                       Employer&rsquo;s dashboard
+                    <Link className="text-green-500 font-medium" href="/">
+                        Jobseeker&rsquo;s dashboard
                     </Link>
                     <Link
-                        href="/auth/jobseeker/signUp"
+                        href="/auth/employer/signUp"
                         className="rounded-lg bg-[#E6F2F9] px-5 py-3 text-blue font-semibold"
                     >
                         Sign up
                     </Link>
                     <Link
-                        href="/auth/jobseeker/login"
+                        href="/auth/employer/login"
                         className="rounded-lg bg-[#E6F2F9] px-5 py-3 text-blue font-semibold"
                     >
                         Log in
@@ -184,14 +184,14 @@ export default function Nav() {
                         <Link
                             href="/auth/signUp"
                             className="mt-6 inline-flex w-[220px] items-center justify-center rounded-2xl bg-[#2F76B6] px-6 py-3 text-white font-semibold shadow-[0_12px_30px_-8px_rgba(47,118,182,0.55)]"
-                                                   >
+                        >
                             Sign up
                         </Link>
                         <Link
                             href="/auth/login"
                             className="mt-6 inline-flex w-[220px] items-center border-[2px] justify-center rounded-2xl text-[#2F76B6] px-6 py-3 bg-white font-semibold shadow-[0_12px_30px_-8px_rgba(47,118,182,0.55)]"
                         >
-                           Log in
+                            Log in
                         </Link>
 
                         {/* Employers link (green) */}

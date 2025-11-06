@@ -46,7 +46,7 @@ export default function PasswordField({
         <div>
             {/* ✅ Styled Label */}
             {label && (
-                <label htmlFor={id} className="block text-lg font-medium text-gray-900 mb-2">
+                <label htmlFor={id} className="block text-[14px] text-gray-900 mb-2 font-sans font-light  ">
                     {labelText}
                 </label>
             )}

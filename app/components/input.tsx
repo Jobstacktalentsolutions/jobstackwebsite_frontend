@@ -25,7 +25,7 @@ export default function Input({
 
     return (
         <label htmlFor={inputId} className="block">
-            <span className="mb-2 block text-[18px] font-medium text-slate-600">
+            <span className="mb-2 block text-[14px] font-sans font-light text-slate-600 ">
                 {label}
             </span>
 
@@ -43,7 +43,7 @@ export default function Input({
                     id={inputId}
                     value={valueItem}
                     className={cn(
-                        "h-12 w-full rounded-xl bg-transparent px-4 text-[18px] text-slate-800 placeholder:text-slate-400 focus:outline-none",
+                        "h-12 w-full rounded-xl bg-transparent px-4 text-[16px] text-slate-800 placeholder:text-slate-400 focus:outline-none",
                         !!iconLeft && "pl-10",
                         !!iconRight && "pr-10",
                         className

@@ -15,15 +15,13 @@ export default function Hero() {
             <div className="relative mx-auto max-w-7xl px-4 pb-0 pt-20 sm:px-6 md:pt-28 lg:px-8 
             lg:pt-32">
                 {/* Headline */}
-                <h1 className="mx-auto max-w-9xl text-center text-[28px]/[1.2] font-semibold tracking-tight text-white sm:text-5xl lg:text-5xl">
-                    Find Your Dream Job
-                    <br className="hidden sm:block" />
-                    <span className="sm:hidden"> or </span>
-                    <span className="block">Hire Top Talent</span>
+                <h1 className="mx-auto sm:max-w-9xl md:w-full  text-center font-[400] leading-16 tracking-normal semiwhite sm:text-5xl lg:text-6xl">
+                    Find Your Dream Job or Hire Top
+                    <span className="block"> Talent</span>
                 </h1>
 
                 {/* Subcopy */}
-                <p className="mx-auto mt-4 max-w-xl text-center text-[15px]/6 text-white/85 sm:text-lg">
+                <p className="mx-auto mt-4 max-w-3xl text-center text-[15px]/6  font-extralight semiwhite sm:text-lg">
                     A better way to connect talented people with great opportunities.
                     Whether you&apos;re taking the next step in your career or building
                     your dream team, we&apos;re here to make it happen.
@@ -33,13 +31,13 @@ export default function Hero() {
                 <div className="mt-6 flex items-center justify-center gap-3">
                     <Link
                         href="#"
-                        className="rounded-[12px] bg-white px-6 py-3 text-center text-[16px] font-semibold text-[#2572A7] shadow hover:shadow-md"
+                        className="rounded-[12px] bg-white px-6 py-3 text-center text-[16px] font-extralight text-[#2572A7] shadow hover:shadow-md"
                     >
                         Search Jobs
                     </Link>
                     <Link
                         href="#"
-                        className="rounded-[12px] border-[1px] border-white/70 px-6 py-3 text-center text-[16px] font-semibold text-white hover:bg-white/10"
+                        className="rounded-[12px] border-[1px] border-white/70 px-6 py-3 text-center text-[16px] font-extalight text-white hover:bg-white/10"
                     >
                         Post a Job
                     </Link>
@@ -117,7 +115,7 @@ export default function Hero() {
                     </div>
 
                     {/* DESKTOP/TABLET floating cards (use your previous positions) */}
-                    <div className="hidden md:mt-0 md:pointer-events-none md:absolute md:left-6 bottom-20  md:block border-2 border-red-500 ">
+                    <div className="hidden md:mt-0 md:pointer-events-none md:absolute md:left-6 bottom-20  md:block ">
                         <div className="w-full max-w-xs rounded-2xl bg-white p-5 shadow-card md:animate-[slow-bounce]">
                             <div className="text-2xl font-semibold">4.5</div>
                             <div className="mt-2 flex gap-1">

@@ -3,6 +3,9 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
+import tinystar from "../assets/tinyStar.svg";
+import verified from '../assets/verified.svg'
+import globe from '../assets/globe.svg'
 
 type Job = {
     id: string;
@@ -20,7 +23,7 @@ type Job = {
 const JOBS: Job[] = [
     {
         id: '1',
-        company: 'TechInnovate Ltd.',
+        company: 'John Doe',
         companyAvatar:
             'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=128&auto=format&fit=crop',
         verified: true,
@@ -30,11 +33,11 @@ const JOBS: Job[] = [
         summary:
             "We’re looking for a passionate frontend developer to join our growing team. You’ll work on cutting-edge projects for international clients...",
         tags: ['Remote', 'Full Time'],
-        pay: '₦350,000 – ₦500,000/m',
+        pay: '₦350,000 – ₦500,000/month',
     },
     {
         id: '2',
-        company: 'DesignMasters Co.',
+        company: 'David cane',
         companyAvatar:
             'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=128&auto=format&fit=crop',
         verified: true,
@@ -44,11 +47,11 @@ const JOBS: Job[] = [
         summary:
             'Seeking a talented UX/UI designer to enhance user experiences for our digital products. Collaborate with developers to create intuitive interfaces...',
         tags: ['On-site', 'Part Time'],
-        pay: '₦150,000 – ₦250,000/m',
+        pay: '₦150,000 – ₦250,000/month',
     },
     {
         id: '3',
-        company: 'Insight Corp.',
+        company: 'Adeola Francis',
         companyAvatar:
             'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=128&auto=format&fit=crop',
         verified: false,
@@ -58,7 +61,7 @@ const JOBS: Job[] = [
         summary:
             'Join us as a data analyst to interpret complex datasets and drive strategic decisions. Your insights will be crucial for our expansion...',
         tags: ['Hybrid', 'Contract'],
-        pay: '₦400,000 – ₦600,000/m',
+        pay: '₦400,000 – ₦600,000/month',
     },
     {
         id: '4',
@@ -76,7 +79,7 @@ const JOBS: Job[] = [
     },
     {
         id: '5',
-        company: 'Tech Innovations Inc.',
+        company: 'Biodun Charles',
         companyAvatar:
             'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=128&auto=format&fit=crop',
         verified: true,
@@ -90,7 +93,7 @@ const JOBS: Job[] = [
     },
     {
         id: '6',
-        company: 'Green Energy Solutions',
+        company: 'Efiok Mfonobong',
         companyAvatar:
             'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=128&auto=format&fit=crop',
         verified: true,
@@ -104,7 +107,7 @@ const JOBS: Job[] = [
     },
     {
         id: '7',
-        company: 'The Adebayos',
+        company: 'Emeka Esther',
         companyAvatar:
             'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=128&auto=format&fit=crop',
         verified: false,
@@ -192,50 +195,53 @@ function ArrowRight() {
 // Job Card
 function JobCard({ job }: { job: Job }) {
     return (
-        <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_15px_50px_-25px_rgba(2,6,23,0.2)]">
-            {/* Company Row */}
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                    <Image
-                        src={job.companyAvatar}
-                        alt={`${job.company} avatar`}
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 rounded-md object-cover"
-                    />
-                    <div className="min-w-0">
-                        <div className="flex items-center gap-1">
-                            <p className="truncate text-sm font-medium text-slate-800">{job.company}</p>
-                            {job.verified && <Check />}
+        <div>
+          
+            <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_15px_50px_-25px_rgba(2,6,23,0.2)]">
+                {/* Company Row */}
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <Image
+                            src={job.companyAvatar}
+                            alt={`${job.company} avatar`}
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 rounded-md object-cover"
+                        />
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-1">
+                                <p className="truncate text-sm font-medium text-slate-800">{job.company}</p>
+                                {job.verified && <Image src={ verified} alt='green tick mark showing verification' />}
+                            </div>
+                            <p className="truncate text-xs font-extralight text-slate-500">{job.location}</p>
                         </div>
-                        <p className="truncate text-xs text-slate-500">{job.location}</p>
                     </div>
+                    <p className="whitespace-nowrap text-xs text-slate-500 flex"><Image src={globe} alt='globe' className='mx-1'/><p>{job.posted}</p></p>
                 </div>
-                <p className="whitespace-nowrap text-xs text-slate-500">{job.posted}</p>
-            </div>
 
-            {/* Title */}
-            <h3 className="mt-3 text-[17px] font-semibold leading-snug text-slate-900">{job.title}</h3>
+                {/* Title */}
+                <h3 className="mt-3 text-[17px] font-semibold leading-snug text-slate-900">{job.title}</h3>
 
-            {/* Summary */}
-            <p className="mt-2 line-clamp-2 text-sm text-slate-600">{job.summary}</p>
+                {/* Summary */}
+                <p className="mt-2 line-clamp-2 font-extralight text-sm text-slate-600">{job.summary}</p>
 
-            {/* Footer Meta */}
-            <div className="mt-4 flex flex-wrap items-center gap-y-2 text-sm text-slate-600">
-                {job.tags.map((t, i) => (
-                    <div key={i} className="flex items-center">
-                        <span className="whitespace-nowrap">{t}</span>
-                        {i < job.tags.length - 1 && <Dot />}
-                    </div>
-                ))}
-                {job.pay && (
-                    <>
-                        <Dot />
-                        <span className="whitespace-nowrap font-medium text-slate-900">{job.pay}</span>
-                    </>
-                )}
-            </div>
-        </article>
+                {/* Footer Meta */}
+                <div className="mt-4 flex flex-wrap justify-between items-center gap-y-2 text-[12px] text-slate-600 font-extralight">
+                    {job.tags.map((t, i) => (
+                        <div key={i} className="flex items-center">
+                            <span className="whitespace-nowrap">{t}</span>
+                            {i < job.tags.length - 1 && <Dot />}
+                        </div>
+                    ))}
+                    {job.pay && (
+                        <>
+                            <Dot />
+                            <span className="whitespace-nowrap font-extralight text-slate-600">{job.pay}</span>
+                        </>
+                    )}
+                </div>
+            </article>
+        </div>
     );
 }
 
@@ -263,6 +269,11 @@ export default function JobsFeed() {
     return (
         <section className="relative">
             <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+                <div className="header my-15 flex flex-col items-center">
+                    <div className='border border-gray-200 px-4 py-4 rounded-full flex '><Image src={tinystar} alt='tiny star' className='mr-2' /> <p>Job listings</p></div>
+                    <h1 className='capitalize font-medium text-5xl my-4 tracking-loose '>Find job a you&apos;ll love</h1>
+                    <p className='font-extralight text-gray-500'>Your skills are in demand let&apos;s find where</p>
+                </div>
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {currentJobs.map((job) => (
                         <JobCard key={job.id} job={job} />

@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';               // ✅ add this
-import AuthPageLayout from '@/app/components/authPageLayout';
+import AuthPageLayout from '@/app/components/AuthPageLayout';
 import Input from '@/app/components/input';
 import Button from '@/app/components/button';
 

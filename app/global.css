@@ -21,9 +21,7 @@ html, body {
   animation: slow-bounce 3s ease-in-out infinite;
 }
 
-.border{
-border: red, 2px solid;
-}
+
 .text-blue{
   color:#2572A7;
 
@@ -34,12 +32,11 @@ border: red, 2px solid;
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-body {
- font-family: var(--font-dmSans), sans-serif;
-  @apply text-slate-800 antialiased;
-}
 .bg-brand{
   background-color: #1e5b86;
+}
+.semiwhite{
+  color: #E6F2F9;
 }
 .bg-brand-two{
   background-color: #346b92;

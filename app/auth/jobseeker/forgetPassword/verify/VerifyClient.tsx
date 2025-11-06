@@ -7,12 +7,12 @@ import { useRouter } from "next/navigation";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 
 type VerifyClientProps = {
-    heading: string;
+ 
     message: React.ReactNode;
     email: string;
 };
 
-export default function VerifyClient({ heading, message, email }: VerifyClientProps) {
+export default function VerifyClient({  message, email }: VerifyClientProps) {
     const router = useRouter();
 
     const handleVerify = async (code: string) => {
@@ -39,7 +39,7 @@ export default function VerifyClient({ heading, message, email }: VerifyClientPr
 
     return (
         <ForgotPasswordVerify
-            heading={heading}
+          
             message={message}
             email={email}
             onVerify={handleVerify}

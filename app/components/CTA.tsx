@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Briefcase, ChevronRight, Plus } from "lucide-react";
-import heroimage from "@/app/assets/heroimage.png"
+import heroimage from "@/app/assets/dummyImage.png"
 
 export default function CTA() {
     return (
@@ -12,14 +12,14 @@ export default function CTA() {
                     <div className="grid items-center gap-10 md:grid-cols-2">
                         {/* Left: copy */}
                         <div>
-                            <div className="inline-flex items-center gap-2 rounded-full bg-white text-slate-800 px-3 py-1 text-sm font-medium shadow">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-white text-slate-800 px-3 py-4 text-sm font-medium shadow">
                                 <Plus className="h-4 w-4" />
                                 Get jobs
                             </div>
 
-                            <h1 className="mt-6 text-4xl font-semibold leading-tight text-white sm:text-5xl">
+                            <h1 className="mt-6 text-4xl font-semibold leading-tight text-white sm:text-5xl w-full">
                                 Find Work That Works
-                                <br /> for You
+                              for You
                             </h1>
 
                             <p className="mt-4 max-w-xl text-slate-200">
@@ -38,11 +38,10 @@ export default function CTA() {
 
                         {/* Right: image */}
                         <div className="flex justify-center md:justify-end">
-                            <div className="relative aspect-[4/5] w-72 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-slate-200">
+                            <div className="relative aspect-[4/5] w-72 overflow-hidden md:flex justify-center items-center rounded-2xl bg-white shadow-lg ring-1 ring-slate-200">
                                 <Image
                                     src={heroimage} // put your image in /public/hero.png
                                     alt="Smiling professional"
-                                    fill
                                     className="object-cover"
                                     priority
                                 />

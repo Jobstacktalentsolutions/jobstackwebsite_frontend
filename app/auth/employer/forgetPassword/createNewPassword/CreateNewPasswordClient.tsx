@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import AuthPageLayout from "@/app/components/authPageLayout";
+import AuthPageLayout from "@/app/components/AuthPageLayout";
 import PasswordField from "@/app/components/passwordField";
 import Button from "@/app/components/button";
 import SuccessModal from "@/app/components/sucessModal";
@@ -65,7 +65,7 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
       subtext="Almost there! Please create a new, strong password for your account."
       message={
         <>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">New Password</h3>
+          <h3 className="text-[14px] font-light text-gray-900 mb-2">New Password</h3>
           <form className="space-y-4" onSubmit={onSubmit}>
             <PasswordField
               label="Password"

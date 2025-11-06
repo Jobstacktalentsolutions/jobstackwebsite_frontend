@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import defaultTheme from "tailwindcss/defaultTheme";
+
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -30,7 +32,7 @@ module.exports = {
         slowBounce: "slowBounce 3s ease-in-out infinite",
       },
       fontFamily: {
-        sans: ["var(--font-dmSans)", "sans-serif"],
+        sans: ["var(--font-dm-sans)", ...defaultTheme.fontFamily.sans],
       },
     },
   },

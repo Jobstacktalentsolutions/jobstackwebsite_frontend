@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import star from "../assets/tinyStar.svg";
-
+import grid from '../assets/grid.svg';
 type Testimonial = {
     name: string;
     role: string;
@@ -115,26 +115,26 @@ export default function Testimonials() {
         <section className="relative bg-brand">
             <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
 
-            <div className="relative  px-4 py-14 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
-                    <div className="lg:col-span-4">
-                        <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-                            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-4 py-2 text-sm text-black">
+            <div className="relative  px-4 py-4 sm:px-6 lg:px-8">
+                <div className="grid ml-20 my-15  gap-10 md:flex md:items-center  w-full ">
+                    <div className="flex flex-col justify-between w-1/2">
+                        <div className="flex flex-col  justify-between text-center lg:items-start lg:text-left">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-4 py-4 text-sm text-black">
                                 <Image src={star} alt="star" width={16} height={16} /> Testimonials
                             </span>
 
-                            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
-                                What Do Our Clients Say
+                            <h2 className="mt-4 text-4xl font-semibold tracking-tight leading-normal text-white sm:text-4xl md:text-5xl">
+                                What Do Our <br/> Clients Say
                             </h2>
 
-                            <p className="mt-3 max-w-sm text-white/80">
+                            <p className="mt-3 font-thin text-white/80">
                                 Don’t just take our word for it. Hear from those who’ve found success.
                             </p>
                         </div>
                         <div className="mt-6 flex gap-3 ">
                             <a
                                 href="#jobs"
-                                className="w-full rounded-xl bg-white px-5 py-3 text-center font-semibold text-[#2572A7] shadow hover:shadow-md sm:w-auto"
+                                className="w-full rounded-xl bg-white px-5 py-3 text-center font-light text-[#2572A7] shadow hover:shadow-md sm:w-auto"
                             >
                                 Search Jobs
                             </a>
@@ -147,7 +147,7 @@ export default function Testimonials() {
                         </div>
                     </div>
 
-                    <div className="relative lg:col-span-8">
+                    <div className="relative w-1/2 lg:col-span-8 ">
                         <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-10 bg-gradient-to-r from-[#1e5b86] to-transparent sm:block" />
                         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-10 bg-gradient-to-l from-[#1e5b86] to-transparent sm:block" />
 
@@ -159,9 +159,9 @@ export default function Testimonials() {
                             {DATA.map((t, idx) => (
                                 <article
                                     key={idx}
-                                    className="snap-center shrink-0 w-[80%] max-w-[520px] rounded-3xl bg-white/5 p-5 md:p-7 ring-1 ring-white/10 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(2,6,23,0.45)]"
+                                    className="snap-center shrink-0 w-[80%] max-w-[620px] rounded-3xl bg-white/5 p-5 md:py-7 ring-1 ring-white/10 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(2,6,23,0.45)] flex"
                                 >
-                                    <div className="flex items-start gap-4">
+                                    <div className="flex w-1/3 flex-col item gap-4 ">
                                         <Image
                                             src={t.avatar}
                                             alt={`${t.name} avatar`}
@@ -169,38 +169,33 @@ export default function Testimonials() {
                                             height={48}
                                             className="h-12 w-12 rounded-full object-cover ring-2 ring-white/20"
                                         />
-                                        <div className="min-w-0">
+                                        <div className="min-w-0 ">
                                             <div className="font-semibold text-white">{t.name}</div>
                                             <div className="text-sm text-white/80">{t.role}</div>
-                                            <div className="text-sm text-white/60">at {t.company}</div>
+                                            <Image src={grid} alt="transparent grid patterns"/>
                                         </div>
+                                        {t.verified && (
+                                            <div className="mt-4 flex items-center gap-2 text-sm text-white/80">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" className="fill-white">
+                                                    <path d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4z" />
+                                                </svg>
+                                                <span>Verified</span>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="mt-5 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+                                    <div className="mt-5 w-2/3 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
                                         <Stars n={t.rating} />
                                         <p className="mt-3 text-white/90">“{t.text}”</p>
                                     </div>
 
-                                    {t.verified && (
-                                        <div className="mt-4 flex items-center gap-2 text-sm text-white/80">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" className="fill-white">
-                                                <path d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4z" />
-                                            </svg>
-                                            <span>Verified</span>
-                                        </div>
-                                    )}
+                                 
                                 </article>
                             ))}
                         </div>
 
                         <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
-                            <button
-                                onClick={() => scrollByAmount("left")}
-                                aria-label="Previous"
-                                className="rounded-full bg-white/10 px-4 py-2 text-white ring-1 ring-white/20 hover:bg-white/20"
-                            >
-                                ‹
-                            </button>
+                            
 
                             <div className="relative h-1 w-40 overflow-hidden rounded-full bg-white/20 sm:w-56 md:w-72">
                                 <div
@@ -209,13 +204,7 @@ export default function Testimonials() {
                                 />
                             </div>
 
-                            <button
-                                onClick={() => scrollByAmount("right")}
-                                aria-label="Next"
-                                className="rounded-full bg-white/10 px-5 py-2 text-white ring-1 ring-white/20 hover:bg-white/20"
-                            >
-                                ›
-                            </button>
+                            
                         </div>
 
                      

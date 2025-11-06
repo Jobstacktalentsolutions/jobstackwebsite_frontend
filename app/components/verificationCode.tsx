@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { type StaticImageData } from "next/image";
 import Button from "@/app/components/button";
 import SuccessModal from "@/app/components/sucessModal";
-import AuthPageLayout from '@/app/components/authPageLayout';
+import AuthPageLayout from '@/app/components/AuthPageLayout';
 type Props = {
     /** Main title (H1) – make this vary per page */
     heading: string;
@@ -70,7 +70,7 @@ export default function OtpVerification(
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
     // countdown
-   
+
 
     const filled = code.every((c) => c !== "");
     const codeString = code.join("");
