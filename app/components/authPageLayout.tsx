@@ -32,42 +32,28 @@ export default function ForgotPassword({
   const jobseekerImgs = [welcome, welcome2, welcome3];
 
   const carouselImages = persona === "employer" ? employerImgs : jobseekerImgs;
-  return (
-    <div
-      className="w-full flex flex-col md:flex-row   my-15 md:my-10 pl-20 relative  overflow-hidden "
-      style={{ fontFamily: "var(--font-dmSans)" }}
-    >
-      {/* Left Column */}
-      <div
-        className=" px-6 w-full md:w-[45%] md:pr-32 flex flex-col "
-        style={{ fontFamily: "var(--font-dmSans)" }}
-      >
-        <div className="hidden my-10 md:flex md:mb-21">
-          <Link href="/">
-            <Image src={logoIcon} alt="Page logo " width={200} height={200} />{" "}
-          </Link>
-        </div>
-        <div className=" md:hidden  flex justify-center ">
-          <Link href="/">
-            <Image src={logo} alt="Page logo " width={100} height={20} />{" "}
-          </Link>
-        </div>
+    return (
+      <div className="w-full flex flex-col md:flex-row   p-10 md:my-10 md:pl-20 relative  overflow-hidden " style={{ fontFamily: 'var(--font-dmSans)' }}>
+            {/* Left Column */}
+        <div className=" md:px-6 w-full md:w-[45%] md:pr-32 flex flex-col " style={{ fontFamily: 'var(--font-dmSans)' }}>
+          <div className="hidden my-10 md:flex md:mb-21">
+            <Link href="/"><Image src={logoIcon} alt="Page logo " width={200} height={200} /> </Link>
+              </div>
+          <div className=" md:hidden  flex justify-center ">
+                    <Link href="/"><Image src={logo} alt="Page logo " width={100} height={20}/> </Link>
+                </div>
 
-        <div className="  flex flex-col   justify-center md:justify-start ">
-          <div className="flex flex-col justify-center md:justify-start my-8 md:my-2">
-            <h1
-              className="text-3xl font-light   text-slate-900 md:mb-2 text-center md:text-start
-                        "
-            >
-              {heading}
-            </h1>
-            <p className="text-center text-gray-400  md:text-start md:mb-8 text-[14px] font-extralight">
-              {subtext}
-            </p>
-          </div>
-          <div>{message}</div>
-        </div>
-      </div>
+          <div className="  flex flex-col   justify-center md:justify-start ">
+                    <div className="flex flex-col justify-center md:justify-start my-8 md:my-2">
+                        <h1 className="text-3xl font-light   text-slate-900 md:mb-2 text-center md:text-start
+                        " >
+                            {heading}
+                        </h1>
+                        <p className="text-center text-gray-600  w-2xs md:text-start md:mb-8 text-[14px] font-extralight">{subtext}</p>
+                   </div>
+                    <div >{message}</div>
+                </div>
+            </div>
 
       {/* Right Column */}
       <div className="hidden md:w-1/2 md:block order-first   md:order-none bg-white">

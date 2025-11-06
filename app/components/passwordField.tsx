@@ -46,7 +46,7 @@ export default function PasswordField({
         <div>
             {/* ✅ Styled Label */}
             {label && (
-                <label htmlFor={id} className="block text-[14px] text-gray-900 mb-2 font-sans font-light  ">
+                <label htmlFor={id} className="block text-[14px] text-gray-600 mb-2 font-sans font-light  ">
                     {labelText}
                 </label>
             )}
@@ -78,7 +78,7 @@ export default function PasswordField({
 
             {/* ✅ Hide password hints for confirm password */}
             {showHints && !label.toLowerCase().includes('confirm') && (
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-4 md:mt-2 flex flex-wrap justify-center md:justify-start gap-2">
                     {rules.map((r) => (
                         <span
                             key={r.key}

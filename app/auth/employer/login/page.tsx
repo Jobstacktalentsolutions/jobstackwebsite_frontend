@@ -88,7 +88,7 @@ export default function LoginPage() {
               <div className="flex justify-end">
                 <Link
                   href="/auth/employer/forgetPassword"
-                  className="text-[12px] font-extralight"
+                  className="text-[12px] text-slate-600 font-extralight"
                 >
                   Forgot password?
                 </Link>
@@ -105,11 +105,11 @@ export default function LoginPage() {
                 <span className="text-sm text-slate-500">or</span>
                 <hr className="flex-grow border-slate-200" />
               </div>
-              <div className="flex">
-                <Button variant="outline" className="w-full">
+              <div className="flex flex-col md:flex-row">
+                <Button variant="outline" className="w-full mb-4">
                   Sign in with Google
                 </Button>
-                <Button variant="outline" className="w-full ml-4">
+                <Button variant="outline" className="w-full md:ml-4">
                   Sign in with Apple
                 </Button>
               </div>

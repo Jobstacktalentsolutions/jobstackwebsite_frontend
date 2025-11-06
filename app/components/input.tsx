@@ -25,7 +25,7 @@ export default function Input({
 
     return (
         <label htmlFor={inputId} className="block">
-            <span className="mb-2 block text-[14px] font-sans font-light text-slate-600 ">
+            <span className="mb-2 block text-[14px] md:text-base font-sans font-light text-slate-600 ">
                 {label}
             </span>
 
