@@ -182,13 +182,13 @@ export default function Nav() {
 
                         {/* Primary action */}
                         <Link
-                            href="/auth/signUp"
+                            href="/auth/employer/signUp"
                             className="mt-6 inline-flex w-[220px] items-center justify-center rounded-2xl bg-[#2F76B6] px-6 py-3 text-white font-semibold shadow-[0_12px_30px_-8px_rgba(47,118,182,0.55)]"
                         >
                             Sign up
                         </Link>
                         <Link
-                            href="/auth/login"
+                            href="/auth/emplyer/login"
                             className="mt-6 inline-flex w-[220px] items-center border-[2px] justify-center rounded-2xl text-[#2F76B6] px-6 py-3 bg-white font-semibold shadow-[0_12px_30px_-8px_rgba(47,118,182,0.55)]"
                         >
                             Log in

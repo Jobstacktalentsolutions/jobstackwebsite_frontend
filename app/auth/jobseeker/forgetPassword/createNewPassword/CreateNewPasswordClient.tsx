@@ -25,7 +25,7 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
   };
 
   const goToLogin = () => {
-    router.push("/auth/login");
+    router.push("/auth/jobseeker/login");
     handleCloseModal();
   };
 
