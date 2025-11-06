@@ -100,8 +100,8 @@ export default function SignUp() {
         heading="Start Hiring Today"
         subtext="Create your free employer account in just a minute. Find the perfect talent for your team."
         message={
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <div className="grid grid-cols-2 gap-4">
+            <form className="space-y-4 " onSubmit={onSubmit}>
+            <div className=" flex flex-col  md:grid grid-cols-2 gap-4">
               <Input
                 label="First Name"
                 placeholder="Enter your first name"
@@ -131,7 +131,7 @@ export default function SignUp() {
             />
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 block text-sm font-medium text-slate-600">
                 Account Type
               </label>
               <div className="flex flex-col w-full font-light text-gray-500 gap-4">

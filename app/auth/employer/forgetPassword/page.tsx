@@ -69,11 +69,11 @@ export default function ForgotPassword() {
               <span className="text-sm text-slate-500">or</span>
               <hr className="flex-grow border-slate-200" />
             </div>
-            <div className="flex">
-              <Button variant="outline" className="w-full">
+            <div className="flex flex-col md:flex-row">
+              <Button variant="outline" className="w-full my-4">
                 Sign in with Google
               </Button>
-              <Button variant="outline" className="w-full ml-4">
+              <Button variant="outline" className="w-full md:ml-4">
                 Sign in with Apple
               </Button>
             </div>
@@ -81,7 +81,7 @@ export default function ForgotPassword() {
             <p className="text-center text-sm text-slate-500">
               Don’t have an account?{" "}
               <Link
-                href="/auth/signUp"
+                href="/auth/employer/signUp"
                 className="text-blue-600 hover:underline"
               >
                 Sign up
