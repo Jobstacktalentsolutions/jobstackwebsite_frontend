@@ -1,23 +1,25 @@
-// app/dashboard/page.tsx
-import { authedFetch } from "../lib/authFetch";
-import Link from "next/link";
+"use client";
 
-export default async function Dashboard() {
-    const res = await authedFetch("/user/me");
-    if (res.status === 401) {
-        // no token -> redirect to login
-        return (
-            <main className="p-6">
-                <p>Session expired.</p>
-                <Link href="/login" className="underline">Login</Link>
-            </main>
-        );
-    }
-    const data = await res.json();
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-    return (
-        <main className="p-6">
-            <h1 className="text-2xl">Welcome {data?.data?.user?.email}</h1>
-        </main>
-    );
+export default function DashboardPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // For now, redirect to home page
+    // In the future, this will be the actual dashboard
+    router.push("/");
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Welcome to JobStack!
+        </h1>
+        <p className="text-gray-600">Redirecting you to the dashboard...</p>
+      </div>
+    </div>
+  );
 }

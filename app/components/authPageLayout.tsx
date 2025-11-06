@@ -1,9 +1,9 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
-import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+
 import { useRouter, useSearchParams } from "next/navigation";
-import logoIcon from '../assets/logo_second.svg';
+import logoIcon from "../assets/logo_second.svg";
 import logo from "../assets/logoicon.svg";
 import Carousel from "@/app/components/carousel";
 import welcome from "../assets/welcomeimage.png";
@@ -12,9 +12,9 @@ import welcome3 from "../assets/securitywithstaff.png";
 import Link from "next/link";
 
 export type authPageProps = {
-    heading: string;
-    subtext?: string ;
-    message: React.ReactNode;
+  heading: string;
+  subtext?: string;
+  message: React.ReactNode;
 };
 
 export default function ForgotPassword({
@@ -22,16 +22,14 @@ export default function ForgotPassword({
   subtext,
   message,
 }: authPageProps) {
-
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const persona = (searchParams.get("persona") as "employer" | "jobseeker") || "jobseeker";
+  const persona =
+    (searchParams.get("persona") as "employer" | "jobseeker") || "jobseeker";
 
   const employerImgs = [welcome3, welcome, welcome2];
   const jobseekerImgs = [welcome, welcome2, welcome3];
-
-
 
   const carouselImages = persona === "employer" ? employerImgs : jobseekerImgs;
     return (
@@ -57,21 +55,17 @@ export default function ForgotPassword({
                 </div>
             </div>
 
-            {/* Right Column */}
-        <div className="hidden md:w-1/2 md:block order-first   md:order-none bg-white">
-          <div className="w-full fixed  h-[300px] md:h-screen">
-                   
-
-            <Carousel
-              images={carouselImages}
-              interval={5000}
-              variant="fade"
-              className="rounded-3xl md:h-full md:w-[700px]"
-            />
-                </div>
-            </div>
+      {/* Right Column */}
+      <div className="hidden md:w-1/2 md:block order-first   md:order-none bg-white">
+        <div className="w-full fixed  h-[300px] md:h-screen">
+          <Carousel
+            images={carouselImages}
+            interval={5000}
+            variant="fade"
+            className="rounded-3xl md:h-full md:w-[700px]"
+          />
         </div>
-   
-
+      </div>
+    </div>
   );
 }
