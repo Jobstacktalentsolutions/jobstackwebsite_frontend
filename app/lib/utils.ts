@@ -11,7 +11,7 @@ export function storeAuthToken(token: string) {
   // Store token in httpOnly cookie for security
   Cookies.set("auth_token", token, {
     expires: 7, // 7 days
-    secure: import.meta.env.NODE_ENV === "production", // Only secure in production
+    secure: process.env.NODE_ENV === "production", // Only secure in production
     sameSite: "strict", // CSRF protection
     path: "/", // Available across the entire site
   });

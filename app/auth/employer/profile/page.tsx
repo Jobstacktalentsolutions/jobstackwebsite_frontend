@@ -1,146 +1,441 @@
-'use client';
-import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';               // ✅ add this
-import AuthPageLayout from '@/app/components/AuthPageLayout';
-import Input from '@/app/components/input';
-import Button from '@/app/components/button';
+"use client";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import AuthPageLayout from "@/app/components/AuthPageLayout";
+import Input from "@/app/components/input";
+import Button from "@/app/components/button";
+import { Building2, MapPin, Globe, Users } from "lucide-react";
+import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
+import {
+  getMyProfile,
+  updateVerificationInfo,
+  uploadVerificationDocument,
+  getDocumentRequirements,
+  getMyVerification,
+  checkAutoVerificationEligibility,
+} from "@/app/api/recruiter-verification.api";
+import {
+  UpdateVerificationInfoDto,
+  DocumentRequirement,
+  RecruiterType,
+  RecruiterDocumentType,
+  RecruiterVerification,
+} from "@/app/types/recruiter.type";
 
-type FormValues = { residentialAddress: string };
+interface DocumentUpload {
+  documentType: RecruiterDocumentType;
+  file: File | null;
+  documentNumber?: string;
+  uploaded: boolean;
+  uploading: boolean;
+}
 
 const ProfilePage = () => {
-    const router = useRouter();                               // ✅ add this
+  const router = useRouter();
 
-    const inputFileRef = useRef<HTMLInputElement | null>(null);
-    const proofFileRef = useRef<HTMLInputElement | null>(null);
+  // Form state
+  const [companyName, setCompanyName] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
+  const [businessAddress, setBusinessAddress] = useState("");
+  const [companySize, setCompanySize] = useState("");
+  const [socialOrWebsiteUrl, setSocialOrWebsiteUrl] = useState("");
 
-    const [formValues, setFormValues] = useState<FormValues>({ residentialAddress: '' });
-    const [idFile, setIdFile] = useState<File | null>(null);
-    const [proofFile, setProofFile] = useState<File | null>(null);
-    const [fileError, setFileError] = useState<string | null>(null);
+  // Document state
+  const [recruiterType, setRecruiterType] = useState<RecruiterType>(
+    RecruiterType.INDIVIDUAL
+  );
+  const [documentRequirements, setDocumentRequirements] = useState<
+    DocumentRequirement[]
+  >([]);
+  const [documentUploads, setDocumentUploads] = useState<DocumentUpload[]>([]);
+  const [verification, setVerification] =
+    useState<RecruiterVerification | null>(null);
 
-    const maxFileSizeMB = 10;
-    const acceptedFormats = ['.pdf', '.docx', '.png', '.jpeg', '.jpg'];
+  // UI state
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        try {
-            const savedData = localStorage.getItem('profileForm');
-            if (savedData) {
-                const parsed = JSON.parse(savedData);
-                if (parsed.residentialAddress) {
-                    setFormValues({ residentialAddress: parsed.residentialAddress });
-                }
-            }
-        } catch {
-            localStorage.removeItem('profileForm');
-        }
-    }, []);
+  useEffect(() => {
+    loadVerificationData();
+  }, []);
 
-    useEffect(() => {
-        localStorage.setItem('profileForm', JSON.stringify(formValues));
-    }, [formValues]);
+  const loadVerificationData = async () => {
+    try {
+      setLoading(true);
 
-    const handleFileChange =
-        (type: 'id' | 'proof') => (e: React.ChangeEvent<HTMLInputElement>) => {
-            setFileError(null);
-            const file = e.target.files?.[0];
-            if (!file) return;
+      // First, get the user's profile to determine their recruiter type
+      const profile = await getMyProfile();
+      if (profile?.type) {
+        setRecruiterType(profile.type);
+      }
 
-            if (file.size > maxFileSizeMB * 1024 * 1024) {
-                setFileError(`File size must be no more than ${maxFileSizeMB} MB`);
-                return;
-            }
-            const ext = '.' + (file.name.split('.').pop() || '').toLowerCase();
-            if (!acceptedFormats.includes(ext)) {
-                setFileError(`Only formats allowed: ${acceptedFormats.join(', ')}`);
-                return;
-            }
+      // Then get verification data
+      const verificationData = await getMyVerification();
+      if (verificationData) {
+        setVerification(verificationData);
+        setCompanyName(verificationData.companyName || "");
+        setCompanyAddress(verificationData.companyAddress || "");
+        setBusinessAddress(verificationData.businessAddress || "");
+        setCompanySize(verificationData.companySize || "");
+        setSocialOrWebsiteUrl(verificationData.socialOrWebsiteUrl || "");
+      }
 
-            const saved = JSON.parse(localStorage.getItem('profileForm') || '{}');
-            saved[type + 'FileInfo'] = { name: file.name, type: file.type, size: file.size };
-            localStorage.setItem('profileForm', JSON.stringify(saved));
+      // Load document requirements
+      await loadDocumentRequirements();
+    } catch (err) {
+      console.error("Failed to load verification data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            if (type === 'id') setIdFile(file);
-            else setProofFile(file);
-        };
+  const loadDocumentRequirements = async () => {
+    try {
+      const requirements = await getDocumentRequirements();
+      setDocumentRequirements(requirements);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setFileError(null);
+      // Initialize document uploads
+      const uploads: DocumentUpload[] = requirements.map((req) => ({
+        documentType: req.documentType,
+        file: null,
+        documentNumber: "",
+        uploaded: false,
+        uploading: false,
+      }));
 
-        if (!formValues.residentialAddress.trim()) {
-            setFileError('Residential address is required');
-            return;
-        }
-        if (!idFile || !proofFile) {
-            setFileError('Please upload both required documents');
-            return;
-        }
+      // Mark already uploaded documents
+      if (verification?.documents) {
+        verification.documents.forEach((doc) => {
+          const upload = uploads.find(
+            (u) => u.documentType === doc.documentType
+          );
+          if (upload) {
+            upload.uploaded = true;
+            upload.documentNumber = doc.documentNumber || "";
+          }
+        });
+      }
 
-        // Save a final snapshot (safe, JSON-only)
-        localStorage.setItem(
-            'profileForm',
-            JSON.stringify({
-                ...formValues,
-                idFileInfo: { name: idFile.name, type: idFile.type, size: idFile.size },
-                proofFileInfo: { name: proofFile.name, type: proofFile.type, size: proofFile.size },
-            })
-        );
+      setDocumentUploads(uploads);
+    } catch (err) {
+      console.error("Failed to load document requirements:", err);
+      toastError("Failed to load document requirements");
+    }
+  };
 
-        // ✅ Redirect to Company Profile (employer flow)
-        router.push('/auth/employer/profile/companyProfile');
-    };
-
-    return (
-        <AuthPageLayout
-            heading="Almost there! Verify your identity"
-            subtext="This helps build trust with job seekers"
-            message={
-                <form className="space-y-6 max-w-md" onSubmit={handleSubmit}>
-                    <Input
-                        label="Residential Address"
-                        value={formValues.residentialAddress}
-                        onChange={(e) =>
-                            setFormValues({ residentialAddress: e.target.value })
-                        }
-                    />
-
-                    <h2 className="text-[18px]">
-                        Government Issued ID{' '}
-                        <span className="italic text-gray-400">
-                            (National ID, Voter&apos;s Card, Driver&apos;s License, or International Passport)
-                        </span>
-                        <span className="text-red-500">*</span>
-                    </h2>
-                    <input
-                        ref={inputFileRef}
-                        type="file"
-                        accept={acceptedFormats.join(',')}
-                        onChange={handleFileChange('id')}
-                        className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-black file:text-white hover:file:bg-gray-600"
-                    />
-
-                    <h2 className="text-[18px]">
-                        Proof of Address{' '}
-                        <span className="italic text-gray-400">
-                            (Utility bill or tenancy agreement from the last 3 months)
-                        </span>
-                        <span className="text-red-500">*</span>
-                    </h2>
-                    <input
-                        ref={proofFileRef}
-                        type="file"
-                        accept={acceptedFormats.join(',')}
-                        onChange={handleFileChange('proof')}
-                        className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-black file:text-white hover:file:bg-gray-600"
-                    />
-
-                    {fileError && <p className="text-red-500 text-sm">{fileError}</p>}
-
-                    <Button className="w-full my-10">Save & Continue</Button>
-                </form>
-            }
-        />
+  const handleFileChange = (
+    documentType: RecruiterDocumentType,
+    file: File | null
+  ) => {
+    setDocumentUploads((prev) =>
+      prev.map((upload) =>
+        upload.documentType === documentType ? { ...upload, file } : upload
+      )
     );
+  };
+
+  const handleDocumentNumberChange = (
+    documentType: RecruiterDocumentType,
+    documentNumber: string
+  ) => {
+    setDocumentUploads((prev) =>
+      prev.map((upload) =>
+        upload.documentType === documentType
+          ? { ...upload, documentNumber }
+          : upload
+      )
+    );
+  };
+
+  const uploadDocument = async (upload: DocumentUpload) => {
+    if (!upload.file) return;
+
+    setDocumentUploads((prev) =>
+      prev.map((u) =>
+        u.documentType === upload.documentType ? { ...u, uploading: true } : u
+      )
+    );
+
+    try {
+      const result = await uploadVerificationDocument(
+        {
+          documentType: upload.documentType,
+          documentNumber: upload.documentNumber,
+        },
+        upload.file
+      );
+
+      setDocumentUploads((prev) =>
+        prev.map((u) =>
+          u.documentType === upload.documentType
+            ? { ...u, uploaded: true, uploading: false, file: null }
+            : u
+        )
+      );
+
+      toastSuccess(`${upload.documentType} uploaded successfully`);
+
+      // Check if auto-verification happened
+      if (result.autoVerificationResult?.verified) {
+        toastSuccess(result.autoVerificationResult.message);
+      }
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.message || "Upload failed";
+      toastError(errorMessage);
+
+      setDocumentUploads((prev) =>
+        prev.map((u) =>
+          u.documentType === upload.documentType
+            ? { ...u, uploading: false }
+            : u
+        )
+      );
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    try {
+      // Update verification info
+      const verificationDto: UpdateVerificationInfoDto = {
+        companyName: companyName.trim(),
+        companyAddress: companyAddress.trim(),
+        businessAddress: businessAddress.trim(),
+        companySize: companySize.trim(),
+        socialOrWebsiteUrl: socialOrWebsiteUrl.trim(),
+      };
+
+      await updateVerificationInfo(verificationDto);
+
+      // Upload pending documents
+      const pendingUploads = documentUploads.filter(
+        (u) => u.file && !u.uploaded
+      );
+      for (const upload of pendingUploads) {
+        await uploadDocument(upload);
+      }
+
+      // Check verification status
+      const eligibility = await checkAutoVerificationEligibility();
+
+      if (eligibility.canAutoVerify) {
+        toastSuccess("Profile completed and verified successfully!");
+        router.push("/dashboard"); // Redirect to main dashboard
+      } else {
+        toastInfo(
+          "Profile saved. Verification pending for: " +
+            eligibility.missingMandatoryDocuments.join(", ")
+        );
+        router.push("/auth/employer/profile/companyProfile");
+      }
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || "Failed to save profile";
+      setError(errorMessage);
+      toastError(errorMessage);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const getDocumentDisplayName = (docType: RecruiterDocumentType): string => {
+    const requirement = documentRequirements.find(
+      (req) => req.documentType === docType
+    );
+    return requirement?.description || docType.replace(/_/g, " ");
+  };
+
+  const requiresDocumentNumber = (docType: RecruiterDocumentType): boolean => {
+    return [
+      RecruiterDocumentType.NATIONAL_ID,
+      RecruiterDocumentType.INTERNATIONAL_PASSPORT,
+      RecruiterDocumentType.TAX_IDENTIFICATION,
+      RecruiterDocumentType.CERTIFICATE_OF_BUSINESS_REGISTRATION,
+      RecruiterDocumentType.CERTIFICATE_OF_INCORPORATION,
+    ].includes(docType);
+  };
+
+  if (loading) {
+    return (
+      <AuthPageLayout
+        heading="Loading..."
+        subtext="Please wait while we load your profile"
+        message={<div className="text-center">Loading...</div>}
+      />
+    );
+  }
+
+  return (
+    <AuthPageLayout
+      heading="Complete Your Employer Profile"
+      subtext="Complete your profile and upload required documents to start hiring top talent"
+      message={
+        <form className="space-y-6 max-w-2xl" onSubmit={handleSubmit}>
+          {/* Account Type Display */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+              <span className="text-sm font-medium text-blue-800">
+                Account Type:
+              </span>
+              <span className="text-sm text-blue-700 font-semibold">
+                {recruiterType || "Loading..."}
+                {recruiterType === RecruiterType.INDIVIDUAL &&
+                  " (Personal recruiting)"}
+                {recruiterType === RecruiterType.SME &&
+                  " (Small & Medium Enterprise)"}
+                {recruiterType === RecruiterType.ORGANIZATION &&
+                  " (Company/Corporate recruiting)"}
+              </span>
+            </div>
+          </div>
+
+          {/* Company Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Company/Business Name"
+              placeholder="Enter company name"
+              iconLeft={<Building2 size={16} />}
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              required
+            />
+            <Input
+              label="Company Size"
+              placeholder="e.g., 1-10, 11-50, 51-200"
+              iconLeft={<Users size={16} />}
+              value={companySize}
+              onChange={(e) => setCompanySize(e.target.value)}
+            />
+          </div>
+
+          <Input
+            label="Company Address"
+            placeholder="Enter company address"
+            iconLeft={<MapPin size={16} />}
+            value={companyAddress}
+            onChange={(e) => setCompanyAddress(e.target.value)}
+            required
+          />
+
+          <Input
+            label="Business Address (if different)"
+            placeholder="Enter business address"
+            iconLeft={<MapPin size={16} />}
+            value={businessAddress}
+            onChange={(e) => setBusinessAddress(e.target.value)}
+          />
+
+          <Input
+            label="Website or Social Media URL"
+            placeholder="https://company.com or social media link"
+            iconLeft={<Globe size={16} />}
+            value={socialOrWebsiteUrl}
+            onChange={(e) => setSocialOrWebsiteUrl(e.target.value)}
+          />
+
+          {/* Document Upload Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">
+              Required Documents
+            </h3>
+            <p className="text-sm text-slate-600">
+              Upload the following documents to verify your account. Mandatory
+              documents are marked with *.
+            </p>
+
+            {documentUploads.map((upload) => {
+              const requirement = documentRequirements.find(
+                (req) => req.documentType === upload.documentType
+              );
+              if (!requirement) return null;
+
+              return (
+                <div
+                  key={upload.documentType}
+                  className="border rounded-lg p-4 space-y-3"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-medium text-slate-800">
+                        {getDocumentDisplayName(upload.documentType)}
+                        {requirement.mandatory && (
+                          <span className="text-red-500 ml-1">*</span>
+                        )}
+                      </h4>
+                      <p className="text-sm text-slate-600">
+                        {requirement.purpose}
+                      </p>
+                    </div>
+                    {upload.uploaded && (
+                      <span className="text-green-600 text-sm font-medium">
+                        ✓ Uploaded
+                      </span>
+                    )}
+                  </div>
+
+                  {requiresDocumentNumber(upload.documentType) && (
+                    <Input
+                      label="Document Number"
+                      placeholder="Enter document number"
+                      value={upload.documentNumber}
+                      onChange={(e) =>
+                        handleDocumentNumberChange(
+                          upload.documentType,
+                          e.target.value
+                        )
+                      }
+                      disabled={upload.uploaded}
+                    />
+                  )}
+
+                  {!upload.uploaded && (
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        onChange={(e) =>
+                          handleFileChange(
+                            upload.documentType,
+                            e.target.files?.[0] || null
+                          )
+                        }
+                        className="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                      />
+                      {upload.file && (
+                        <Button
+                          type="button"
+                          onClick={() => uploadDocument(upload)}
+                          disabled={upload.uploading}
+                          className="px-4 py-2"
+                        >
+                          {upload.uploading ? "Uploading..." : "Upload"}
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+
+          <Button
+            type="submit"
+            className="w-full py-4 text-base font-medium"
+            disabled={submitting}
+          >
+            {submitting ? "Saving Profile..." : "Save & Continue"}
+          </Button>
+        </form>
+      }
+    />
+  );
 };
 
 export default ProfilePage;

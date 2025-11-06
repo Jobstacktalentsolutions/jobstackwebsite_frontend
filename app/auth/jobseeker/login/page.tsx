@@ -34,15 +34,19 @@ export default function LoginPage() {
       const payload: LoginDto = { email, password };
       await jsLogin(payload);
       toastSuccess("Signed in successfully");
-      router.push("/");
+      router.push("/auth/jobseeker/profile");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Incorrect email or password";
 
       if (/verify\s+your\s+email/i.test(errorMessage)) {
-        try { await jsSendVerificationEmail({ email }); } catch { }
+        try {
+          await jsSendVerificationEmail({ email });
+        } catch {}
         toastInfo("Please verify your email to continue");
-        router.push(`/auth/employer/signUp/verify?email=${encodeURIComponent(email)}`);
+        router.push(
+          `/auth/employer/signUp/verify?email=${encodeURIComponent(email)}`
+        );
         return;
       }
 
@@ -54,66 +58,67 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthPageLayout heading=" Welcome Back!" subtext=" Great to see you again. Pick up right where you left off." message={
-      <div className="flex flex-col justify-center  ">
-
-
-        <div className="max-w-xl mx-auto w-full">
-
-
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <Input
-              label="Email Address"
-              placeholder="Enter email address"
-              iconLeft={<Mail size={16} />}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <PasswordField
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (pwError) setPwError(undefined);
-              }}
-              error={pwError}
-              showHints={false}
-            />
-            <div className=" flex justify-end">
-              <Link href="/auth/jobseeker/forgetPassword">Forgot password?</Link>
-            </div>
-            <Button disabled={submitting} className="w-full my-8 text-medium">
-              {submitting ? "Signing in..." : "Sign in"}
-            </Button>
-
-            <div className="flex items-center gap-2 mb-6">
-              <hr className="flex-grow border-slate-200" />
-              <span className="text-sm text-slate-500">or</span>
-              <hr className="flex-grow border-slate-200" />
-            </div>
-            <div className="flex">
-              <Button variant="outline" className="w-full">
-                Sign in with Google
+    <AuthPageLayout
+      heading=" Welcome Back!"
+      subtext=" Great to see you again. Pick up right where you left off."
+      message={
+        <div className="flex flex-col justify-center  ">
+          <div className="max-w-xl mx-auto w-full">
+            <form className="space-y-4" onSubmit={onSubmit}>
+              <Input
+                label="Email Address"
+                placeholder="Enter email address"
+                iconLeft={<Mail size={16} />}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <PasswordField
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (pwError) setPwError(undefined);
+                }}
+                error={pwError}
+                showHints={false}
+              />
+              <div className=" flex justify-end">
+                <Link href="/auth/jobseeker/forgetPassword">
+                  Forgot password?
+                </Link>
+              </div>
+              <Button disabled={submitting} className="w-full my-8 text-medium">
+                {submitting ? "Signing in..." : "Sign in"}
               </Button>
-              <Button variant="outline" className="w-full ml-4">
-                Sign in with Apple
-              </Button>
-            </div>
 
-            <p className="text-center text-sm text-slate-500">
-              Don’t have an account?{" "}
-              <Link
-                href="/auth/jobseeker/signUp"
-                className="text-blue-600 hover:underline"
-              >
-                Sign up
-              </Link>
-            </p>
-          </form>
+              <div className="flex items-center gap-2 mb-6">
+                <hr className="flex-grow border-slate-200" />
+                <span className="text-sm text-slate-500">or</span>
+                <hr className="flex-grow border-slate-200" />
+              </div>
+              <div className="flex">
+                <Button variant="outline" className="w-full">
+                  Sign in with Google
+                </Button>
+                <Button variant="outline" className="w-full ml-4">
+                  Sign in with Apple
+                </Button>
+              </div>
+
+              <p className="text-center text-sm text-slate-500">
+                Don’t have an account?{" "}
+                <Link
+                  href="/auth/jobseeker/signUp"
+                  className="text-blue-600 hover:underline"
+                >
+                  Sign up
+                </Link>
+              </p>
+            </form>
+          </div>
         </div>
-      </div>
-    } />
-
+      }
+    />
   );
 }

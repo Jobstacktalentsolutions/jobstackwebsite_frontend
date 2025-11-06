@@ -1,244 +1,366 @@
 "use client";
-
 import React, { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import AuthPageLayout from "@/app/components/AuthPageLayout";
 import Input from "@/app/components/input";
 import Button from "@/app/components/button";
+import SkillsSelector, {
+  type SelectedSkill,
+} from "@/app/components/SkillsSelector";
+import {
+  User,
+  MapPin,
+  Phone,
+  Mail,
+  FileText,
+  Briefcase,
+  GraduationCap,
+} from "lucide-react";
+import { toastSuccess, toastError } from "@/app/lib/toast";
 
-type FormValues = {
-  jobTitle: string;
-  preferredLocation: string;
-  jobType: string;
-};
+interface JobseekerProfileData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  location: string;
+  bio: string;
+  experience: string;
+  education: string;
+  skills: SelectedSkill[];
+  cv: File | null;
+}
 
-type FormErrors = Partial<Record<keyof FormValues, string>>;
+const JobseekerProfilePage = () => {
+  const router = useRouter();
+  const cvInputRef = useRef<HTMLInputElement>(null);
 
-const CreateProfilePage: React.FC = () => {
-  const [formValues, setFormValues] = useState<FormValues>({
-    jobTitle: "",
-    preferredLocation: "",
-    jobType: "",
+  // Form state
+  const [profileData, setProfileData] = useState<JobseekerProfileData>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    location: "",
+    bio: "",
+    experience: "",
+    education: "",
+    skills: [],
+    cv: null,
   });
-  const [errors, setErrors] = useState<FormErrors>({});
 
-  // --- file upload state
-  const inputFileRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
+  // UI state
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [cvError, setCvError] = useState<string | null>(null);
+
   const maxFileSizeMB = 10;
-  const acceptedFormats = [".pdf", ".docx", ".png", ".jpeg"];
+  const acceptedCvFormats = [".pdf", ".doc", ".docx"];
 
-  // --- skills tags state
-  const [skillInput, setSkillInput] = useState("");
-  const [skills, setSkills] = useState<string[]>([]);
-
-  const handleChange =
-    (field: keyof FormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormValues((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }));
-      setErrors((prev) => ({
-        ...prev,
-        [field]: undefined,
-      }));
-    };
-
-  const validate = (): boolean => {
-    const newErrors: FormErrors = {};
-    if (!formValues.jobTitle.trim()) {
-      newErrors.jobTitle = "Job title is required";
-    }
-    if (!formValues.preferredLocation.trim()) {
-      newErrors.preferredLocation = "Preferred location is required";
-    }
-    if (!formValues.jobType.trim()) {
-      newErrors.jobType = "Job type is required";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFileError(null);
-    const files = e.target.files;
-    if (files && files[0]) {
-      setSelectedFile(files[0]);
-    }
-  };
-
-  const handleSkillInputKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>
+  const handleInputChange = (
+    field: keyof JobseekerProfileData,
+    value: string
   ) => {
-    const trimmed = skillInput.trim();
-    if ((e.key === "Enter" || e.key === ",") && trimmed.length > 0) {
-      e.preventDefault();
-      // dedupe
-      if (!skills.includes(trimmed)) {
-        setSkills((prev) => [...prev, trimmed]);
-      }
-      setSkillInput("");
-    }
-    if (e.key === "Backspace" && !skillInput && skills.length > 0) {
-      e.preventDefault();
-      const last = skills[skills.length - 1];
-      setSkills((prev) => prev.slice(0, prev.length - 1));
-      setSkillInput(last);
-    }
+    setProfileData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError(null);
   };
 
-  const removeSkill = (idx: number) => {
-    setSkills((prev) => prev.filter((_, i) => i !== idx));
+  const handleSkillsChange = (skills: SelectedSkill[]) => {
+    setProfileData((prev) => ({ ...prev, skills }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFileError(null);
+  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCvError(null);
+    const file = e.target.files?.[0];
 
-    if (!validate()) {
+    if (!file) {
+      setProfileData((prev) => ({ ...prev, cv: null }));
       return;
     }
 
-    // Validate file if selected
-    if (selectedFile) {
-      if (selectedFile.size > maxFileSizeMB * 1024 * 1024) {
-        setFileError(`File size must be no more than ${maxFileSizeMB} MB`);
-        return;
-      }
-      const ext =
-        "." + (selectedFile.name.split(".").pop() || "").toLowerCase();
-      if (!acceptedFormats.includes(ext)) {
-        setFileError(`Only formats allowed: ${acceptedFormats.join(", ")}`);
-        return;
-      }
+    // Validate file size
+    if (file.size > maxFileSizeMB * 1024 * 1024) {
+      setCvError(`CV file size must be no more than ${maxFileSizeMB} MB`);
+      return;
     }
 
-    // Now you have: formValues, selectedFile, skills
-    console.log("Submitting profile setup:", {
-      formValues,
-      selectedFile,
-      skills,
-    });
+    // Validate file format
+    const ext = "." + (file.name.split(".").pop() || "").toLowerCase();
+    if (!acceptedCvFormats.includes(ext)) {
+      setCvError(`Only formats allowed: ${acceptedCvFormats.join(", ")}`);
+      return;
+    }
 
-    // TODO: send formValues, file & skills to your backend API
+    setProfileData((prev) => ({ ...prev, cv: file }));
+  };
+
+  const validateForm = (): boolean => {
+    if (!profileData.firstName.trim()) {
+      setError("First name is required");
+      return false;
+    }
+    if (!profileData.lastName.trim()) {
+      setError("Last name is required");
+      return false;
+    }
+    if (!profileData.email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+    if (!profileData.phoneNumber.trim()) {
+      setError("Phone number is required");
+      return false;
+    }
+    if (!profileData.location.trim()) {
+      setError("Location is required");
+      return false;
+    }
+    if (!profileData.bio.trim()) {
+      setError("Bio is required");
+      return false;
+    }
+    if (profileData.skills.length === 0) {
+      setError("At least one skill is required");
+      return false;
+    }
+    if (!profileData.cv) {
+      setError("CV upload is required");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+
+      // Add profile data
+      formData.append("firstName", profileData.firstName.trim());
+      formData.append("lastName", profileData.lastName.trim());
+      formData.append("email", profileData.email.trim());
+      formData.append("phoneNumber", profileData.phoneNumber.trim());
+      formData.append("location", profileData.location.trim());
+      formData.append("bio", profileData.bio.trim());
+      formData.append("experience", profileData.experience.trim());
+      formData.append("education", profileData.education.trim());
+
+      // Add skills
+      formData.append("skills", JSON.stringify(profileData.skills));
+
+      // Add CV file
+      if (profileData.cv) {
+        formData.append("cv", profileData.cv);
+      }
+
+      // TODO: Replace with actual API call
+      // await updateJobseekerProfile(formData);
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      toastSuccess("Profile completed successfully!");
+      router.push("/dashboard"); // Redirect to main dashboard
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || "Failed to save profile";
+      setError(errorMessage);
+      toastError(errorMessage);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <AuthPageLayout
-      heading="Set up your profile"
-      subtext="Help us match you with the perfect roles. You can always update this later."
+      heading="Complete Your Profile"
+      subtext="Help employers find you by completing your professional profile"
       message={
-        <form className="space-y-6 max-w-md" onSubmit={handleSubmit}>
-          {/* Job Title */}
-          <div>
-            <label
-              htmlFor="jobTitle"
-              className="block text-gray-900 font-medium text-lg mb-1"
-            >
-              Job Title
-            </label>
-            <Input
-              id="jobTitle"
-              placeholder="e.g. Baker, Project Manager, Designer"
-              value={formValues.jobTitle}
-              onChange={handleChange("jobTitle")}
-              error={errors.jobTitle}
-            />
-          </div>
+        <form className="space-y-6 max-w-2xl" onSubmit={handleSubmit}>
+          {/* Personal Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">
+              Personal Information
+            </h3>
 
-          {/* Preferred Location */}
-          <div>
-            <label
-              htmlFor="preferredLocation"
-              className="block text-gray-900 font-medium text-lg mb-1"
-            >
-              Preferred Location(s)
-            </label>
-            <Input
-              id="preferredLocation"
-              placeholder="e.g. Lagos, Abuja, Oyo..."
-              value={formValues.preferredLocation}
-              onChange={handleChange("preferredLocation")}
-              error={errors.preferredLocation}
-            />
-          </div>
-
-          {/* Job Type */}
-          <div>
-            <label
-              htmlFor="jobType"
-              className="block text-gray-900 font-medium text-lg mb-1"
-            >
-              Job Type
-            </label>
-            <Input
-              id="jobType"
-              placeholder="e.g. Full-time, Part-time, Contract"
-              value={formValues.jobType}
-              onChange={handleChange("jobType")}
-              error={errors.jobType}
-            />
-          </div>
-
-          {/* Upload your CV */}
-          <div>
-            <label className="block text-gray-900 font-medium text-lg mb-1">
-              Upload your CV (optional, but highly encouraged)
-            </label>
-            <input
-              ref={inputFileRef}
-              type="file"
-              accept={acceptedFormats.join(",")}
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-black file:text-white hover:file:bg-gray-600"
-            />
-            {selectedFile && (
-              <p className="mt-2 text-gray-500 text-sm">
-                Selected file: {selectedFile.name}
-              </p>
-            )}
-            {fileError && (
-              <p className="text-red-600 mt-2 text-sm">{fileError}</p>
-            )}
-          </div>
-
-          {/* Skills */}
-          <div>
-            <label className="block text-gray-900 font-medium text-lg mb-1">
-              Skills
-            </label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {skills.map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm"
-                >
-                  {skill}
-                  <button
-                    type="button"
-                    className="ml-2 text-blue-600 hover:text-blue-800"
-                    onClick={() => removeSkill(idx)}
-                  >
-                    &times;
-                  </button>
-                </span>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="First Name"
+                placeholder="Enter your first name"
+                iconLeft={<User size={16} />}
+                value={profileData.firstName}
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
+                required
+              />
+              <Input
+                label="Last Name"
+                placeholder="Enter your last name"
+                iconLeft={<User size={16} />}
+                value={profileData.lastName}
+                onChange={(e) => handleInputChange("lastName", e.target.value)}
+                required
+              />
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Email Address"
+                placeholder="your.email@example.com"
+                iconLeft={<Mail size={16} />}
+                type="email"
+                value={profileData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                required
+              />
+              <Input
+                label="Phone Number"
+                placeholder="+234 800 000 0000"
+                iconLeft={<Phone size={16} />}
+                value={profileData.phoneNumber}
+                onChange={(e) =>
+                  handleInputChange("phoneNumber", e.target.value)
+                }
+                required
+              />
+            </div>
+
             <Input
-              placeholder="Fill in key skills manually ."
-              className="block w-full border border-gray-300 rounded-md px-4 py-4 text-sm"
-              value={skillInput}
-              onChange={(e) => setSkillInput(e.target.value)}
-              onKeyDown={handleSkillInputKeyDown}
+              label="Location"
+              placeholder="City, State, Country"
+              iconLeft={<MapPin size={16} />}
+              value={profileData.location}
+              onChange={(e) => handleInputChange("location", e.target.value)}
+              required
             />
-            <sub className="text-gray-500">
-              After each skill add a comma(,) e.g time management,
-            </sub>
           </div>
 
-          {/* Submit Button */}
-          <Button type="submit" className="w-full py-4 text-base font-medium">
-            Continue
+          {/* Professional Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">
+              Professional Information
+            </h3>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Professional Bio <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                placeholder="Tell us about yourself, your career goals, and what makes you unique..."
+                value={profileData.bio}
+                onChange={(e) => handleInputChange("bio", e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Work Experience
+              </label>
+              <textarea
+                placeholder="Describe your work experience, previous roles, and achievements..."
+                value={profileData.experience}
+                onChange={(e) =>
+                  handleInputChange("experience", e.target.value)
+                }
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Education
+              </label>
+              <textarea
+                placeholder="Your educational background, degrees, certifications..."
+                value={profileData.education}
+                onChange={(e) => handleInputChange("education", e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+              />
+            </div>
+          </div>
+
+          {/* Skills Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">
+              Skills & Expertise
+            </h3>
+            <SkillsSelector
+              selectedSkills={profileData.skills}
+              onSkillsChange={handleSkillsChange}
+              maxSkills={15}
+              showProficiency={true}
+              showExperience={true}
+            />
+          </div>
+
+          {/* CV Upload */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">
+              CV/Resume Upload
+            </h3>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+              <div className="text-center">
+                <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="mt-4">
+                  <label htmlFor="cv-upload" className="cursor-pointer">
+                    <span className="mt-2 block text-sm font-medium text-gray-900">
+                      Upload your CV/Resume
+                    </span>
+                    <span className="mt-1 block text-sm text-gray-500">
+                      PDF, DOC, or DOCX up to {maxFileSizeMB}MB
+                    </span>
+                  </label>
+                  <input
+                    id="cv-upload"
+                    ref={cvInputRef}
+                    type="file"
+                    accept={acceptedCvFormats.join(",")}
+                    onChange={handleCvChange}
+                    className="sr-only"
+                  />
+                </div>
+                <div className="mt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => cvInputRef.current?.click()}
+                  >
+                    Choose File
+                  </Button>
+                </div>
+                {profileData.cv && (
+                  <div className="mt-2 text-sm text-green-600">
+                    ✓ {profileData.cv.name}
+                  </div>
+                )}
+                {cvError && (
+                  <div className="mt-2 text-sm text-red-600">{cvError}</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+
+          <Button
+            type="submit"
+            className="w-full py-4 text-base font-medium"
+            disabled={submitting}
+          >
+            {submitting ? "Saving Profile..." : "Complete Profile"}
           </Button>
         </form>
       }
@@ -246,4 +368,4 @@ const CreateProfilePage: React.FC = () => {
   );
 };
 
-export default CreateProfilePage;
+export default JobseekerProfilePage;
