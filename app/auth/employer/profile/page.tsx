@@ -6,6 +6,8 @@ import Input from "@/app/components/input";
 import Button from "@/app/components/button";
 import { Building2, MapPin, Globe, Users } from "lucide-react";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
+import statesAndCities from "@/app/lib/states-and-cities.json";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
 import {
   getMyProfile,
   updateVerificationInfo,
@@ -36,7 +38,8 @@ const ProfilePage = () => {
   // Form state
   const [companyName, setCompanyName] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
-  const [businessAddress, setBusinessAddress] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
   const [companySize, setCompanySize] = useState("");
   const [socialOrWebsiteUrl, setSocialOrWebsiteUrl] = useState("");
 
@@ -76,7 +79,8 @@ const ProfilePage = () => {
         setVerification(verificationData);
         setCompanyName(verificationData.companyName || "");
         setCompanyAddress(verificationData.companyAddress || "");
-        setBusinessAddress(verificationData.businessAddress || "");
+        setState(verificationData.state || "");
+        setCity(verificationData.city || "");
         setCompanySize(verificationData.companySize || "");
         setSocialOrWebsiteUrl(verificationData.socialOrWebsiteUrl || "");
       }
@@ -204,7 +208,8 @@ const ProfilePage = () => {
       const verificationDto: UpdateVerificationInfoDto = {
         companyName: companyName.trim(),
         companyAddress: companyAddress.trim(),
-        businessAddress: businessAddress.trim(),
+        state: state.trim(),
+        city: city.trim(),
         companySize: companySize.trim(),
         socialOrWebsiteUrl: socialOrWebsiteUrl.trim(),
       };
@@ -259,6 +264,30 @@ const ProfilePage = () => {
     ].includes(docType);
   };
 
+  // Prepare state options
+  const stateOptions = statesAndCities.map((stateData) => ({
+    value: stateData.name,
+    label: stateData.name,
+  }));
+
+  // Prepare city options based on selected state
+  const cityOptions =
+    statesAndCities
+      .find((s) => s.name === state)
+      ?.cities.map((cityName) => ({
+        value: cityName,
+        label: cityName,
+      })) || [];
+
+  // Company size options
+  const companySizeOptions = [
+    { value: "1-10", label: "1-10 employees" },
+    { value: "10-50", label: "10-50 employees" },
+    { value: "50-100", label: "50-100 employees" },
+    { value: "100-500", label: "100-500 employees" },
+    { value: "500+", label: "500+ employees" },
+  ];
+
   if (loading) {
     return (
       <AuthPageLayout
@@ -304,31 +333,54 @@ const ProfilePage = () => {
               onChange={(e) => setCompanyName(e.target.value)}
               required
             />
-            <Input
+            <SearchableSelect
               label="Company Size"
-              placeholder="e.g., 1-10, 11-50, 51-200"
-              iconLeft={<Users size={16} />}
+              options={companySizeOptions}
               value={companySize}
-              onChange={(e) => setCompanySize(e.target.value)}
+              onChange={setCompanySize}
+              placeholder="Select company size..."
+              icon={<Users size={16} />}
             />
           </div>
 
           <Input
-            label="Company Address"
-            placeholder="Enter company address"
+            label="Business Address"
+            placeholder="Enter street address"
             iconLeft={<MapPin size={16} />}
             value={companyAddress}
             onChange={(e) => setCompanyAddress(e.target.value)}
             required
           />
 
-          <Input
-            label="Business Address (if different)"
-            placeholder="Enter business address"
-            iconLeft={<MapPin size={16} />}
-            value={businessAddress}
-            onChange={(e) => setBusinessAddress(e.target.value)}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SearchableSelect
+              label="State"
+              options={stateOptions}
+              value={state}
+              onChange={(value) => {
+                setState(value);
+                setCity(""); // Reset city when state changes
+              }}
+              placeholder="Search and select state..."
+              required
+              icon={<MapPin size={16} />}
+              emptyMessage="No state found."
+            />
+
+            <SearchableSelect
+              label="City/LGA"
+              options={cityOptions}
+              value={city}
+              onChange={setCity}
+              placeholder={
+                state ? "Search and select city/LGA..." : "Select state first"
+              }
+              required
+              disabled={!state}
+              icon={<MapPin size={16} />}
+              emptyMessage="No city/LGA found."
+            />
+          </div>
 
           <Input
             label="Website or Social Media URL"
