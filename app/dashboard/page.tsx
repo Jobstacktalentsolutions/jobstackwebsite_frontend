@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+// This page is protected by middleware.ts
+// No need for client-side protection wrapper
 export default function DashboardPage() {
   const router = useRouter();
 

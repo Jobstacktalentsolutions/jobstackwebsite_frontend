@@ -31,9 +31,17 @@ interface JobseekerProfileData {
   cv: File | null;
 }
 
+import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
+
 const JobseekerProfilePage = () => {
   const router = useRouter();
   const cvInputRef = useRef<HTMLInputElement>(null);
+
+  // Check authentication - will redirect if not authenticated
+  const { isLoading: authLoading } = useProtectedRoute({
+    allowedRoles: ["JOB_SEEKER"],
+    redirectTo: "/auth/jobseeker/login",
+  });
 
   // Form state
   const [profileData, setProfileData] = useState<JobseekerProfileData>({
@@ -179,6 +187,21 @@ const JobseekerProfilePage = () => {
       setSubmitting(false);
     }
   };
+
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <AuthPageLayout
+        heading="Loading..."
+        subtext="Please wait while we verify your access"
+        message={
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        }
+      />
+    );
+  }
 
   return (
     <AuthPageLayout
@@ -368,4 +391,6 @@ const JobseekerProfilePage = () => {
   );
 };
 
+// This page is protected by middleware.ts
+// No need for client-side protection wrapper
 export default JobseekerProfilePage;

@@ -68,6 +68,7 @@ const ProfilePage = () => {
       setLoading(true);
 
       // First, get the user's profile to determine their recruiter type
+      // If this fails with 401, user is not authenticated
       const profile = await getMyProfile();
       if (profile?.type) {
         setRecruiterType(profile.type);
@@ -87,8 +88,17 @@ const ProfilePage = () => {
 
       // Load document requirements
       await loadDocumentRequirements();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load verification data:", err);
+
+      // Check if it's an authentication error (401 or 403)
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        // User is not authenticated, redirect to login
+        toastError("Please login to access this page");
+        router.push("/auth/employer/login");
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -490,4 +500,6 @@ const ProfilePage = () => {
   );
 };
 
+// This page is protected by middleware.ts
+// No need for client-side protection wrapper
 export default ProfilePage;
