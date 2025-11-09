@@ -47,12 +47,9 @@ export enum RecruiterDocumentType {
   CORPORATE_ACCOUNT_DETAILS = "CORPORATE_ACCOUNT_DETAILS",
 }
 
-// Verification Status
-export enum VerificationStatus {
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  REJECTED = "REJECTED",
-}
+// Re-export enums from centralized location
+import { VerificationStatus } from "@/app/lib/enums";
+export { VerificationStatus };
 
 // Document Requirement Interface
 export interface DocumentRequirement {

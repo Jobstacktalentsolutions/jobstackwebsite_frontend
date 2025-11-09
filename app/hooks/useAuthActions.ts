@@ -7,17 +7,6 @@ import type { JobSeekerRegistrationDto } from "@/app/types/jobseeker.type";
 export function useAuthActions() {
   const { login, logout } = useAuth();
 
-  // Get token from cookies instead of context
-  const getToken = () => {
-    if (typeof window !== "undefined") {
-      return document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("jobstack_access_token="))
-        ?.split("=")[1];
-    }
-    return null;
-  };
-
   const loginRecruiter = async (dto: LoginDto) => {
     const authResult = await AuthService.loginRecruiter(dto);
     login(authResult);

@@ -4,6 +4,7 @@
 
 import { httpClient } from "@/app/api/http-client";
 import { ResponseDto } from "@/app/types/response.type";
+import { ApprovalStatus, VerificationStatus } from "@/app/lib/enums";
 
 export interface JobSeekerProfile {
   id: string;
@@ -13,7 +14,7 @@ export interface JobSeekerProfile {
   phoneNumber: string;
   cvUrl?: string;
   cvDocumentId?: string;
-  approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
+  approvalStatus: ApprovalStatus;
   skills?: Array<{ id: string; name: string }>;
   userSkills?: Array<{
     id: string;
@@ -30,6 +31,8 @@ export interface JobSeekerProfile {
   location?: string;
   preferredLocation?: string;
   address?: string;
+  state?: string;
+  city?: string;
   jobTitle?: string;
   yearsOfExperience?: number;
 }
@@ -51,7 +54,7 @@ export interface RecruiterProfile {
 export interface RecruiterVerification {
   id: string;
   recruiterId: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
+  status: VerificationStatus;
   companyRegistrationNumber?: string;
   taxIdentificationNumber?: string;
   businessAddress?: string;
@@ -103,10 +106,12 @@ export function isRecruiterProfileComplete(
  * Fetch job seeker profile from API
  */
 export async function fetchJobSeekerProfile(): Promise<JobSeekerProfile> {
-  const { data } = await httpClient.get<
-    ResponseDto<{ profile: JobSeekerProfile }>
-  >("/user/jobseeker/me");
-  return data.data.profile;
+  const { data } = await httpClient.get<ResponseDto<JobSeekerProfile>>(
+    "/user/jobseeker/me"
+  );
+
+  console.log("data", data);
+  return data.data;
 }
 
 /**
@@ -143,14 +148,22 @@ export async function checkJobSeekerProfileCompletion(): Promise<
   try {
     const profile = await fetchJobSeekerProfile();
 
-    if (!isJobSeekerProfileComplete(profile)) {
+    // Only redirect to onboarding if status is NOT_STARTED
+    if (profile.approvalStatus === ApprovalStatus.NOT_STARTED) {
       return "/auth/jobseeker/profile";
+    }
+
+    // If profile is incomplete but status is not NOT_STARTED, don't redirect
+    // (they've already started onboarding)
+    if (!isJobSeekerProfileComplete(profile)) {
+      return null;
     }
 
     return null;
   } catch (error) {
     console.error("Error checking job seeker profile:", error);
-    return null;
+    // On error, redirect to profile page to be safe
+    return "/auth/jobseeker/profile";
   }
 }
 
@@ -165,27 +178,22 @@ export async function checkRecruiterProfileCompletion(): Promise<
     // Use verification from profile instead of separate fetch
     const verification = profile.verification || null;
 
-    // If verification is null, redirect to onboarding (not started)
-    if (!verification) {
+    // If verification is null or status is NOT_STARTED, redirect to onboarding
+    if (
+      !verification ||
+      verification.status === VerificationStatus.NOT_STARTED
+    ) {
       return "/auth/employer/profile";
     }
 
-    // If verification status is not APPROVED, redirect to onboarding
-    // (PENDING or REJECTED means they're still in onboarding)
-    if (verification.status !== "APPROVED") {
-      return "/auth/employer/profile";
-    }
+    // If status is PENDING, APPROVED, or REJECTED, don't redirect
+    // (they've already started onboarding or completed it)
+    // Only redirect if status is NOT_STARTED
 
-    // If verification is APPROVED but profile is incomplete, redirect
-    if (!isRecruiterProfileComplete(profile, verification)) {
-      return "/auth/employer/profile";
-    }
-
-    // Profile is complete and verified
     return null;
   } catch (error) {
     console.error("Error checking recruiter profile:", error);
-    // On error, redirect to profile page to be safe
-    return "/auth/employer/profile";
+    // On error, don't redirect - let them access the dashboard
+    return null;
   }
 }

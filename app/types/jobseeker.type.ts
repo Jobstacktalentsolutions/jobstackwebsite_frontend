@@ -1,4 +1,13 @@
-import type { LoginDto, RefreshTokenDto, EmailVerificationConfirmDto, EmailVerificationRequestDto, PasswordResetConfirmCodeDto, PasswordResetDto, PasswordResetRequestDto, AuthResult } from "./auth.type";
+import type {
+  LoginDto,
+  RefreshTokenDto,
+  EmailVerificationConfirmDto,
+  EmailVerificationRequestDto,
+  PasswordResetConfirmCodeDto,
+  PasswordResetDto,
+  PasswordResetRequestDto,
+  AuthResult,
+} from "./auth.type";
 
 export interface JobSeekerRegistrationDto {
   email: string;
@@ -13,4 +22,15 @@ export type JobSeekerRegisterResponse = {
   data: AuthResult;
 };
 
-export type { LoginDto, RefreshTokenDto, EmailVerificationConfirmDto, EmailVerificationRequestDto, PasswordResetConfirmCodeDto, PasswordResetDto, PasswordResetRequestDto };
+// Re-export enums from centralized location
+export { ApprovalStatus } from "@/app/lib/enums";
+
+export type {
+  LoginDto,
+  RefreshTokenDto,
+  EmailVerificationConfirmDto,
+  EmailVerificationRequestDto,
+  PasswordResetConfirmCodeDto,
+  PasswordResetDto,
+  PasswordResetRequestDto,
+};

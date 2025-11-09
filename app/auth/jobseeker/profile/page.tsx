@@ -7,34 +7,25 @@ import Button from "@/app/components/button";
 import SkillsSelector, {
   type SelectedSkill,
 } from "@/app/components/SkillsSelector";
-import {
-  User,
-  MapPin,
-  Phone,
-  Mail,
-  FileText,
-  Briefcase,
-  GraduationCap,
-  Download,
-  X,
-} from "lucide-react";
+import { User, MapPin, Phone, FileText, Download, X } from "lucide-react";
 import { toastSuccess, toastError } from "@/app/lib/toast";
+import { useProfile } from "@/app/lib/auth-context";
 import {
-  fetchJobSeekerProfile,
-  type JobSeekerProfile,
-} from "@/app/lib/profile-completion";
+  jsGetCvDocument,
+  jsUpdateProfile,
+  jsUploadCv,
+} from "@/app/api/auth-jobseeker.api";
+import statesAndCities from "@/app/lib/states-and-cities.json";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
 import Loading from "@/app/loading";
-import { jsGetCvDocument } from "@/app/api/auth-jobseeker.api";
 
 interface JobseekerProfileData {
   firstName: string;
   lastName: string;
-  email: string;
   phoneNumber: string;
-  location: string;
+  state: string;
+  city: string;
   bio: string;
-  experience: string;
-  education: string;
   skills: SelectedSkill[];
   cv: File | null;
 }
@@ -61,74 +52,79 @@ const JobseekerProfilePage = () => {
   const [profileData, setProfileData] = useState<JobseekerProfileData>({
     firstName: "",
     lastName: "",
-    email: "",
     phoneNumber: "",
-    location: "",
+    state: "",
+    city: "",
     bio: "",
-    experience: "",
-    education: "",
     skills: [],
     cv: null,
   });
+
+  // Get profile from auth context (already loaded)
+  const { profile, refreshProfile } = useProfile();
 
   // UI state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cvError, setCvError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [existingCv, setExistingCv] = useState<ExistingCvInfo | null>(null);
 
   const maxFileSizeMB = 10;
   const acceptedCvFormats = [".pdf", ".doc", ".docx"];
 
-  // Load existing profile data on mount
+  // Prepare state options
+  const stateOptions = statesAndCities.map((stateData) => ({
+    value: stateData.name,
+    label: stateData.name,
+  }));
+
+  // Prepare city options based on selected state
+  const cityOptions =
+    statesAndCities
+      .find((s) => s.name === profileData.state)
+      ?.cities.map((cityName) => ({
+        value: cityName,
+        label: cityName,
+      })) || [];
+
+  // Prefill form fields from profile in context when profile is available
   useEffect(() => {
-    loadProfileData();
-  }, []);
+    const jobSeekerProfile = profile?.jobSeeker;
 
-  // Load existing profile data and prefill fields
-  const loadProfileData = async () => {
-    try {
-      setLoading(true);
-      const profile = await fetchJobSeekerProfile();
-
-      if (profile) {
-        // Prefill form fields
-        setProfileData((prev) => ({
-          ...prev,
-          firstName: profile.firstName || "",
-          lastName: profile.lastName || "",
-          email: profile.email || "",
-          phoneNumber: profile.phoneNumber || "",
-          location:
-            profile.location ||
-            profile.preferredLocation ||
-            profile.address ||
-            "",
-          bio: profile.bio || profile.brief || "",
-          // Map skills from profile to SelectedSkill format
-          skills: profile.userSkills
-            ? profile.userSkills.map((userSkill: any) => {
-                const skill = userSkill.skill || userSkill;
-                return {
-                  id: skill.id,
-                  name: skill.name,
-                  proficiency: userSkill.proficiency,
-                  yearsExperience: userSkill.yearsExperience,
-                };
-              })
-            : profile.skills
-            ? profile.skills.map((skill: any) => ({
+    if (jobSeekerProfile) {
+      // Prefill all form fields from the profile in context
+      // This ensures users can complete remaining fields if they've filled part before
+      setProfileData((prev) => ({
+        ...prev,
+        firstName: jobSeekerProfile.firstName || prev.firstName || "",
+        lastName: jobSeekerProfile.lastName || prev.lastName || "",
+        phoneNumber: jobSeekerProfile.phoneNumber || prev.phoneNumber || "",
+        state: jobSeekerProfile.state || prev.state || "",
+        city: jobSeekerProfile.city || prev.city || "",
+        bio: jobSeekerProfile.bio || jobSeekerProfile.brief || prev.bio || "",
+        // Map skills from profile to SelectedSkill format
+        skills: jobSeekerProfile.userSkills
+          ? jobSeekerProfile.userSkills.map((userSkill: any) => {
+              const skill = userSkill.skill || userSkill;
+              return {
                 id: skill.id,
                 name: skill.name,
-              }))
-            : [],
-        }));
+                proficiency: userSkill.proficiency,
+                yearsExperience: userSkill.yearsExperience,
+              };
+            })
+          : jobSeekerProfile.skills
+          ? jobSeekerProfile.skills.map((skill: any) => ({
+              id: skill.id,
+              name: skill.name,
+            }))
+          : prev.skills || [],
+      }));
 
-        // Try to load existing CV if cvUrl exists
-        if (profile.cvUrl || profile.cvDocumentId) {
-          try {
-            const cvData = await jsGetCvDocument();
+      // Load existing CV if cvDocumentId exists
+      if (jobSeekerProfile.cvDocumentId) {
+        jsGetCvDocument()
+          .then((cvData) => {
             if (cvData?.document) {
               setExistingCv({
                 fileName:
@@ -137,22 +133,14 @@ const JobseekerProfilePage = () => {
                 documentId: cvData.document.id,
               });
             }
-          } catch (cvErr) {
+          })
+          .catch((cvErr) => {
             // CV might not exist or might be in different format, that's okay
             console.log("No existing CV found or error loading CV:", cvErr);
-          }
-        }
+          });
       }
-    } catch (err: any) {
-      console.error("Failed to load profile data:", err);
-      // Don't show error if it's just that profile doesn't exist yet
-      if (err?.response?.status !== 404) {
-        toastError("Failed to load profile data");
-      }
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [profile?.jobSeeker]);
 
   const handleInputChange = (
     field: keyof JobseekerProfileData,
@@ -211,16 +199,16 @@ const JobseekerProfilePage = () => {
       setError("Last name is required");
       return false;
     }
-    if (!profileData.email.trim()) {
-      setError("Email is required");
-      return false;
-    }
     if (!profileData.phoneNumber.trim()) {
       setError("Phone number is required");
       return false;
     }
-    if (!profileData.location.trim()) {
-      setError("Location is required");
+    if (!profileData.state.trim()) {
+      setError("State is required");
+      return false;
+    }
+    if (!profileData.city.trim()) {
+      setError("City/LGA is required");
       return false;
     }
     if (!profileData.bio.trim()) {
@@ -250,32 +238,26 @@ const JobseekerProfilePage = () => {
     setSubmitting(true);
 
     try {
-      // Create FormData for file upload
-      const formData = new FormData();
+      // Extract skill IDs from selected skills
+      const skillIds = profileData.skills.map((skill) => skill.id);
 
-      // Add profile data
-      formData.append("firstName", profileData.firstName.trim());
-      formData.append("lastName", profileData.lastName.trim());
-      formData.append("email", profileData.email.trim());
-      formData.append("phoneNumber", profileData.phoneNumber.trim());
-      formData.append("location", profileData.location.trim());
-      formData.append("bio", profileData.bio.trim());
-      formData.append("experience", profileData.experience.trim());
-      formData.append("education", profileData.education.trim());
+      // Update profile data
+      await jsUpdateProfile({
+        firstName: profileData.firstName.trim(),
+        lastName: profileData.lastName.trim(),
+        brief: profileData.bio.trim(),
+        state: profileData.state.trim(),
+        city: profileData.city.trim(),
+        skillIds: skillIds,
+      });
 
-      // Add skills
-      formData.append("skills", JSON.stringify(profileData.skills));
-
-      // Add CV file
+      // Upload CV if a new file is selected
       if (profileData.cv) {
-        formData.append("cv", profileData.cv);
+        await jsUploadCv(profileData.cv);
       }
 
-      // TODO: Replace with actual API call
-      // await updateJobseekerProfile(formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Refresh profile to get updated data
+      await refreshProfile();
 
       toastSuccess("Profile completed successfully!");
       router.push("/dashboard"); // Redirect to main dashboard
@@ -289,8 +271,8 @@ const JobseekerProfilePage = () => {
     }
   };
 
-  // Show loading while checking authentication or loading profile data
-  if (authLoading || loading) {
+  // Show loading while checking authentication
+  if (authLoading) {
     return (
       <Loading />
     );
@@ -327,36 +309,51 @@ const JobseekerProfilePage = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Email Address"
-                placeholder="your.email@example.com"
-                iconLeft={<Mail size={16} />}
-                type="email"
-                value={profileData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                required
-              />
-              <Input
-                label="Phone Number"
-                placeholder="+234 800 000 0000"
-                iconLeft={<Phone size={16} />}
-                value={profileData.phoneNumber}
-                onChange={(e) =>
-                  handleInputChange("phoneNumber", e.target.value)
-                }
-                required
-              />
-            </div>
-
             <Input
-              label="Location"
-              placeholder="City, State, Country"
-              iconLeft={<MapPin size={16} />}
-              value={profileData.location}
-              onChange={(e) => handleInputChange("location", e.target.value)}
+              label="Phone Number"
+              placeholder="+234 800 000 0000"
+              iconLeft={<Phone size={16} />}
+              value={profileData.phoneNumber}
+              onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
               required
             />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SearchableSelect
+                label="State"
+                options={stateOptions}
+                value={profileData.state}
+                onChange={(value) => {
+                  setProfileData((prev) => ({
+                    ...prev,
+                    state: value,
+                    city: "",
+                  }));
+                }}
+                placeholder="Search and select state..."
+                required
+                icon={<MapPin size={16} />}
+                emptyMessage="No state found."
+              />
+
+              <SearchableSelect
+                label="City/LGA"
+                options={cityOptions}
+                value={profileData.city}
+                onChange={(value) => {
+                  setProfileData((prev) => ({ ...prev, city: value }));
+                }}
+                placeholder={
+                  profileData.state
+                    ? "Search and select city/LGA..."
+                    : "Select state first"
+                }
+                required
+                disabled={!profileData.state}
+                icon={<MapPin size={16} />}
+                emptyMessage="No city/LGA found."
+              />
+            </div>
           </div>
 
           {/* Professional Information */}
@@ -376,34 +373,6 @@ const JobseekerProfilePage = () => {
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
                 required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Work Experience
-              </label>
-              <textarea
-                placeholder="Describe your work experience, previous roles, and achievements..."
-                value={profileData.experience}
-                onChange={(e) =>
-                  handleInputChange("experience", e.target.value)
-                }
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Education
-              </label>
-              <textarea
-                placeholder="Your educational background, degrees, certifications..."
-                value={profileData.education}
-                onChange={(e) => handleInputChange("education", e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
               />
             </div>
           </div>
