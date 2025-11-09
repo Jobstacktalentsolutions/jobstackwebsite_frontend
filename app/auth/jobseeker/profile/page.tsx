@@ -7,33 +7,24 @@ import Button from "@/app/components/button";
 import SkillsSelector, {
   type SelectedSkill,
 } from "@/app/components/SkillsSelector";
-import {
-  User,
-  MapPin,
-  Phone,
-  Mail,
-  FileText,
-  Briefcase,
-  GraduationCap,
-  Download,
-  X,
-} from "lucide-react";
+import { User, MapPin, Phone, FileText, Download, X } from "lucide-react";
 import { toastSuccess, toastError } from "@/app/lib/toast";
 import { useProfile } from "@/app/lib/auth-context";
-import { jsGetCvDocument } from "@/app/api/auth-jobseeker.api";
+import {
+  jsGetCvDocument,
+  jsUpdateProfile,
+  jsUploadCv,
+} from "@/app/api/auth-jobseeker.api";
 import statesAndCities from "@/app/lib/states-and-cities.json";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 
 interface JobseekerProfileData {
   firstName: string;
   lastName: string;
-  email: string;
   phoneNumber: string;
   state: string;
   city: string;
   bio: string;
-  experience: string;
-  education: string;
   skills: SelectedSkill[];
   cv: File | null;
 }
@@ -60,19 +51,16 @@ const JobseekerProfilePage = () => {
   const [profileData, setProfileData] = useState<JobseekerProfileData>({
     firstName: "",
     lastName: "",
-    email: "",
     phoneNumber: "",
     state: "",
     city: "",
     bio: "",
-    experience: "",
-    education: "",
     skills: [],
     cv: null,
   });
 
   // Get profile from auth context (already loaded)
-  const { profile } = useProfile();
+  const { profile, refreshProfile } = useProfile();
 
   // UI state
   const [submitting, setSubmitting] = useState(false);
@@ -109,15 +97,10 @@ const JobseekerProfilePage = () => {
         ...prev,
         firstName: jobSeekerProfile.firstName || prev.firstName || "",
         lastName: jobSeekerProfile.lastName || prev.lastName || "",
-        email: jobSeekerProfile.email || prev.email || "",
         phoneNumber: jobSeekerProfile.phoneNumber || prev.phoneNumber || "",
         state: jobSeekerProfile.state || prev.state || "",
         city: jobSeekerProfile.city || prev.city || "",
         bio: jobSeekerProfile.bio || jobSeekerProfile.brief || prev.bio || "",
-        // Note: experience and education fields don't have corresponding backend fields yet
-        // They will remain empty or use previous values if user has started filling them
-        experience: prev.experience || "",
-        education: prev.education || "",
         // Map skills from profile to SelectedSkill format
         skills: jobSeekerProfile.userSkills
           ? jobSeekerProfile.userSkills.map((userSkill: any) => {
@@ -137,8 +120,8 @@ const JobseekerProfilePage = () => {
           : prev.skills || [],
       }));
 
-      // Try to load existing CV if cvUrl or cvDocumentId exists
-      if (jobSeekerProfile.cvUrl || jobSeekerProfile.cvDocumentId) {
+      // Load existing CV if cvDocumentId exists
+      if (jobSeekerProfile.cvDocumentId) {
         jsGetCvDocument()
           .then((cvData) => {
             if (cvData?.document) {
@@ -215,10 +198,6 @@ const JobseekerProfilePage = () => {
       setError("Last name is required");
       return false;
     }
-    if (!profileData.email.trim()) {
-      setError("Email is required");
-      return false;
-    }
     if (!profileData.phoneNumber.trim()) {
       setError("Phone number is required");
       return false;
@@ -258,33 +237,26 @@ const JobseekerProfilePage = () => {
     setSubmitting(true);
 
     try {
-      // Create FormData for file upload
-      const formData = new FormData();
+      // Extract skill IDs from selected skills
+      const skillIds = profileData.skills.map((skill) => skill.id);
 
-      // Add profile data
-      formData.append("firstName", profileData.firstName.trim());
-      formData.append("lastName", profileData.lastName.trim());
-      formData.append("email", profileData.email.trim());
-      formData.append("phoneNumber", profileData.phoneNumber.trim());
-      formData.append("state", profileData.state.trim());
-      formData.append("city", profileData.city.trim());
-      formData.append("bio", profileData.bio.trim());
-      formData.append("experience", profileData.experience.trim());
-      formData.append("education", profileData.education.trim());
+      // Update profile data
+      await jsUpdateProfile({
+        firstName: profileData.firstName.trim(),
+        lastName: profileData.lastName.trim(),
+        brief: profileData.bio.trim(),
+        state: profileData.state.trim(),
+        city: profileData.city.trim(),
+        skillIds: skillIds,
+      });
 
-      // Add skills
-      formData.append("skills", JSON.stringify(profileData.skills));
-
-      // Add CV file
+      // Upload CV if a new file is selected
       if (profileData.cv) {
-        formData.append("cv", profileData.cv);
+        await jsUploadCv(profileData.cv);
       }
 
-      // TODO: Replace with actual API call
-      // await updateJobseekerProfile(formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Refresh profile to get updated data
+      await refreshProfile();
 
       toastSuccess("Profile completed successfully!");
       router.push("/dashboard"); // Redirect to main dashboard
@@ -344,27 +316,14 @@ const JobseekerProfilePage = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Email Address"
-                placeholder="your.email@example.com"
-                iconLeft={<Mail size={16} />}
-                type="email"
-                value={profileData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                required
-              />
-              <Input
-                label="Phone Number"
-                placeholder="+234 800 000 0000"
-                iconLeft={<Phone size={16} />}
-                value={profileData.phoneNumber}
-                onChange={(e) =>
-                  handleInputChange("phoneNumber", e.target.value)
-                }
-                required
-              />
-            </div>
+            <Input
+              label="Phone Number"
+              placeholder="+234 800 000 0000"
+              iconLeft={<Phone size={16} />}
+              value={profileData.phoneNumber}
+              onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+              required
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <SearchableSelect
@@ -421,34 +380,6 @@ const JobseekerProfilePage = () => {
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
                 required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Work Experience
-              </label>
-              <textarea
-                placeholder="Describe your work experience, previous roles, and achievements..."
-                value={profileData.experience}
-                onChange={(e) =>
-                  handleInputChange("experience", e.target.value)
-                }
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Education
-              </label>
-              <textarea
-                placeholder="Your educational background, degrees, certifications..."
-                value={profileData.education}
-                onChange={(e) => handleInputChange("education", e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
               />
             </div>
           </div>

@@ -104,6 +104,38 @@ export async function jsGetCvDocument() {
   return data;
 }
 
+// Update jobseeker profile
+export async function jsUpdateProfile(updateData: {
+  firstName?: string;
+  lastName?: string;
+  brief?: string;
+  state?: string;
+  city?: string;
+  skillIds?: string[];
+}) {
+  const { data } = await httpClient.put<{
+    success: boolean;
+    profile: any;
+  }>("/user/jobseeker/profile", updateData);
+  return data;
+}
+
+// Upload jobseeker CV
+export async function jsUploadCv(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const { data } = await httpClient.post<{
+    success: boolean;
+    cvUrl: string;
+    documentId: string;
+  }>("/user/jobseeker/profile/cv", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return data;
+}
+
 export default {
   jsRegister,
   jsLogin,
@@ -115,4 +147,6 @@ export default {
   jsConfirmPasswordResetCode,
   jsResetPassword,
   jsGetCvDocument,
+  jsUpdateProfile,
+  jsUploadCv,
 };
