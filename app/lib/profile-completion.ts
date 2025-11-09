@@ -31,6 +31,8 @@ export interface JobSeekerProfile {
   location?: string;
   preferredLocation?: string;
   address?: string;
+  state?: string;
+  city?: string;
   jobTitle?: string;
   yearsOfExperience?: number;
 }
@@ -104,10 +106,12 @@ export function isRecruiterProfileComplete(
  * Fetch job seeker profile from API
  */
 export async function fetchJobSeekerProfile(): Promise<JobSeekerProfile> {
-  const { data } = await httpClient.get<
-    ResponseDto<{ profile: JobSeekerProfile }>
-  >("/user/jobseeker/me");
-  return data.data.profile;
+  const { data } = await httpClient.get<ResponseDto<JobSeekerProfile>>(
+    "/user/jobseeker/me"
+  );
+
+  console.log("data", data);
+  return data.data;
 }
 
 /**

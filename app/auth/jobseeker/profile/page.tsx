@@ -19,18 +19,18 @@ import {
   X,
 } from "lucide-react";
 import { toastSuccess, toastError } from "@/app/lib/toast";
-import {
-  fetchJobSeekerProfile,
-  type JobSeekerProfile,
-} from "@/app/lib/profile-completion";
+import { useProfile } from "@/app/lib/auth-context";
 import { jsGetCvDocument } from "@/app/api/auth-jobseeker.api";
+import statesAndCities from "@/app/lib/states-and-cities.json";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
 
 interface JobseekerProfileData {
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
-  location: string;
+  state: string;
+  city: string;
   bio: string;
   experience: string;
   education: string;
@@ -62,7 +62,8 @@ const JobseekerProfilePage = () => {
     lastName: "",
     email: "",
     phoneNumber: "",
-    location: "",
+    state: "",
+    city: "",
     bio: "",
     experience: "",
     education: "",
@@ -70,64 +71,76 @@ const JobseekerProfilePage = () => {
     cv: null,
   });
 
+  // Get profile from auth context (already loaded)
+  const { profile } = useProfile();
+
   // UI state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cvError, setCvError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [existingCv, setExistingCv] = useState<ExistingCvInfo | null>(null);
 
   const maxFileSizeMB = 10;
   const acceptedCvFormats = [".pdf", ".doc", ".docx"];
 
-  // Load existing profile data on mount
+  // Prepare state options
+  const stateOptions = statesAndCities.map((stateData) => ({
+    value: stateData.name,
+    label: stateData.name,
+  }));
+
+  // Prepare city options based on selected state
+  const cityOptions =
+    statesAndCities
+      .find((s) => s.name === profileData.state)
+      ?.cities.map((cityName) => ({
+        value: cityName,
+        label: cityName,
+      })) || [];
+
+  // Prefill form fields from profile in context when profile is available
   useEffect(() => {
-    loadProfileData();
-  }, []);
+    const jobSeekerProfile = profile?.jobSeeker;
 
-  // Load existing profile data and prefill fields
-  const loadProfileData = async () => {
-    try {
-      setLoading(true);
-      const profile = await fetchJobSeekerProfile();
-
-      if (profile) {
-        // Prefill form fields
-        setProfileData((prev) => ({
-          ...prev,
-          firstName: profile.firstName || "",
-          lastName: profile.lastName || "",
-          email: profile.email || "",
-          phoneNumber: profile.phoneNumber || "",
-          location:
-            profile.location ||
-            profile.preferredLocation ||
-            profile.address ||
-            "",
-          bio: profile.bio || profile.brief || "",
-          // Map skills from profile to SelectedSkill format
-          skills: profile.userSkills
-            ? profile.userSkills.map((userSkill: any) => {
-                const skill = userSkill.skill || userSkill;
-                return {
-                  id: skill.id,
-                  name: skill.name,
-                  proficiency: userSkill.proficiency,
-                  yearsExperience: userSkill.yearsExperience,
-                };
-              })
-            : profile.skills
-            ? profile.skills.map((skill: any) => ({
+    if (jobSeekerProfile) {
+      // Prefill all form fields from the profile in context
+      // This ensures users can complete remaining fields if they've filled part before
+      setProfileData((prev) => ({
+        ...prev,
+        firstName: jobSeekerProfile.firstName || prev.firstName || "",
+        lastName: jobSeekerProfile.lastName || prev.lastName || "",
+        email: jobSeekerProfile.email || prev.email || "",
+        phoneNumber: jobSeekerProfile.phoneNumber || prev.phoneNumber || "",
+        state: jobSeekerProfile.state || prev.state || "",
+        city: jobSeekerProfile.city || prev.city || "",
+        bio: jobSeekerProfile.bio || jobSeekerProfile.brief || prev.bio || "",
+        // Note: experience and education fields don't have corresponding backend fields yet
+        // They will remain empty or use previous values if user has started filling them
+        experience: prev.experience || "",
+        education: prev.education || "",
+        // Map skills from profile to SelectedSkill format
+        skills: jobSeekerProfile.userSkills
+          ? jobSeekerProfile.userSkills.map((userSkill: any) => {
+              const skill = userSkill.skill || userSkill;
+              return {
                 id: skill.id,
                 name: skill.name,
-              }))
-            : [],
-        }));
+                proficiency: userSkill.proficiency,
+                yearsExperience: userSkill.yearsExperience,
+              };
+            })
+          : jobSeekerProfile.skills
+          ? jobSeekerProfile.skills.map((skill: any) => ({
+              id: skill.id,
+              name: skill.name,
+            }))
+          : prev.skills || [],
+      }));
 
-        // Try to load existing CV if cvUrl exists
-        if (profile.cvUrl || profile.cvDocumentId) {
-          try {
-            const cvData = await jsGetCvDocument();
+      // Try to load existing CV if cvUrl or cvDocumentId exists
+      if (jobSeekerProfile.cvUrl || jobSeekerProfile.cvDocumentId) {
+        jsGetCvDocument()
+          .then((cvData) => {
             if (cvData?.document) {
               setExistingCv({
                 fileName:
@@ -136,22 +149,14 @@ const JobseekerProfilePage = () => {
                 documentId: cvData.document.id,
               });
             }
-          } catch (cvErr) {
+          })
+          .catch((cvErr) => {
             // CV might not exist or might be in different format, that's okay
             console.log("No existing CV found or error loading CV:", cvErr);
-          }
-        }
+          });
       }
-    } catch (err: any) {
-      console.error("Failed to load profile data:", err);
-      // Don't show error if it's just that profile doesn't exist yet
-      if (err?.response?.status !== 404) {
-        toastError("Failed to load profile data");
-      }
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [profile?.jobSeeker]);
 
   const handleInputChange = (
     field: keyof JobseekerProfileData,
@@ -218,8 +223,12 @@ const JobseekerProfilePage = () => {
       setError("Phone number is required");
       return false;
     }
-    if (!profileData.location.trim()) {
-      setError("Location is required");
+    if (!profileData.state.trim()) {
+      setError("State is required");
+      return false;
+    }
+    if (!profileData.city.trim()) {
+      setError("City/LGA is required");
       return false;
     }
     if (!profileData.bio.trim()) {
@@ -257,7 +266,8 @@ const JobseekerProfilePage = () => {
       formData.append("lastName", profileData.lastName.trim());
       formData.append("email", profileData.email.trim());
       formData.append("phoneNumber", profileData.phoneNumber.trim());
-      formData.append("location", profileData.location.trim());
+      formData.append("state", profileData.state.trim());
+      formData.append("city", profileData.city.trim());
       formData.append("bio", profileData.bio.trim());
       formData.append("experience", profileData.experience.trim());
       formData.append("education", profileData.education.trim());
@@ -288,12 +298,12 @@ const JobseekerProfilePage = () => {
     }
   };
 
-  // Show loading while checking authentication or loading profile data
-  if (authLoading || loading) {
+  // Show loading while checking authentication
+  if (authLoading) {
     return (
       <AuthPageLayout
         heading="Loading..."
-        subtext="Please wait while we load your profile"
+        subtext="Please wait while we verify your access"
         message={
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -356,14 +366,42 @@ const JobseekerProfilePage = () => {
               />
             </div>
 
-            <Input
-              label="Location"
-              placeholder="City, State, Country"
-              iconLeft={<MapPin size={16} />}
-              value={profileData.location}
-              onChange={(e) => handleInputChange("location", e.target.value)}
-              required
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SearchableSelect
+                label="State"
+                options={stateOptions}
+                value={profileData.state}
+                onChange={(value) => {
+                  setProfileData((prev) => ({
+                    ...prev,
+                    state: value,
+                    city: "",
+                  }));
+                }}
+                placeholder="Search and select state..."
+                required
+                icon={<MapPin size={16} />}
+                emptyMessage="No state found."
+              />
+
+              <SearchableSelect
+                label="City/LGA"
+                options={cityOptions}
+                value={profileData.city}
+                onChange={(value) => {
+                  setProfileData((prev) => ({ ...prev, city: value }));
+                }}
+                placeholder={
+                  profileData.state
+                    ? "Search and select city/LGA..."
+                    : "Select state first"
+                }
+                required
+                disabled={!profileData.state}
+                icon={<MapPin size={16} />}
+                emptyMessage="No city/LGA found."
+              />
+            </div>
           </div>
 
           {/* Professional Information */}
