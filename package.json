@@ -11,17 +11,20 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@headlessui/react": "^2.2.9",
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.545.0",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "sonner": "^1.7.4"
+    "sonner": "^1.7.4",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

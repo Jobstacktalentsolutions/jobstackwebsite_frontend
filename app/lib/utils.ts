@@ -1,32 +1,17 @@
-// import { clsx, type ClassValue } from "clsx";
-// import { twMerge } from "tailwind-merge";
-import Cookies from "js-cookie";
+import clsx, { type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { getAccessToken } from "./cookies";
 
-// export function cn(...inputs: ClassValue[]) {
-//   return twMerge(clsx(inputs));
-// }
-
-let cachedToken: string | null = null;
-export function storeAuthToken(token: string) {
-  // Store token in httpOnly cookie for security
-  Cookies.set("auth_token", token, {
-    expires: 7, // 7 days
-    secure: process.env.NODE_ENV === "production", // Only secure in production
-    sameSite: "strict", // CSRF protection
-    path: "/", // Available across the entire site
-  });
-  cachedToken = token || null;
+/**
+ * Utility function to merge Tailwind CSS classes
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
-export function getAuthToken() {
-  if (cachedToken && cachedToken != null) return cachedToken;
-  const token = Cookies.get("auth_token");
-  console.log("token", token);
-  cachedToken = token || null;
-  return token;
-}
-
-export function removeAuthToken() {
-  Cookies.remove("auth_token", { path: "/" });
-  cachedToken = null;
+/**
+ * Get authentication token from cookies
+ */
+export function getAuthToken(): string | undefined {
+  return getAccessToken();
 }

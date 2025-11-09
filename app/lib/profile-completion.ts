@@ -12,10 +12,25 @@ export interface JobSeekerProfile {
   lastName: string;
   phoneNumber: string;
   cvUrl?: string;
+  cvDocumentId?: string;
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
   skills?: Array<{ id: string; name: string }>;
+  userSkills?: Array<{
+    id: string;
+    skillId: string;
+    proficiency?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
+    yearsExperience?: number;
+    skill: {
+      id: string;
+      name: string;
+    };
+  }>;
   bio?: string;
+  brief?: string;
   location?: string;
+  preferredLocation?: string;
+  address?: string;
+  jobTitle?: string;
   yearsOfExperience?: number;
 }
 
@@ -30,6 +45,7 @@ export interface RecruiterProfile {
   companyDescription?: string;
   companyLogoUrl?: string;
   type?: "INDIVIDUAL" | "AGENCY" | "COMPANY";
+  verification?: RecruiterVerification;
 }
 
 export interface RecruiterVerification {
@@ -104,13 +120,18 @@ export async function fetchRecruiterProfile(): Promise<RecruiterProfile> {
 }
 
 /**
- * Fetch recruiter verification status from API
+ * Fetch recruiter verification status from API (deprecated - use verification from profile)
  */
-export async function fetchRecruiterVerification(): Promise<RecruiterVerification> {
-  const { data } = await httpClient.get<ResponseDto<RecruiterVerification>>(
-    "/recruiters/verification"
-  );
-  return data.data;
+export async function fetchRecruiterVerification(): Promise<RecruiterVerification | null> {
+  try {
+    const { data } = await httpClient.get<ResponseDto<RecruiterVerification>>(
+      "/recruiters/verification"
+    );
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching verification:", error);
+    return null;
+  }
 }
 
 /**
@@ -123,7 +144,7 @@ export async function checkJobSeekerProfileCompletion(): Promise<
     const profile = await fetchJobSeekerProfile();
 
     if (!isJobSeekerProfileComplete(profile)) {
-      return "/auth/jobseeker/complete-profile";
+      return "/auth/jobseeker/profile";
     }
 
     return null;
@@ -140,18 +161,31 @@ export async function checkRecruiterProfileCompletion(): Promise<
   string | null
 > {
   try {
-    const [profile, verification] = await Promise.all([
-      fetchRecruiterProfile(),
-      fetchRecruiterVerification(),
-    ]);
+    const profile = await fetchRecruiterProfile();
+    // Use verification from profile instead of separate fetch
+    const verification = profile.verification || null;
 
-    if (!isRecruiterProfileComplete(profile, verification)) {
-      return "/auth/employer/complete-profile";
+    // If verification is null, redirect to onboarding (not started)
+    if (!verification) {
+      return "/auth/employer/profile";
     }
 
+    // If verification status is not APPROVED, redirect to onboarding
+    // (PENDING or REJECTED means they're still in onboarding)
+    if (verification.status !== "APPROVED") {
+      return "/auth/employer/profile";
+    }
+
+    // If verification is APPROVED but profile is incomplete, redirect
+    if (!isRecruiterProfileComplete(profile, verification)) {
+      return "/auth/employer/profile";
+    }
+
+    // Profile is complete and verified
     return null;
   } catch (error) {
     console.error("Error checking recruiter profile:", error);
-    return null;
+    // On error, redirect to profile page to be safe
+    return "/auth/employer/profile";
   }
 }

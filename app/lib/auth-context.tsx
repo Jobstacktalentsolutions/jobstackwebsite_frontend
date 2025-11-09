@@ -45,11 +45,18 @@ interface AuthContextType {
   profile: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (
-    accessToken: string,
-    refreshToken: string,
-    user: User
-  ) => Promise<void>;
+  login: (authResult: {
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      id: string;
+      email: string;
+      role: string;
+      profileId?: string;
+      firstName?: string;
+      lastName?: string;
+    };
+  }) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   refreshProfile: () => Promise<void>;
@@ -109,19 +116,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (user.role === "RECRUITER") {
         const recruiterProfile = await fetchRecruiterProfile();
         setProfile({ recruiter: recruiterProfile });
+
+        // Check if verification is null or not APPROVED, redirect to onboarding
+        const verification = recruiterProfile.verification;
+        if (!verification || verification.status !== "APPROVED") {
+          // Only redirect if not already on profile page
+          const currentPath = window.location.pathname;
+          if (!currentPath.includes("/auth/employer/profile")) {
+            router.push("/auth/employer/profile");
+          }
+        }
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
-  }, [user]);
+  }, [user, router]);
 
-  const login = async (
-    accessToken: string,
-    refreshToken: string,
-    userData: User
-  ) => {
-    // Store tokens in cookies
-    setAuthTokens(accessToken, refreshToken, userData.role);
+  const login = async (authResult: {
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      id: string;
+      email: string;
+      role: string;
+      profileId?: string;
+      firstName?: string;
+      lastName?: string;
+    };
+  }) => {
+    // Normalize role from API format to internal format
+    const normalizeRole = (role: string): string => {
+      if (role === "JobSeeker") return "JOB_SEEKER";
+      if (role === "Recruiter") return "RECRUITER";
+      if (role === "Admin") return "ADMIN";
+      return role.toUpperCase();
+    };
+
+    const normalizedRole = normalizeRole(authResult.user.role);
+
+    // Store tokens in cookies immediately after login
+    setAuthTokens(
+      authResult.accessToken,
+      authResult.refreshToken,
+      normalizedRole
+    );
+
+    // Prepare user data with normalized role
+    const userData: User = {
+      id: authResult.user.id,
+      email: authResult.user.email,
+      role: normalizedRole,
+      profileId: authResult.user.profileId || "",
+      firstName: authResult.user.firstName,
+      lastName: authResult.user.lastName,
+    };
 
     // Store user data in cookies
     setUserData(userData);
@@ -129,14 +177,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Update user state
     setUser(userData);
 
-    // Check profile completion
-    const redirectPath = await checkProfileCompletion(userData.role);
+    // Check profile completion and redirect accordingly
+    const redirectPath = await checkProfileCompletion(normalizedRole);
 
     if (redirectPath) {
       router.push(redirectPath);
     } else {
       // Profile is complete, redirect to dashboard
-      if (userData.role === "RECRUITER") {
+      if (normalizedRole === "RECRUITER") {
         router.push("/dashboard/employers");
       } else {
         router.push("/dashboard");
@@ -169,12 +217,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       if (userRole === "RECRUITER") {
-        return await checkRecruiterProfileCompletion();
+        const path = await checkRecruiterProfileCompletion();
+        return path || null;
       } else if (userRole === "JOB_SEEKER") {
-        return await checkJobSeekerProfileCompletion();
+        const path = await checkJobSeekerProfileCompletion();
+        return path || null;
       }
     } catch (error) {
       console.error("Error checking profile completion:", error);
+      // If profile check fails, redirect to profile page to be safe
+      if (userRole === "RECRUITER") {
+        return "/auth/employer/profile";
+      } else if (userRole === "JOB_SEEKER") {
+        return "/auth/jobseeker/profile";
+      }
     }
 
     return null;

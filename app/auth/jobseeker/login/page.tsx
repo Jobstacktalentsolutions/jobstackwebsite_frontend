@@ -13,13 +13,15 @@ import welcome from "../../../assets/welcomeimage.png";
 import welcome2 from "../../../assets/welcomeimagetwo.png";
 import welcome3 from "../../../assets/securitywithstaff.png";
 import PasswordField from "@/app/components/passwordField";
-import { jsLogin, jsSendVerificationEmail } from "@/app/api/auth-jobseeker.api";
+import { jsSendVerificationEmail } from "@/app/api/auth-jobseeker.api";
 import { toastError, toastSuccess, toastInfo } from "@/app/lib/toast";
 import type { LoginDto } from "@/app/types/auth.type";
 import { useRouter } from "next/navigation";
+import { useAuthActions } from "@/app/hooks/useAuthActions";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { loginJobSeeker } = useAuthActions();
   const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,10 +34,11 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const payload: LoginDto = { email, password };
-      await jsLogin(payload);
+      await loginJobSeeker(payload);
       toastSuccess("Signed in successfully");
-      router.push("/auth/jobseeker/profile");
+      // Redirect is handled by auth context login function
     } catch (err: any) {
+      console.log(err);
       const errorMessage =
         err?.response?.data?.message || "Incorrect email or password";
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthPageLayout from "@/app/components/AuthPageLayout";
 import Input from "@/app/components/input";
@@ -15,8 +15,15 @@ import {
   FileText,
   Briefcase,
   GraduationCap,
+  Download,
+  X,
 } from "lucide-react";
 import { toastSuccess, toastError } from "@/app/lib/toast";
+import {
+  fetchJobSeekerProfile,
+  type JobSeekerProfile,
+} from "@/app/lib/profile-completion";
+import { jsGetCvDocument } from "@/app/api/auth-jobseeker.api";
 
 interface JobseekerProfileData {
   firstName: string;
@@ -31,9 +38,23 @@ interface JobseekerProfileData {
   cv: File | null;
 }
 
+interface ExistingCvInfo {
+  fileName: string;
+  signedUrl: string;
+  documentId: string;
+}
+
+import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
+
 const JobseekerProfilePage = () => {
   const router = useRouter();
   const cvInputRef = useRef<HTMLInputElement>(null);
+
+  // Check authentication - will redirect if not authenticated
+  const { isLoading: authLoading } = useProtectedRoute({
+    allowedRoles: ["JOB_SEEKER"],
+    redirectTo: "/auth/jobseeker/login",
+  });
 
   // Form state
   const [profileData, setProfileData] = useState<JobseekerProfileData>({
@@ -53,9 +74,84 @@ const JobseekerProfilePage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cvError, setCvError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [existingCv, setExistingCv] = useState<ExistingCvInfo | null>(null);
 
   const maxFileSizeMB = 10;
   const acceptedCvFormats = [".pdf", ".doc", ".docx"];
+
+  // Load existing profile data on mount
+  useEffect(() => {
+    loadProfileData();
+  }, []);
+
+  // Load existing profile data and prefill fields
+  const loadProfileData = async () => {
+    try {
+      setLoading(true);
+      const profile = await fetchJobSeekerProfile();
+
+      if (profile) {
+        // Prefill form fields
+        setProfileData((prev) => ({
+          ...prev,
+          firstName: profile.firstName || "",
+          lastName: profile.lastName || "",
+          email: profile.email || "",
+          phoneNumber: profile.phoneNumber || "",
+          location:
+            profile.location ||
+            profile.preferredLocation ||
+            profile.address ||
+            "",
+          bio: profile.bio || profile.brief || "",
+          // Map skills from profile to SelectedSkill format
+          skills: profile.userSkills
+            ? profile.userSkills.map((userSkill: any) => {
+                const skill = userSkill.skill || userSkill;
+                return {
+                  id: skill.id,
+                  name: skill.name,
+                  proficiency: userSkill.proficiency,
+                  yearsExperience: userSkill.yearsExperience,
+                };
+              })
+            : profile.skills
+            ? profile.skills.map((skill: any) => ({
+                id: skill.id,
+                name: skill.name,
+              }))
+            : [],
+        }));
+
+        // Try to load existing CV if cvUrl exists
+        if (profile.cvUrl || profile.cvDocumentId) {
+          try {
+            const cvData = await jsGetCvDocument();
+            if (cvData?.document) {
+              setExistingCv({
+                fileName:
+                  cvData.document.originalName || cvData.document.fileName,
+                signedUrl: cvData.signedUrl,
+                documentId: cvData.document.id,
+              });
+            }
+          } catch (cvErr) {
+            // CV might not exist or might be in different format, that's okay
+            console.log("No existing CV found or error loading CV:", cvErr);
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error("Failed to load profile data:", err);
+      // Don't show error if it's just that profile doesn't exist yet
+      if (err?.response?.status !== 404) {
+        toastError("Failed to load profile data");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (
     field: keyof JobseekerProfileData,
@@ -91,7 +187,18 @@ const JobseekerProfilePage = () => {
       return;
     }
 
+    // When user selects a new file, clear existing CV info
+    setExistingCv(null);
     setProfileData((prev) => ({ ...prev, cv: file }));
+  };
+
+  // Handle removing existing CV
+  const handleRemoveExistingCv = () => {
+    setExistingCv(null);
+    setProfileData((prev) => ({ ...prev, cv: null }));
+    if (cvInputRef.current) {
+      cvInputRef.current.value = "";
+    }
   };
 
   const validateForm = (): boolean => {
@@ -123,7 +230,8 @@ const JobseekerProfilePage = () => {
       setError("At least one skill is required");
       return false;
     }
-    if (!profileData.cv) {
+    // CV is required only if there's no existing CV
+    if (!profileData.cv && !existingCv) {
       setError("CV upload is required");
       return false;
     }
@@ -179,6 +287,21 @@ const JobseekerProfilePage = () => {
       setSubmitting(false);
     }
   };
+
+  // Show loading while checking authentication or loading profile data
+  if (authLoading || loading) {
+    return (
+      <AuthPageLayout
+        heading="Loading..."
+        subtext="Please wait while we load your profile"
+        message={
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        }
+      />
+    );
+  }
 
   return (
     <AuthPageLayout
@@ -311,46 +434,90 @@ const JobseekerProfilePage = () => {
             <h3 className="text-lg font-semibold text-slate-800">
               CV/Resume Upload
             </h3>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-              <div className="text-center">
-                <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="mt-4">
-                  <label htmlFor="cv-upload" className="cursor-pointer">
-                    <span className="mt-2 block text-sm font-medium text-gray-900">
-                      Upload your CV/Resume
-                    </span>
-                    <span className="mt-1 block text-sm text-gray-500">
-                      PDF, DOC, or DOCX up to {maxFileSizeMB}MB
-                    </span>
-                  </label>
-                  <input
-                    id="cv-upload"
-                    ref={cvInputRef}
-                    type="file"
-                    accept={acceptedCvFormats.join(",")}
-                    onChange={handleCvChange}
-                    className="sr-only"
-                  />
-                </div>
-                <div className="mt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => cvInputRef.current?.click()}
-                  >
-                    Choose File
-                  </Button>
-                </div>
-                {profileData.cv && (
-                  <div className="mt-2 text-sm text-green-600">
-                    ✓ {profileData.cv.name}
+
+            {/* Show existing CV if available */}
+            {existingCv && !profileData.cv && (
+              <div className="border border-green-300 bg-green-50 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-8 w-8 text-green-600" />
+                    <div>
+                      <p className="text-sm font-medium text-green-900">
+                        {existingCv.fileName}
+                      </p>
+                      <p className="text-xs text-green-700">
+                        Existing CV uploaded
+                      </p>
+                    </div>
                   </div>
-                )}
-                {cvError && (
-                  <div className="mt-2 text-sm text-red-600">{cvError}</div>
-                )}
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={existingCv.signedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded hover:bg-green-200 transition-colors flex items-center gap-1"
+                    >
+                      <Download size={14} />
+                      View
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleRemoveExistingCv}
+                      className="p-1.5 text-green-700 hover:text-green-900 hover:bg-green-200 rounded transition-colors"
+                      title="Remove existing CV"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Upload new CV section */}
+            {(!existingCv || profileData.cv) && (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                <div className="text-center">
+                  <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="mt-4">
+                    <label htmlFor="cv-upload" className="cursor-pointer">
+                      <span className="mt-2 block text-sm font-medium text-gray-900">
+                        {existingCv
+                          ? "Replace CV/Resume"
+                          : "Upload your CV/Resume"}
+                      </span>
+                      <span className="mt-1 block text-sm text-gray-500">
+                        PDF, DOC, or DOCX up to {maxFileSizeMB}MB
+                      </span>
+                    </label>
+                    <input
+                      id="cv-upload"
+                      ref={cvInputRef}
+                      type="file"
+                      accept={acceptedCvFormats.join(",")}
+                      onChange={handleCvChange}
+                      className="sr-only"
+                    />
+                  </div>
+                  <div className="mt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => cvInputRef.current?.click()}
+                    >
+                      Choose File
+                    </Button>
+                  </div>
+                  {profileData.cv && (
+                    <div className="mt-2 text-sm text-green-600">
+                      ✓ {profileData.cv.name}
+                    </div>
+                  )}
+                  {cvError && (
+                    <div className="mt-2 text-sm text-red-600">{cvError}</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {error && <p className="text-red-600 text-sm">{error}</p>}
@@ -368,4 +535,6 @@ const JobseekerProfilePage = () => {
   );
 };
 
+// This page is protected by middleware.ts
+// No need for client-side protection wrapper
 export default JobseekerProfilePage;

@@ -6,13 +6,13 @@ import Input from "@/app/components/input";
 import Button from "@/app/components/button";
 import { Building2, MapPin, Globe, Users } from "lucide-react";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
+import statesAndCities from "@/app/lib/states-and-cities.json";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
 import {
   getMyProfile,
   updateVerificationInfo,
   uploadVerificationDocument,
   getDocumentRequirements,
-  getMyVerification,
-  checkAutoVerificationEligibility,
 } from "@/app/api/recruiter-verification.api";
 import {
   UpdateVerificationInfoDto,
@@ -36,7 +36,8 @@ const ProfilePage = () => {
   // Form state
   const [companyName, setCompanyName] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
-  const [businessAddress, setBusinessAddress] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
   const [companySize, setCompanySize] = useState("");
   const [socialOrWebsiteUrl, setSocialOrWebsiteUrl] = useState("");
 
@@ -64,33 +65,46 @@ const ProfilePage = () => {
     try {
       setLoading(true);
 
-      // First, get the user's profile to determine their recruiter type
+      // Get the user's profile which now includes verification
       const profile = await getMyProfile();
       if (profile?.type) {
         setRecruiterType(profile.type);
       }
 
-      // Then get verification data
-      const verificationData = await getMyVerification();
+      // Use verification from profile instead of separate fetch
+      const verificationData = profile?.verification || null;
       if (verificationData) {
         setVerification(verificationData);
         setCompanyName(verificationData.companyName || "");
         setCompanyAddress(verificationData.companyAddress || "");
-        setBusinessAddress(verificationData.businessAddress || "");
+        setState(verificationData.state || "");
+        setCity(verificationData.city || "");
         setCompanySize(verificationData.companySize || "");
         setSocialOrWebsiteUrl(verificationData.socialOrWebsiteUrl || "");
       }
 
-      // Load document requirements
-      await loadDocumentRequirements();
-    } catch (err) {
+      // Load document requirements with verification data
+      await loadDocumentRequirements(verificationData);
+    } catch (err: any) {
       console.error("Failed to load verification data:", err);
+
+      // Check if it's an authentication error (401 or 403)
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        // User is not authenticated, redirect to login
+        toastError("Please login to access this page");
+        router.push("/auth/employer/login");
+        return;
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const loadDocumentRequirements = async () => {
+  // Load document requirements and prefill existing documents
+  const loadDocumentRequirements = async (
+    verificationData?: RecruiterVerification | null
+  ) => {
     try {
       const requirements = await getDocumentRequirements();
       setDocumentRequirements(requirements);
@@ -104,9 +118,10 @@ const ProfilePage = () => {
         uploading: false,
       }));
 
-      // Mark already uploaded documents
-      if (verification?.documents) {
-        verification.documents.forEach((doc) => {
+      // Mark already uploaded documents from verification data
+      const verificationToUse = verificationData || verification;
+      if (verificationToUse?.documents) {
+        verificationToUse.documents.forEach((doc) => {
           const upload = uploads.find(
             (u) => u.documentType === doc.documentType
           );
@@ -181,7 +196,16 @@ const ProfilePage = () => {
         toastSuccess(result.autoVerificationResult.message);
       }
     } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || "Upload failed";
+      console.error("Upload failed:", {
+        error: err,
+        response: err?.response?.data,
+        status: err?.response?.status,
+      });
+
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Upload failed. Please check your file and try again.";
       toastError(errorMessage);
 
       setDocumentUploads((prev) =>
@@ -204,7 +228,8 @@ const ProfilePage = () => {
       const verificationDto: UpdateVerificationInfoDto = {
         companyName: companyName.trim(),
         companyAddress: companyAddress.trim(),
-        businessAddress: businessAddress.trim(),
+        state: state.trim(),
+        city: city.trim(),
         companySize: companySize.trim(),
         socialOrWebsiteUrl: socialOrWebsiteUrl.trim(),
       };
@@ -219,19 +244,10 @@ const ProfilePage = () => {
         await uploadDocument(upload);
       }
 
-      // Check verification status
-      const eligibility = await checkAutoVerificationEligibility();
-
-      if (eligibility.canAutoVerify) {
-        toastSuccess("Profile completed and verified successfully!");
-        router.push("/dashboard"); // Redirect to main dashboard
-      } else {
-        toastInfo(
-          "Profile saved. Verification pending for: " +
-            eligibility.missingMandatoryDocuments.join(", ")
-        );
-        router.push("/auth/employer/profile/companyProfile");
-      }
+      toastInfo(
+        "Profile saved. Verification pending. Please wait for approval."
+      );
+      router.push("/auth/employer/profile/companyProfile");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Failed to save profile";
@@ -258,6 +274,30 @@ const ProfilePage = () => {
       RecruiterDocumentType.CERTIFICATE_OF_INCORPORATION,
     ].includes(docType);
   };
+
+  // Prepare state options
+  const stateOptions = statesAndCities.map((stateData) => ({
+    value: stateData.name,
+    label: stateData.name,
+  }));
+
+  // Prepare city options based on selected state
+  const cityOptions =
+    statesAndCities
+      .find((s) => s.name === state)
+      ?.cities.map((cityName) => ({
+        value: cityName,
+        label: cityName,
+      })) || [];
+
+  // Company size options
+  const companySizeOptions = [
+    { value: "1-10", label: "1-10 employees" },
+    { value: "10-50", label: "10-50 employees" },
+    { value: "50-100", label: "50-100 employees" },
+    { value: "100-500", label: "100-500 employees" },
+    { value: "500+", label: "500+ employees" },
+  ];
 
   if (loading) {
     return (
@@ -304,31 +344,54 @@ const ProfilePage = () => {
               onChange={(e) => setCompanyName(e.target.value)}
               required
             />
-            <Input
+            <SearchableSelect
               label="Company Size"
-              placeholder="e.g., 1-10, 11-50, 51-200"
-              iconLeft={<Users size={16} />}
+              options={companySizeOptions}
               value={companySize}
-              onChange={(e) => setCompanySize(e.target.value)}
+              onChange={setCompanySize}
+              placeholder="Select company size..."
+              icon={<Users size={16} />}
             />
           </div>
 
           <Input
-            label="Company Address"
-            placeholder="Enter company address"
+            label="Business Address"
+            placeholder="Enter street address"
             iconLeft={<MapPin size={16} />}
             value={companyAddress}
             onChange={(e) => setCompanyAddress(e.target.value)}
             required
           />
 
-          <Input
-            label="Business Address (if different)"
-            placeholder="Enter business address"
-            iconLeft={<MapPin size={16} />}
-            value={businessAddress}
-            onChange={(e) => setBusinessAddress(e.target.value)}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SearchableSelect
+              label="State"
+              options={stateOptions}
+              value={state}
+              onChange={(value) => {
+                setState(value);
+                setCity(""); // Reset city when state changes
+              }}
+              placeholder="Search and select state..."
+              required
+              icon={<MapPin size={16} />}
+              emptyMessage="No state found."
+            />
+
+            <SearchableSelect
+              label="City/LGA"
+              options={cityOptions}
+              value={city}
+              onChange={setCity}
+              placeholder={
+                state ? "Search and select city/LGA..." : "Select state first"
+              }
+              required
+              disabled={!state}
+              icon={<MapPin size={16} />}
+              emptyMessage="No city/LGA found."
+            />
+          </div>
 
           <Input
             label="Website or Social Media URL"
@@ -438,4 +501,6 @@ const ProfilePage = () => {
   );
 };
 
+// This page is protected by middleware.ts
+// No need for client-side protection wrapper
 export default ProfilePage;

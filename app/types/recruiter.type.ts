@@ -84,9 +84,10 @@ export interface RecruiterVerification {
   recruiterId: string;
   companyName?: string;
   companyAddress?: string;
+  state?: string;
+  city?: string;
   companySize?: string;
   socialOrWebsiteUrl?: string;
-  businessAddress?: string;
   status: VerificationStatus;
   reviewedByAdminId?: string;
   reviewedAt?: string;
@@ -118,9 +119,10 @@ export interface AutoVerificationResult {
 export interface UpdateVerificationInfoDto {
   companyName?: string;
   companyAddress?: string;
+  state?: string;
+  city?: string;
   companySize?: string;
   socialOrWebsiteUrl?: string;
-  businessAddress?: string;
 }
 
 export interface UploadVerificationDocumentDto {

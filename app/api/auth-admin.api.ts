@@ -13,10 +13,6 @@ import { ResponseDto } from "@/app/types/response.type";
 
 const base = "/auth/admin" as const;
 
-function authHeader(accessToken?: string) {
-  return accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined;
-}
-
 export async function adminLogin(dto: LoginDto) {
   const { data } = await httpClient.post<ResponseDto<AuthResult>>(
     `${base}/login`,
@@ -33,10 +29,8 @@ export async function adminRefresh(dto: RefreshTokenDto) {
   return data.data;
 }
 
-export async function adminLogout(accessToken?: string) {
-  await httpClient.delete(`${base}/logout`, {
-    headers: authHeader(accessToken),
-  });
+export async function adminLogout() {
+  await httpClient.delete(`${base}/logout`);
 }
 
 export async function adminSendVerificationEmail(

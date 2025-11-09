@@ -36,8 +36,9 @@ export default function LoginPage() {
       const payload: LoginDto = { email: email.toLowerCase(), password };
       await loginRecruiter(payload);
       toastSuccess("Signed in successfully");
-      router.push("/auth/employer/profile");
+      // Redirect is handled by auth context login function
     } catch (err: any) {
+      console.log(err);
       const errorMessage =
         err?.response?.data?.message || "Incorrect email or password";
 

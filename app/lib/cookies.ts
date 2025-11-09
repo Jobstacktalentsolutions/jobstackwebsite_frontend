@@ -21,9 +21,9 @@ export function setAuthTokens(
   refreshToken: string,
   role: string
 ): void {
-  // Access token expires in 15 minutes (but we store it for 1 day for convenience)
+  // Access token expires in 2 days
   Cookies.set(COOKIE_NAMES.ACCESS_TOKEN, accessToken, {
-    expires: 1,
+    expires: 2,
     secure: isProduction,
     sameSite: "strict",
     path: "/",
