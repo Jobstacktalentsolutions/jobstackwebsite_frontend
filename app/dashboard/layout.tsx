@@ -1,18 +1,16 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Dashboard | JobStack",
-  description: "Manage your JobStack account and activities",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+import VerificationWarningBanner from "@/app/components/VerificationWarningBanner";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <VerificationWarningBanner />
+      {children}
+    </>
+  );
 }

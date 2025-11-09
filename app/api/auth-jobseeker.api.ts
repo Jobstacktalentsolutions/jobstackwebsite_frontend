@@ -17,10 +17,6 @@ import { ResponseDto } from "@/app/types/response.type";
 
 const base = "/auth/jobseeker" as const;
 
-function authHeader(accessToken?: string) {
-  return accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined;
-}
-
 export async function jsRegister(dto: JobSeekerRegistrationDto) {
   const { data } = await httpClient.post<
     ResponseDto<JobSeekerRegisterResponse>
@@ -44,10 +40,8 @@ export async function jsRefresh(dto: RefreshTokenDto) {
   return data.data;
 }
 
-export async function jsLogout(accessToken?: string) {
-  await httpClient.delete(`${base}/logout`, {
-    headers: authHeader(accessToken),
-  });
+export async function jsLogout() {
+  await httpClient.delete(`${base}/logout`);
 }
 
 export async function jsSendVerificationEmail(
@@ -91,6 +85,25 @@ export async function jsResetPassword(dto: PasswordResetDto) {
   return data.data;
 }
 
+// Get jobseeker CV document
+export async function jsGetCvDocument() {
+  const { data } = await httpClient.get<{
+    success: boolean;
+    document: {
+      id: string;
+      fileName: string;
+      originalName: string;
+      mimeType: string;
+      size: number;
+      type: string;
+      description?: string;
+      createdAt: string;
+    };
+    signedUrl: string;
+  }>("/user/jobseeker/profile/cv");
+  return data;
+}
+
 export default {
   jsRegister,
   jsLogin,
@@ -101,4 +114,5 @@ export default {
   jsSendPasswordResetCode,
   jsConfirmPasswordResetCode,
   jsResetPassword,
+  jsGetCvDocument,
 };

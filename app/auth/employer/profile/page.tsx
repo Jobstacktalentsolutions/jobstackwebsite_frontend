@@ -13,7 +13,6 @@ import {
   updateVerificationInfo,
   uploadVerificationDocument,
   getDocumentRequirements,
-  getMyVerification,
   checkAutoVerificationEligibility,
 } from "@/app/api/recruiter-verification.api";
 import {
@@ -67,15 +66,14 @@ const ProfilePage = () => {
     try {
       setLoading(true);
 
-      // First, get the user's profile to determine their recruiter type
-      // If this fails with 401, user is not authenticated
+      // Get the user's profile which now includes verification
       const profile = await getMyProfile();
       if (profile?.type) {
         setRecruiterType(profile.type);
       }
 
-      // Then get verification data
-      const verificationData = await getMyVerification();
+      // Use verification from profile instead of separate fetch
+      const verificationData = profile?.verification || null;
       if (verificationData) {
         setVerification(verificationData);
         setCompanyName(verificationData.companyName || "");
@@ -86,8 +84,8 @@ const ProfilePage = () => {
         setSocialOrWebsiteUrl(verificationData.socialOrWebsiteUrl || "");
       }
 
-      // Load document requirements
-      await loadDocumentRequirements();
+      // Load document requirements with verification data
+      await loadDocumentRequirements(verificationData);
     } catch (err: any) {
       console.error("Failed to load verification data:", err);
 
@@ -104,7 +102,10 @@ const ProfilePage = () => {
     }
   };
 
-  const loadDocumentRequirements = async () => {
+  // Load document requirements and prefill existing documents
+  const loadDocumentRequirements = async (
+    verificationData?: RecruiterVerification | null
+  ) => {
     try {
       const requirements = await getDocumentRequirements();
       setDocumentRequirements(requirements);
@@ -118,9 +119,10 @@ const ProfilePage = () => {
         uploading: false,
       }));
 
-      // Mark already uploaded documents
-      if (verification?.documents) {
-        verification.documents.forEach((doc) => {
+      // Mark already uploaded documents from verification data
+      const verificationToUse = verificationData || verification;
+      if (verificationToUse?.documents) {
+        verificationToUse.documents.forEach((doc) => {
           const upload = uploads.find(
             (u) => u.documentType === doc.documentType
           );
@@ -195,7 +197,16 @@ const ProfilePage = () => {
         toastSuccess(result.autoVerificationResult.message);
       }
     } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || "Upload failed";
+      console.error("Upload failed:", {
+        error: err,
+        response: err?.response?.data,
+        status: err?.response?.status,
+      });
+
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Upload failed. Please check your file and try again.";
       toastError(errorMessage);
 
       setDocumentUploads((prev) =>
@@ -234,19 +245,10 @@ const ProfilePage = () => {
         await uploadDocument(upload);
       }
 
-      // Check verification status
-      const eligibility = await checkAutoVerificationEligibility();
-
-      if (eligibility.canAutoVerify) {
-        toastSuccess("Profile completed and verified successfully!");
-        router.push("/dashboard"); // Redirect to main dashboard
-      } else {
-        toastInfo(
-          "Profile saved. Verification pending for: " +
-            eligibility.missingMandatoryDocuments.join(", ")
-        );
-        router.push("/auth/employer/profile/companyProfile");
-      }
+      toastInfo(
+        "Profile saved. Verification pending. Please wait for approval."
+      );
+      router.push("/auth/employer/profile/companyProfile");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Failed to save profile";

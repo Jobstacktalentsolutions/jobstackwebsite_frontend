@@ -12,49 +12,33 @@ import type {
 
 const base = "/recruiters/verification" as const;
 
-function authHeader(accessToken?: string) {
-  return accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined;
-}
-
-export async function getMyProfile(accessToken?: string): Promise<any> {
+export async function getMyProfile(): Promise<any> {
   const { data } = await httpClient.get<{ success: boolean; profile: any }>(
-    "/user/recruiter/me",
-    {
-      headers: authHeader(accessToken),
-    }
+    "/user/recruiter/me"
   );
   return data.profile;
 }
 
-export async function getMyVerification(
-  accessToken?: string
-): Promise<RecruiterVerification | null> {
+export async function getMyVerification(): Promise<RecruiterVerification | null> {
   const { data } = await httpClient.get<
     ResponseDto<RecruiterVerification | null>
-  >(base, {
-    headers: authHeader(accessToken),
-  });
+  >(base);
   return data.data;
 }
 
 export async function updateVerificationInfo(
-  dto: UpdateVerificationInfoDto,
-  accessToken?: string
+  dto: UpdateVerificationInfoDto
 ): Promise<RecruiterVerification> {
-  const { data } = await httpClient.patch<ResponseDto<RecruiterVerification>>(
+  const { data } = await httpClient.put<ResponseDto<RecruiterVerification>>(
     base,
-    dto,
-    {
-      headers: authHeader(accessToken),
-    }
+    dto
   );
   return data.data;
 }
 
 export async function uploadVerificationDocument(
   dto: UploadVerificationDocumentDto,
-  file: File,
-  accessToken?: string
+  file: File
 ): Promise<
   RecruiterVerificationDocument & {
     autoVerificationResult?: AutoVerificationResult;
@@ -67,65 +51,55 @@ export async function uploadVerificationDocument(
     formData.append("documentNumber", dto.documentNumber);
   }
 
+  console.log("Uploading document:", {
+    fileName: file.name,
+    fileSize: file.size,
+    fileType: file.type,
+    documentType: dto.documentType,
+  });
+
+  // Don't set Content-Type - axios will automatically set it with boundary for FormData
   const { data } = await httpClient.post<
     ResponseDto<
       RecruiterVerificationDocument & {
         autoVerificationResult?: AutoVerificationResult;
       }
     >
-  >(`${base}/documents`, formData, {
-    headers: {
-      ...authHeader(accessToken),
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  >(`${base}/documents`, formData);
   return data.data;
 }
 
-export async function getMyVerificationDocuments(
-  accessToken?: string
-): Promise<RecruiterVerificationDocument[]> {
+export async function getMyVerificationDocuments(): Promise<
+  RecruiterVerificationDocument[]
+> {
   const { data } = await httpClient.get<
     ResponseDto<RecruiterVerificationDocument[]>
-  >(`${base}/documents`, {
-    headers: authHeader(accessToken),
-  });
+  >(`${base}/documents`);
   return data.data;
 }
 
 export async function deleteVerificationDocument(
-  documentId: string,
-  accessToken?: string
+  documentId: string
 ): Promise<{ message: string }> {
   const { data } = await httpClient.delete<ResponseDto<{ message: string }>>(
-    `${base}/documents/${documentId}`,
-    {
-      headers: authHeader(accessToken),
-    }
+    `${base}/documents/${documentId}`
   );
   return data.data;
 }
 
-export async function getDocumentRequirements(
-  accessToken?: string
-): Promise<DocumentRequirement[]> {
+export async function getDocumentRequirements(): Promise<
+  DocumentRequirement[]
+> {
   const { data } = await httpClient.get<ResponseDto<DocumentRequirement[]>>(
-    `${base}/requirements`,
-    {
-      headers: authHeader(accessToken),
-    }
+    `${base}/requirements`
   );
   return data.data;
 }
 
-export async function checkAutoVerificationEligibility(
-  accessToken?: string
-): Promise<AutoVerificationEligibility> {
+export async function checkAutoVerificationEligibility(): Promise<AutoVerificationEligibility> {
   const { data } = await httpClient.get<
     ResponseDto<AutoVerificationEligibility>
-  >(`${base}/auto-verification-eligibility`, {
-    headers: authHeader(accessToken),
-  });
+  >(`${base}/auto-verification-eligibility`);
   return data.data;
 }
 

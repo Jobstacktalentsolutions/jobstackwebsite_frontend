@@ -14,8 +14,8 @@ export class AuthService {
     return await rcRegister(dto);
   }
 
-  static async logoutRecruiter(accessToken?: string) {
-    return await rcLogout(accessToken);
+  static async logoutRecruiter() {
+    return await rcLogout();
   }
 
   // Job seeker auth methods
@@ -27,7 +27,7 @@ export class AuthService {
     return await jsRegister(dto);
   }
 
-  static async logoutJobSeeker(accessToken?: string) {
-    return await jsLogout(accessToken);
+  static async logoutJobSeeker() {
+    return await jsLogout();
   }
 }

@@ -14,10 +14,6 @@ import { ResponseDto } from "@/app/types/response.type";
 
 const base = "/auth/recruiter" as const;
 
-function authHeader(accessToken?: string) {
-  return accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined;
-}
-
 export async function rcRegister(dto: RecruiterRegistrationDto) {
   const { data } = await httpClient.post<ResponseDto<AuthResult>>(
     `${base}/register`,
@@ -42,10 +38,8 @@ export async function rcRefresh(dto: RefreshTokenDto) {
   return data.data;
 }
 
-export async function rcLogout(accessToken?: string) {
-  await httpClient.delete(`${base}/logout`, {
-    headers: authHeader(accessToken),
-  });
+export async function rcLogout() {
+  await httpClient.delete(`${base}/logout`);
 }
 
 export async function rcSendVerificationEmail(

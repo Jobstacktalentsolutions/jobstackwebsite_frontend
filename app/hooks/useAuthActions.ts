@@ -46,12 +46,12 @@ export function useAuthActions() {
   };
 
   const logoutUser = async () => {
-    const token = getToken();
     try {
       // Try to logout from server (we don't know the user type, so we'll try both)
+      // The interceptor will automatically add the auth token from cookies
       await Promise.allSettled([
-        AuthService.logoutRecruiter(token || undefined),
-        AuthService.logoutJobSeeker(token || undefined),
+        AuthService.logoutRecruiter(),
+        AuthService.logoutJobSeeker(),
       ]);
     } finally {
       // Always clear local auth state

@@ -116,11 +116,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (user.role === "RECRUITER") {
         const recruiterProfile = await fetchRecruiterProfile();
         setProfile({ recruiter: recruiterProfile });
+
+        // Check if verification is null or not APPROVED, redirect to onboarding
+        const verification = recruiterProfile.verification;
+        if (!verification || verification.status !== "APPROVED") {
+          // Only redirect if not already on profile page
+          const currentPath = window.location.pathname;
+          if (!currentPath.includes("/auth/employer/profile")) {
+            router.push("/auth/employer/profile");
+          }
+        }
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
-  }, [user]);
+  }, [user, router]);
 
   const login = async (authResult: {
     accessToken: string;
