@@ -30,6 +30,7 @@ export interface RecruiterProfile {
   companyDescription?: string;
   companyLogoUrl?: string;
   type?: "INDIVIDUAL" | "AGENCY" | "COMPANY";
+  verification?: RecruiterVerification;
 }
 
 export interface RecruiterVerification {
@@ -123,7 +124,7 @@ export async function checkJobSeekerProfileCompletion(): Promise<
     const profile = await fetchJobSeekerProfile();
 
     if (!isJobSeekerProfileComplete(profile)) {
-      return "/auth/jobseeker/complete-profile";
+      return "/auth/jobseeker/profile";
     }
 
     return null;
@@ -146,7 +147,7 @@ export async function checkRecruiterProfileCompletion(): Promise<
     ]);
 
     if (!isRecruiterProfileComplete(profile, verification)) {
-      return "/auth/employer/complete-profile";
+      return "/auth/employer/profile";
     }
 
     return null;

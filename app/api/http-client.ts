@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance } from "axios";
 import { ENV } from "@/app/config/env.config";
-import { getAuthToken } from "@/app/lib/utils";
+import { getAccessToken } from "../lib/cookies";
 
 // Create axios instance with base configuration
 const httpClient: AxiosInstance = axios.create({
@@ -15,7 +15,7 @@ const httpClient: AxiosInstance = axios.create({
 // Add request interceptor to dynamically add auth token to every request
 httpClient.interceptors.request.use(
   (config) => {
-    const token = getAuthToken();
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
