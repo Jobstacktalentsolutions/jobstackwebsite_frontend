@@ -6,6 +6,7 @@ import Input from "@/app/components/input";
 import Button from "@/app/components/button";
 import { Building2, MapPin, Globe, Users } from "lucide-react";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
+import Loading from '@/app/loading'
 import statesAndCities from "@/app/lib/states-and-cities.json";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import {
@@ -301,11 +302,7 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <AuthPageLayout
-        heading="Loading..."
-        subtext="Please wait while we load your profile"
-        message={<div className="text-center">Loading...</div>}
-      />
+     <Loading/>
     );
   }
 

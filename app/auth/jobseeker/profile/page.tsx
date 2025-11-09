@@ -23,6 +23,7 @@ import {
   fetchJobSeekerProfile,
   type JobSeekerProfile,
 } from "@/app/lib/profile-completion";
+import Loading from "@/app/loading";
 import { jsGetCvDocument } from "@/app/api/auth-jobseeker.api";
 
 interface JobseekerProfileData {
@@ -291,15 +292,7 @@ const JobseekerProfilePage = () => {
   // Show loading while checking authentication or loading profile data
   if (authLoading || loading) {
     return (
-      <AuthPageLayout
-        heading="Loading..."
-        subtext="Please wait while we load your profile"
-        message={
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        }
-      />
+      <Loading />
     );
   }
 

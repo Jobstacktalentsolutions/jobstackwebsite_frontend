@@ -13,7 +13,7 @@ import Link from "next/link";
 
 export type authPageProps = {
   heading: string;
-  subtext?: string;
+  subtext?: React.ReactNode;
   message: React.ReactNode;
 };
 

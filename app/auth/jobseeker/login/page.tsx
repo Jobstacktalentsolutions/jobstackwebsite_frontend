@@ -63,7 +63,8 @@ export default function LoginPage() {
   return (
     <AuthPageLayout
       heading=" Welcome Back!"
-      subtext=" Great to see you again. Pick up right where you left off."
+      subtext=" Great to see you again. 
+      Pick up right where you left off."
       message={
         <div className="flex flex-col justify-center  ">
           <div className="max-w-xl mx-auto w-full">
