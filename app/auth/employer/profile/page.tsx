@@ -13,7 +13,6 @@ import {
   updateVerificationInfo,
   uploadVerificationDocument,
   getDocumentRequirements,
-  checkAutoVerificationEligibility,
 } from "@/app/api/recruiter-verification.api";
 import {
   UpdateVerificationInfoDto,

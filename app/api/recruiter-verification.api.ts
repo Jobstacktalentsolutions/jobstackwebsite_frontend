@@ -5,7 +5,6 @@ import type {
   RecruiterVerificationDocument,
   UpdateVerificationInfoDto,
   UploadVerificationDocumentDto,
-  AutoVerificationEligibility,
   AutoVerificationResult,
   DocumentRequirement,
 } from "@/app/types/recruiter.type";
@@ -96,13 +95,6 @@ export async function getDocumentRequirements(): Promise<
   return data.data;
 }
 
-export async function checkAutoVerificationEligibility(): Promise<AutoVerificationEligibility> {
-  const { data } = await httpClient.get<
-    ResponseDto<AutoVerificationEligibility>
-  >(`${base}/auto-verification-eligibility`);
-  return data.data;
-}
-
 export default {
   getMyProfile,
   getMyVerification,
@@ -111,5 +103,4 @@ export default {
   getMyVerificationDocuments,
   deleteVerificationDocument,
   getDocumentRequirements,
-  checkAutoVerificationEligibility,
 };
