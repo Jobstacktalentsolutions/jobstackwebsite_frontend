@@ -3,7 +3,7 @@
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useProfile } from "@/app/lib/auth-context";
-import { VerificationStatus } from "@/app/types/recruiter.type";
+import { VerificationStatus } from "@/app/lib/enums";
 
 /**
  * Warning banner component that shows when recruiter is not verified
@@ -19,8 +19,12 @@ export default function VerificationWarningBanner() {
   const verification = profile.recruiter.verification;
   const status = verification?.status;
 
-  // Only show if verification is pending or rejected
-  if (status === VerificationStatus.APPROVED || !verification) {
+  // Only show if verification is pending or rejected (not NOT_STARTED or APPROVED)
+  if (
+    status === VerificationStatus.APPROVED ||
+    status === VerificationStatus.NOT_STARTED ||
+    !verification
+  ) {
     return null;
   }
 
