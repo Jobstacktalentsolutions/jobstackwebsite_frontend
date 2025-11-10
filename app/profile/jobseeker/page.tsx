@@ -5,6 +5,7 @@ import profileImage from '@/app/assets/profileImage.svg'
 import editIcon from '@/app/assets/editIcon.svg'
 import threedots from '@/app/assets/threedots.svg';
 import calendar from '@/app/assets/calendar.svg';
+import location from '@/app/assets/locationPin.svg';
 import documentIcon from '@/app/assets/documentIcon.svg'
 const tagBase =
     "inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700";
@@ -17,9 +18,9 @@ const sectionTitle = "flex items-center justify-between mb-3 text-sm font-semibo
 const ProfilePage: React.FC = () => {
     return (
         <main className="min-h-screen bg-slate-100">
-            <div className=" bg-white shadow-sm border-2  border-slate-200">
+            <div className="">
                 {/* Top banner */}
-                <div className="bg-gradient-to-r from-sky-900 to-sky-700 px-6 pb-24 pt-8 md:px-10 md:mb-20">
+                <div className="bg-gradient-to-r from-sky-900 to-sky-700 px-6 pb-10 md:pb-24  pt-8 mb-10 md:px-10 md:mb-20">
                     {/* Decorative stripes, optional */}
                     <div className="pointer-events-none absolute inset-y-0 left-0 w-40 opacity-20">
                         <div className="h-full bg-[radial-gradient(circle_at_top,_#fff_0,_transparent_60%)]" />
@@ -27,14 +28,14 @@ const ProfilePage: React.FC = () => {
 
                     <header className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between  h-full">
                         {/* Left: avatar and basic info */}
-                        <div className="flex text-[#717680] absolute w-full items-start gap-4 md:gap-6 -bottom-[160px]">
+                        <div className="flex text-[#717680] md:absolute w-full items-start gap-4 md:gap-6 bottom-0 md:-bottom-[150px] ">
                             <div className="h-20 w-20 overflow-hidden rounded-full border-4 border-white/70 bg-slate-200 md:h-24 md:w-24">
                                 <Image src={profileImage} alt="dark skinned man as the profile picture" />
                             </div>
 
                             <div className="text-white">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h1 className="text-2xl font-semibold md:text-3xl">
+                                <div className="flex flex-wrap items-center gap-2 pb-2">
+                                    <h1 className="text-2xl font-semibold md:text-3xl ">
                                         Chinedu Okoro
                                     </h1>
                                     <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
@@ -42,26 +43,31 @@ const ProfilePage: React.FC = () => {
                                         Approved
                                     </span>
                                 </div>
-                                <p className="mt-1 text-[#717680] text-sm md:text-base">
+                                <p className="mt-1 text-white md:text-[#717680] text-sm md:text-sm">
                                     Customer Service Representative
                                 </p>
-                                <p className="mt-1 text-xs text-[#717680] md:text-sm">
-                                    Ikeja, Lagos
-                                </p>
+                                <div>
+                                    <Image src={location } alt="location"/>
+                                    <p className="mt-1 text-xs text-white md:text-[#717680]  md:text-sm">
+                                        Ikeja, Lagos
+                                    </p>
+                                </div>
+                               
                             </div>
                         </div>
 
                         {/* Right: actions */}
                         <div className="flex w-full flex-wrap items-center gap-3 justify-end">
-                            <button className="rounded-full border border-white/70 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur hover:bg-white/20">
-                                <p>  Edit Profile</p>
-                                <Image src={editIcon} alt="edit icon" />
+                            <button className=" flex items-center rounded-lg bg-white  px-4 py-2 text-xs font-medium text-blue backdrop-blur hover:bg-white/80">
+                                <p >  Edit Profile</p>
+                                <Image className="mx-4"  src={editIcon} alt="edit icon" width={15} height={15}/>
                             </button>
-                            <button className="rounded-full border border-white/70 bg-white px-4 py-2 text-xs font-medium text-slate-900 hover:bg-slate-100">
+                            <button className="rounded-lg border border-white/70  bg-[#2572A7] px-4 py-2 text-xs font-medium text-white 
+                            hover:bg-white/80">
                                 Share Profile
                             </button>
                             <button
-                                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/60 bg-white/10 text-white hover:bg-white/25"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg  bg-white  hover:bg-white/90"
                                 aria-label="More options"
                             >
                                 <Image src={threedots} alt="three dots" />
@@ -101,15 +107,16 @@ const ProfilePage: React.FC = () => {
                                     {/* Job 1 */}
                                     <div className="flex flex-col border-b border-slate-100 py-4 last:border-b-0 last:pb-0">
 
-                                        <p className="text-base">Sales Assistant</p>
+                                        <p className="text-sm">Sales Assistant</p>
 
 
                                         <p className="text-sm text-slate-500 my-2">Fashion Hub Ltd.</p>
-                                        <div className="flex">
-                                            <Image src={calendar} alt="calendar" />
-                                            <p className="text-base text-slate-500">
-                                                Jan 2022 – Present
-                                            </p>
+                                        <div className="flex  flex-col ">
+                                            <div className="flex ">
+                                                <Image src={calendar} alt="calendar" className="mr-2" />
+                                                <p className="text-sm text-slate-500">
+                                                    Jan 2022 – Present
+                                                </p></div>
                                             <p className="mt-2 text-sm text-slate-500">
                                                 Managing customer inquiries, processing sales transactions,
                                                 and maintaining store inventory. Achieved 95 percent
@@ -121,17 +128,17 @@ const ProfilePage: React.FC = () => {
                                         {/* Job 2 */}
                                         <div className="flex flex-col">
 
-                                            <p className="text-xl">Front Desk Officer</p>
-                                            <p className="text-base text-slate-500 my-2">SwiftPay Nigeria</p>
+                                            <p className="text-lg">Front Desk Officer</p>
+                                            <p className="text-sm text-slate-500 my-2">SwiftPay Nigeria</p>
                                             <div className="flex">
-                                                <Image src={calendar} alt="calendar" />
-                                                <p className="text-base text-slate-500">
+                                                <Image src={calendar} alt="calendar" className="mr-2" />
+                                                <p className="text-sm text-slate-500">
                                                     Jun 2020 – Dec 2021
                                                 </p>
                                             </div>
 
 
-                                            <p className="mt-2 text-base text-slate-500">
+                                            <p className="mt-2 text-sm text-slate-500">
                                                 Handled reception duties, managed visitor logs, and
                                                 coordinated office supplies. Supported team of more than
                                                 15 employees.
@@ -150,10 +157,10 @@ const ProfilePage: React.FC = () => {
                                     <p className="font-semibold">
                                         Diploma in Business Administration
                                     </p>
-                                    <p className="text-xs text-slate-500">
+                                    <p className="mt-2 text-sm text-slate-500">
                                         Lagos City Polytechnic
                                     </p>
-                                    <p className="mt-1 text-xs text-slate-500">2018 – 2020</p>
+                                    <p className="mt-1 text-sm text-slate-500">2018 – 2020</p>
                                 </div>
                             </section>
 
@@ -163,7 +170,7 @@ const ProfilePage: React.FC = () => {
                                     Where You have Applied
                                 </h2>
 
-                                <div className="space-y-3 text-sm">
+                                <div className="space-y-3 mt-2 text-sm text-slate-500">
                                     <ApplicationRow
                                         role="Front Desk Officer"
                                         company="TechFlow NG"
@@ -277,10 +284,10 @@ const ApplicationRow: React.FC<ApplicationRowProps> = ({
     return (
         <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
             <div>
-                <p className="text-sm font-semibold text-slate-900">{role}</p>
-                <p className="text-xs text-slate-500">{company}</p>
+                <p className=" font-semibold text-slate-900">{role}</p>
+                <p className=" text-slate-500">{company}</p>
             </div>
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${badgeClasses}`}>
+            <span className={`inline-flex items-center rounded-full px-3 py-1  font-medium ${badgeClasses}`}>
                 {status}
             </span>
         </div>

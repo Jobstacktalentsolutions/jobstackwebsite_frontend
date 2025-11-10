@@ -17,7 +17,7 @@ export default function Page() {
           <SignUp />
         </Suspense>
       </nav>
-      <h1>Dashboard</h1>
+     
     </>
   )
 }
