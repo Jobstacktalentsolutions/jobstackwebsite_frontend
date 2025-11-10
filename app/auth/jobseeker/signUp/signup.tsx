@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignUp() {
 
-  const [fullName, setfullName] = useState('')
+
   const [submitting, setSubmitting] = useState(false);
   type Persona = "jobseeker" | "employer";
 
@@ -26,7 +26,6 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pwError, setPwError] = useState<string | undefined>();
   const [err, setErr] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   // Jobseeker fields
   const [firstName, setFirstName] = useState("");
@@ -57,24 +56,23 @@ export default function SignUp() {
   }, [persona]);
 
   async function onSubmit(e: React.FormEvent) {
-
     e.preventDefault();
     setPwError(undefined);
     setSubmitting(true);
+
     try {
-      const [firstName, ...rest] = fullName.trim().split(" ");
-      const lastName = rest.join(" ") || firstName;
       const payload: JobSeekerRegistrationDto = {
         email,
         password,
         firstName,
         lastName,
-        phoneNumber: phoneNumber,
+        phoneNumber,
       };
+
       const res = await jsRegister(payload);
       toastSuccess("Verification code sent to your email");
       router.push(`/auth/employer/signUp/verify?email=${encodeURIComponent(email)}`);
-    } catch (err: unknown) {
+    } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Unable to create account";
       setPwError(errorMessage);
@@ -83,6 +81,7 @@ export default function SignUp() {
       setSubmitting(false);
     }
   }
+
 
   return (
     <div className="">
@@ -196,9 +195,10 @@ export default function SignUp() {
               error={pwError}
             />
 
-            <Button className="w-full my-10 text-medium" disabled={loading}>
-              {loading ? "Creating account..." : persona === "employer" ? "Create employer account" : "Create an account"}
+            <Button className="w-full my-10 text-medium" disabled={submitting}>
+              {submitting ? "Creating account..." : "Create an account"}
             </Button>
+
 
             {err && <p className="text-red-600 text-sm whitespace-pre-line">{err}</p>}
 

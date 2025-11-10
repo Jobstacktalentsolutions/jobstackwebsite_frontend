@@ -33,7 +33,7 @@ export default function ForgotPassword({
 
   const carouselImages = persona === "employer" ? employerImgs : jobseekerImgs;
     return (
-      <div className="w-full flex flex-col md:flex-row   p-10 md:my-10 md:pl-20 relative  overflow-hidden " style={{ fontFamily: 'var(--font-dmSans)' }}>
+      <div className="w-full flex flex-col md:flex-row   p-10  md:pl-20 relative  overflow-hidden " style={{ fontFamily: 'var(--font-dmSans)' }}>
             {/* Left Column */}
         <div className=" md:px-6 w-full md:w-[45%] md:pr-32 flex flex-col " style={{ fontFamily: 'var(--font-dmSans)' }}>
           <div className="hidden my-10 md:flex md:mb-21">
@@ -56,7 +56,7 @@ export default function ForgotPassword({
             </div>
 
       {/* Right Column */}
-      <div className="hidden md:w-1/2 md:block order-first   md:order-none bg-white">
+      <div className="hidden md:w-1/2 md:block order-first   md:order-none ">
         <div className="w-full fixed  h-[300px] md:h-screen">
           <Carousel
             images={carouselImages}
