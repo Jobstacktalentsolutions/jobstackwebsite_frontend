@@ -247,7 +247,7 @@ const ProfilePage = () => {
       toastInfo(
         "Profile saved. Verification pending. Please wait for approval."
       );
-      router.push("/auth/employer/profile/companyProfile");
+      router.push("/dashboard/employers");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Failed to save profile";
