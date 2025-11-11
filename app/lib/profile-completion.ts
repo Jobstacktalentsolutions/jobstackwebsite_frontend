@@ -150,7 +150,7 @@ export async function checkJobSeekerProfileCompletion(): Promise<
 
     // Only redirect to onboarding if status is NOT_STARTED
     if (profile.approvalStatus === ApprovalStatus.NOT_STARTED) {
-      return "/auth/jobseeker/profile";
+      return "/jobseeker/auth/profile";
     }
 
     // If profile is incomplete but status is not NOT_STARTED, don't redirect
@@ -163,7 +163,7 @@ export async function checkJobSeekerProfileCompletion(): Promise<
   } catch (error) {
     console.error("Error checking job seeker profile:", error);
     // On error, redirect to profile page to be safe
-    return "/auth/jobseeker/profile";
+    return "/jobseeker/auth/profile";
   }
 }
 

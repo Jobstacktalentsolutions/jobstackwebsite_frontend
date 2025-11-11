@@ -1,10 +1,10 @@
-import Nav from './components/nav'
-import Hero from './components/hero'
-import WhyChooseUs from './components/whychoose'
-import Testimonials from './components/testimonials'
-import JobsSection from './components/jobpostings'
-import CTA from './components/CTA'
-import Footer from './components/footer'
+import Nav from './pages/components/nav'
+import Hero from './pages/components/hero'
+import WhyChooseUs from './pages/components/whychoose'
+import Testimonials from './pages/components/testimonials'
+import JobsSection from './pages/components/jobpostings'
+import CTA from './pages/components/CTA'
+import Footer from './pages/components/footer'
 
 export default function Page() {
   return (
@@ -15,8 +15,8 @@ export default function Page() {
       <Testimonials />
       <JobsSection />
       <CTA />
-      <Footer/>
-      
+      <Footer />
+
     </main>
   )
 }

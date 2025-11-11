@@ -1,6 +1,6 @@
 import "./global.css";
 import type { Metadata } from "next";
-import AppToaster from "@/app/components/toaster";
+import AppToaster from "@/app/pages/components/toaster";
 import { Geist, Geist_Mono, DM_Sans } from "next/font/google";
 import Providers from "@/app/providers/AuthProvider";
 

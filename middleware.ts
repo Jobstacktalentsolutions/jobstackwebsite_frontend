@@ -3,11 +3,11 @@ import type { NextRequest } from "next/server";
 
 // Define protected routes and their required roles
 const protectedRoutes = {
-  "/dashboard/employers": ["RECRUITER"],
+  "/pages/employer": ["RECRUITER"],
   "/auth/employer/profile": ["RECRUITER"],
   "/auth/employer/profile/companyProfile": ["RECRUITER"],
   "/dashboard": ["JOB_SEEKER"],
-  "/auth/jobseeker/profile": ["JOB_SEEKER"],
+  "/jobseeker/auth/profile": ["JOB_SEEKER"],
   "/admin": ["ADMIN"],
 };
 
@@ -18,12 +18,12 @@ const publicRoutes = [
   "/jobs",
   "/blog",
   "/postajob",
-  "/auth/employer/login",
-  "/auth/employer/signUp",
-  "/auth/employer/forgetPassword",
-  "/auth/jobseeker/login",
-  "/auth/jobseeker/signUp",
-  "/auth/jobseeker/forgetPassword",
+  " /pages/employer/auth/login",
+  "/pages/employer/auth/signUp",
+  "/pages/employer/auth/forgetPassword",
+  "/jobseeker/auth/login",
+  "/jobseeker/auth/signUp",
+  "/jobseeker/auth/forgetPassword",
 ];
 
 export function middleware(request: NextRequest) {
@@ -79,20 +79,20 @@ export function middleware(request: NextRequest) {
 function getLoginPathForRole(role: string): string {
   switch (role) {
     case "RECRUITER":
-      return "/auth/employer/login";
+      return " /pages/employer/auth/login";
     case "JOB_SEEKER":
-      return "/auth/jobseeker/login";
+      return "/jobseeker/auth/login";
     case "ADMIN":
       return "/auth/admin/login";
     default:
-      return "/auth/employer/login";
+      return " /pages/employer/auth/login";
   }
 }
 
 function getDashboardPathForRole(role: string): string {
   switch (role) {
     case "RECRUITER":
-      return "/dashboard/employers";
+      return "/pages/employer";
     case "JOB_SEEKER":
       return "/dashboard";
     case "ADMIN":

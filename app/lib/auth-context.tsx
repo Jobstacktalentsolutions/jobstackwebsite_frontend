@@ -41,7 +41,7 @@ export interface UserProfile {
   recruiter?: RecruiterProfile;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   isAuthenticated: boolean;
@@ -118,8 +118,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Only redirect to onboarding if approvalStatus is NOT_STARTED
         if (jobSeekerProfile.approvalStatus === ApprovalStatus.NOT_STARTED) {
           const currentPath = window.location.pathname;
-          if (!currentPath.includes("/auth/jobseeker/profile")) {
-            router.push("/auth/jobseeker/profile");
+          if (!currentPath.includes("/jobseeker/auth/profile")) {
+            router.push("/jobseeker/auth/profile");
           }
         }
       } else if (user.role === UserRole.RECRUITER) {
@@ -197,7 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       // Profile is complete, redirect to dashboard
       if (normalizedRole === UserRole.RECRUITER) {
-        router.push("/dashboard/employers");
+        router.push("/pages/employer");
       } else {
         router.push("/dashboard");
       }
@@ -241,7 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (userRole === UserRole.RECRUITER) {
         return "/auth/employer/profile";
       } else if (userRole === UserRole.JOB_SEEKER) {
-        return "/auth/jobseeker/profile";
+        return "/jobseeker/auth/profile";
       }
     }
 

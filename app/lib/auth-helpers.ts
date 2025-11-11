@@ -77,7 +77,7 @@ export async function handleRecruiterLogin(
 
     return {
       success: true,
-      redirectPath: redirectPath || "/dashboard/employers",
+      redirectPath: redirectPath || "/pages/employer",
       user: authResult.user,
     };
   } catch (error) {
