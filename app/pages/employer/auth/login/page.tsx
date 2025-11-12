@@ -44,7 +44,7 @@ export default function LoginPage() {
         } catch { }
         toastInfo("Please verify your email to continue");
         router.push(
-          `/employer/auth/signUp/verify?email=${encodeURIComponent(email)}`
+          ` /pages/employer/auth/login/verify?email=${encodeURIComponent(email)}`
         );
         return;
       }

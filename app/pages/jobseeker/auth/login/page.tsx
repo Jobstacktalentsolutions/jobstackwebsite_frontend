@@ -5,13 +5,8 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import Button from "@/app/pages/components/button";
 import Input from "@/app/pages/components/input";
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
-import logo from "../@/app/assets/coloredlogo.svg";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import { useState } from "react";
-import Carousel from "@/app/pages/components/carousel";
-import welcome from "../@/app/assets/welcomeimage.png";
-import welcome2 from "../@/app/assets/welcomeimagetwo.png";
-import welcome3 from "../@/app/assets/securitywithstaff.png";
 import PasswordField from "@/app/pages/components/passwordField";
 import { jsSendVerificationEmail } from "@/app/api/auth-jobseeker.api";
 import { toastError, toastSuccess, toastInfo } from "@/app/lib/toast";
@@ -22,7 +17,7 @@ import { useAuthActions } from "@/app/hooks/useAuthActions";
 export default function LoginPage() {
   const router = useRouter();
   const { loginJobSeeker } = useAuthActions();
-  const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pwError, setPwError] = useState<string | undefined>(undefined);
@@ -48,7 +43,7 @@ export default function LoginPage() {
         } catch { }
         toastInfo("Please verify your email to continue");
         router.push(
-          `/employer/auth/signUp/verify?email=${encodeURIComponent(email)}`
+          ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(email)}`
         );
         return;
       }
@@ -113,7 +108,7 @@ export default function LoginPage() {
               <p className="text-center text-sm text-slate-500">
                 Don’t have an account?{" "}
                 <Link
-                  href="/jobseeker/auth/signUp"
+                  href="/pages/jobseeker/auth/signUp"
                   className="text-blue-600 hover:underline"
                 >
                   Sign up

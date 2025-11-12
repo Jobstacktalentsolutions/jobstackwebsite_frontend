@@ -9,6 +9,9 @@ import Carousel from "@/app/pages/components/carousel";
 import welcome from "@/app/assets/welcomeimage.png";
 import welcome2 from "@/app/assets/welcomeimagetwo.png";
 import welcome3 from "@/app/assets/securitywithstaff.png";
+import cooperatewelcome from "@/app/assets/image 505.png"
+import cooperatewelcome2 from "@/app/assets/image 506.png"
+
 import Link from "next/link";
 
 export type authPageProps = {
@@ -28,8 +31,8 @@ export default function AuthPageLayout({
   const persona =
     (searchParams.get("persona") as "employer" | "jobseeker") || "jobseeker";
 
-  const employerImgs = [welcome3, welcome, welcome2];
-  const jobseekerImgs = [welcome, welcome2, welcome3];
+  const jobseekerImgs = [welcome3, welcome, welcome2];
+  const employerImgs = [cooperatewelcome, cooperatewelcome2, welcome];
 
   const carouselImages = persona === "employer" ? employerImgs : jobseekerImgs;
   return (

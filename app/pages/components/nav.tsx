@@ -82,13 +82,13 @@ export default function Nav() {
                         Employer&rsquo;s dashboard
                     </Link>
                     <Link
-                        href="/jobseeker/auth/signUp"
+                        href="/pages/jobseeker/auth/signUp"
                         className="rounded-lg bg-[#E6F2F9] px-5 py-3 text-blue font-semibold"
                     >
                         Sign up
                     </Link>
                     <Link
-                        href="/jobseeker/auth/login"
+                        href="/pages/jobseeker/auth/login"
                         className="rounded-lg bg-[#E6F2F9] px-5 py-3 text-blue font-semibold"
                     >
                         Log in
@@ -182,13 +182,13 @@ export default function Nav() {
 
                         {/* Primary action */}
                         <Link
-                            href="/jobseeker/auth/signUp"
+                            href="/pages/jobseeker/auth/signUp"
                             className="mt-6 inline-flex w-[220px] items-center justify-center rounded-2xl bg-[#2F76B6] px-6 py-3 text-white font-semibold shadow-[0_12px_30px_-8px_rgba(47,118,182,0.55)]"
                         >
                             Sign up
                         </Link>
                         <Link
-                            href="/jobseeker/auth/login"
+                            href="/pages/jobseeker/auth/login"
                             className="mt-6 inline-flex w-[220px] items-center border-[2px] justify-center rounded-2xl text-[#2F76B6] px-6 py-3 bg-white font-semibold shadow-[0_12px_30px_-8px_rgba(47,118,182,0.55)]"
                         >
                             Log in

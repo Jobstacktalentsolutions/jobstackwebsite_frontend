@@ -206,7 +206,7 @@ export default function OtpVerification({
           <div className="mt-4 text-sm text-slate-600">
             {timeLeft > 0 ? (
               <div>
-                Didn&apos;t receive code? Resend in{" "}
+                Didn&apos;t receive code? 
                 <span className="font-medium text-blue-700">
                   0:{String(timeLeft).padStart(2, "0")}
                 </span>

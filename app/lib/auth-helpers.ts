@@ -48,7 +48,7 @@ export async function handleJobSeekerLogin(
 
     return {
       success: true,
-      redirectPath: redirectPath || "/dashboard",
+      redirectPath: redirectPath || "/",
       user: authResult.user,
     };
   } catch (error) {

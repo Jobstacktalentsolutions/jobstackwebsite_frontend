@@ -10,7 +10,7 @@ export default function NotFound() {
     const pathname = usePathname();
     const isEmployer = pathname.includes("employer");
 
-    const backRoute = isEmployer ? "/dashboard/employer" : "/";
+    const backRoute = isEmployer ? "/pages/employer/dashboard" : "/pages/jobseeker/dashboard";
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-sky-50 text-brand-blue px-6">
             <div className="max-w-md text-center">

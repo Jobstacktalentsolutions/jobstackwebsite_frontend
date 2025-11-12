@@ -71,11 +71,10 @@ export default function SignUp() {
 
       const res = await jsRegister(payload);
       toastSuccess("Verification code sent to your email");
-      router.push(`/employer/auth/signUp/verify?email=${encodeURIComponent(email)}`);
+      router.push(` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Unable to create account";
-      setPwError(errorMessage);
       toastError(errorMessage);
     } finally {
       setSubmitting(false);
@@ -217,7 +216,7 @@ export default function SignUp() {
 
             <p className="text-center text-sm text-slate-500">
               Already have an account?{" "}
-              <Link href="/jobseeker/auth/login" className="text-blue-600 hover:underline">
+              <Link href="/pages/jobseeker/auth/login" className="text-blue-600 hover:underline">
                 Sign in
               </Link>
             </p>

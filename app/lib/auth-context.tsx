@@ -118,8 +118,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Only redirect to onboarding if approvalStatus is NOT_STARTED
         if (jobSeekerProfile.approvalStatus === ApprovalStatus.NOT_STARTED) {
           const currentPath = window.location.pathname;
-          if (!currentPath.includes("/jobseeker/auth/profile")) {
-            router.push("/jobseeker/auth/profile");
+          if (!currentPath.includes("/pages/jobseeker/auth/profile")) {
+            router.push("/pages/jobseeker/auth/profile");
           }
         }
       } else if (user.role === UserRole.RECRUITER) {
@@ -134,8 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ) {
           // Only redirect if not already on profile page
           const currentPath = window.location.pathname;
-          if (!currentPath.includes("/auth/employer/profile")) {
-            router.push("/auth/employer/profile");
+          if (!currentPath.includes(" /pages/employer/auth/profile")) {
+            router.push(" /pages/employer/auth/profile");
           }
         }
       }
@@ -239,9 +239,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Error checking profile completion:", error);
       // If profile check fails, redirect to profile page to be safe
       if (userRole === UserRole.RECRUITER) {
-        return "/auth/employer/profile";
+        return " /pages/employer/auth/profile";
       } else if (userRole === UserRole.JOB_SEEKER) {
-        return "/jobseeker/auth/profile";
+        return "/pages/jobseeker/auth/profile";
       }
     }
 

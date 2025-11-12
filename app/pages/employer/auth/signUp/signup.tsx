@@ -82,7 +82,7 @@ export default function SignUp() {
       await rcRegister(payload);
       toastSuccess("Account created successfully! Please verify your email.");
       router.push(
-        `/employer/auth/signUp/verify?email=${encodeURIComponent(email)}`
+        ` /pages/employer/auth/signUp/verify?email=${encodeURIComponent(email)}`
       );
     } catch (err: any) {
       const errorMessage =

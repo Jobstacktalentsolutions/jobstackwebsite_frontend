@@ -1,42 +1,76 @@
-// components/ProfileStrength.tsx
-import React from "react";
+// app/components/ProfileStrength.tsx
+'use client';
 
-export const ProfileStrength: React.FC = () => {
+import Image, { StaticImageData } from 'next/image';
+import React from 'react';
+
+type StrengthItem = {
+    label: string;
+    percent: number; // 0–100
+};
+
+type ProfileStrengthProps = {
+    title?: string;
+    onEdit?: () => void;
+    avatarSrc: string | StaticImageData;
+    items: StrengthItem[];
+};
+
+export default function ProfileStrength({
+    title = 'Profile Strength',
+    onEdit,
+    avatarSrc,
+    items,
+}: ProfileStrengthProps) {
     return (
-        <section className="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm md:p-6">
-            <h2 className="text-xl font-semibold tracking-tight">Profile Strength</h2>
-            <p className="text-sm text-slate-600">
-                You are most likely to be hired for:
-            </p>
-
-            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-xs font-semibold text-white">
-                    OA
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-slate-900">
-                        Office Assistant
-                    </span>
-                    <span className="text-xs text-slate-500">ProBiz Ltd</span>
-                </div>
+        <section className="w-full max-w-[560px]">
+            {/* Header */}
+            <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-3xl font-semibold">{title}</h2>
+                <button
+                    type="button"
+                    onClick={onEdit}
+                    className="text-sm font-medium text-blue-600 hover:underline"
+                >
+                    Edit
+                </button>
             </div>
 
-            <div className="mt-2 space-y-3 text-sm">
-                <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Profile completeness</span>
-                    <span className="text-xs font-medium text-emerald-600">80%</span>
+            {/* Card (solid blue border) */}
+            <div className="relative rounded-2xl border-2 border-blue-400/80 p-6 bg-white shadow-sm">
+                {/* Soft rounded corner shading (subtle) */}
+                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-0 [box-shadow:inset_0_0_0_1px_rgba(59,130,246,0.08)]" />
+
+                {/* Avatar container with dotted outline */}
+                <div className="mx-auto mb-6 w-fit rounded-xl border-2 border-dotted border-blue-400/70 p-3">
+                    <div className="relative h-28 w-28 rounded-full">
+                        <Image
+                            src={avatarSrc}
+                            alt="Profile photo"
+                            fill
+                            className="rounded-full object-cover border-4 border-blue-400/80"
+                            sizes="112px"
+                        />
+                    </div>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                    <div className="h-full w-4/5 rounded-full bg-emerald-500" />
-                </div>
-                <div className="text-xs text-slate-500">
-                    Add more skills and work experience to improve your chances.
+
+                {/* Items box with dotted outline */}
+                <div className="rounded-xl border-2 border-dotted border-blue-400/70 p-4">
+                    <ul className="space-y-3">
+                        {items.map((item, i) => (
+                            <li
+                                key={`${item.label}-${i}`}
+                                className="flex items-center justify-between rounded-md bg-gray-50 px-4 py-3 text-sm sm:text-base"
+                            >
+                                <span className="text-gray-700">{item.label}</span>
+                                <span className="font-semibold text-gray-900">
+                                    {Math.round(item.percent)}%
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
-
-            <button className="mt-auto inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800">
-                Improve Profile
-            </button>
         </section>
     );
-};
+}

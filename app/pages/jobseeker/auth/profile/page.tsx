@@ -45,7 +45,7 @@ const JobseekerProfilePage = () => {
   // Check authentication - will redirect if not authenticated
   const { isLoading: authLoading } = useProtectedRoute({
     allowedRoles: ["JOB_SEEKER"],
-    redirectTo: "/jobseeker/auth/login",
+    redirectTo: "/pages/jobseeker/auth/login",
   });
 
   // Form state
@@ -260,7 +260,7 @@ const JobseekerProfilePage = () => {
       await refreshProfile();
 
       toastSuccess("Profile completed successfully!");
-      router.push("/dashboard"); // Redirect to main dashboard
+      router.push("/pages/jobseeker/dashboard"); // Redirect to main dashboard
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Failed to save profile";

@@ -16,7 +16,7 @@ const TimeSlot = ({ timeLeft, setTimeLeft }: Props) => {
         <div>
             {timeLeft > 0 ? (
                 <div>
-                    Expires in{" "}
+                    Resend in{" "}
                     <span className="font-medium text-blue-700">
                         0:{String(timeLeft).padStart(2, "0")}
                     </span>

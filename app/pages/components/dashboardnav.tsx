@@ -16,7 +16,7 @@ const Dashboardnav = () => {
     // Redirect if not authenticated
     useEffect(() => {
         if (!isAuthLoading && !isAuthenticated) {
-            router.push('/pages/employer/login');
+            router.push(' /pages/jobseeker/auth/login');
         }
     }, [isAuthLoading, isAuthenticated, router]);
 
@@ -46,7 +46,7 @@ const Dashboardnav = () => {
             <Image src={logo} alt="logo image" className="" />
             <div className='flex items-center w-1/6'>
                 <div className="flex items-center w-full"><Image src={notification} alt='notification icon' className=' w bg-sky-50 p-2 w-10 h-10 rounded-full mr-6' />
-                <p className='bg-white/30 p-2 rounded-full'>{user?.firstName}</p>
+                    <p className='bg-white/30 p-2 rounded-full'>{user?.firstName}</p>
                 </div>
 
             </div>

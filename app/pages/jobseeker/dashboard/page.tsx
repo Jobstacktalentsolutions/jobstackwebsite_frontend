@@ -3,7 +3,8 @@ import React from "react";
 import Image from 'next/image'
 import { StatCard } from "@/app/pages/components/statcard";
 import { ApplicationJourney } from "@/app/pages/components/applicationJourney";
-import { ProfileStrength } from "@/app/pages/components/profileStrength";
+import avatar from '@/app/assets/avatar.svg'
+import  ProfileStrength  from "@/app/pages/components/profileStrength";
 import JobCard from '@/app/pages/components/jobcard'; 
 import Dashboardnav from "@/app/pages/components/dashboardnav"
 import { useAuth } from '@/app/lib/auth-context';
@@ -156,7 +157,18 @@ export default function CandidateDashboard() {
                 {/* Application Journey + Profile Strength */}
                 <section className="grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]">
                     <ApplicationJourney />
-                    <ProfileStrength />
+                    <ProfileStrength
+                        avatarSrc={avatar}
+                        onEdit={() => console.log('Edit clicked')}
+                        items={[
+                            { label: 'Verified Government ID', percent: 50 },
+                            { label: 'Profile Photo (Clear headshot)', percent: 90 },
+                            { label: 'Detailed Work Experience (At least one role)', percent: 85 },
+                            { label: 'CV/Resume Uploaded', percent: 80 },
+                            { label: 'Educational Background Filled', percent: 95 },
+                            { label: 'Profile Bio/Summary Written', percent: 75 },
+                        ]}
+                    />
                 </section>
             </main>
         </div>

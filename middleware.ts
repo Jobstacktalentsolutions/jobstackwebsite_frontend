@@ -4,10 +4,10 @@ import type { NextRequest } from "next/server";
 // Define protected routes and their required roles
 const protectedRoutes = {
   "/pages/employer": ["RECRUITER"],
-  "/auth/employer/profile": ["RECRUITER"],
-  "/auth/employer/profile/companyProfile": ["RECRUITER"],
+  " /pages/employer/auth/profile": ["RECRUITER"],
+  " /pages/employer/auth/profile/companyProfile": ["RECRUITER"],
   "/dashboard": ["JOB_SEEKER"],
-  "/jobseeker/auth/profile": ["JOB_SEEKER"],
+  "/pages/jobseeker/auth/profile": ["JOB_SEEKER"],
   "/admin": ["ADMIN"],
 };
 
@@ -21,8 +21,8 @@ const publicRoutes = [
   " /pages/employer/auth/login",
   "/pages/employer/auth/signUp",
   "/pages/employer/auth/forgetPassword",
-  "/jobseeker/auth/login",
-  "/jobseeker/auth/signUp",
+  "/pages/jobseeker/auth/login",
+  "/pages/jobseeker/auth/signUp",
   "/jobseeker/auth/forgetPassword",
 ];
 
@@ -81,7 +81,7 @@ function getLoginPathForRole(role: string): string {
     case "RECRUITER":
       return " /pages/employer/auth/login";
     case "JOB_SEEKER":
-      return "/jobseeker/auth/login";
+      return "/pages/jobseeker/auth/login";
     case "ADMIN":
       return "/auth/admin/login";
     default:
@@ -92,9 +92,9 @@ function getLoginPathForRole(role: string): string {
 function getDashboardPathForRole(role: string): string {
   switch (role) {
     case "RECRUITER":
-      return "/pages/employer";
+      return "/pages/employer/dashboard";
     case "JOB_SEEKER":
-      return "/dashboard";
+      return "/pages/jobseeker/dashboard";
     case "ADMIN":
       return "/admin/dashboard";
     default:

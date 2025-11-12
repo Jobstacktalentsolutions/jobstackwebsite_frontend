@@ -69,9 +69,9 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
 function getRedirectPathForRole(role?: UserRole): string {
   switch (role) {
     case "RECRUITER":
-      return "/pages/employer";
+      return "/pages/employer/dasboard";
     case "JOB_SEEKER":
-      return "/dashboard";
+      return "pages/jobseeker/dashboard";
     case "ADMIN":
       return "/admin/dashboard";
     default:
@@ -84,7 +84,7 @@ function getLoginPathForRole(role?: UserRole): string {
     case "RECRUITER":
       return " /pages/employer/auth/login";
     case "JOB_SEEKER":
-      return "/jobseeker/auth/login";
+      return "/pages/jobseeker/auth/login";
     case "ADMIN":
       return "/auth/admin/login";
     default:

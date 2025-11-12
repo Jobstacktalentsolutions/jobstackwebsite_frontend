@@ -167,7 +167,7 @@ export default function ForgotPasswordVerify({
           <div className="mt-4 text-sm text-slate-600">
             {timeLeft > 0 ? (
               <div>
-                Didn&apos;t receive the code? Resend in <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
+                Didn&apos;t receive the code?  <span className="font-medium text-blue-700">0:{String(timeLeft).padStart(2, "0")}</span>
               </div>
             ) : (
               <button

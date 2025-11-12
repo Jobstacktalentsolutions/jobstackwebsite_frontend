@@ -78,7 +78,8 @@ export default function VerifyClient({ heading, email }: Props) {
       await jsVerifyEmail({ email, code: codeString });
       toastSuccess("Email verified successfully");
       // Redirect to profile completion after successful verification
-      window.location.href = "/jobseeker/auth/profile";
+      window.location.href = "/pages/jobseeker/auth/profile";
+      
     } catch (e) {
       setError("Invalid or expired code.");
       toastError("Verification failed");

@@ -78,7 +78,7 @@ export default function VerifyClient({ heading, email }: Props) {
       await rcVerifyEmail({ email, code: codeString });
       toastSuccess("Email verified successfully");
       // Redirect to profile completion after successful verification
-      window.location.href = "/auth/employer/profile";
+      window.location.href = "/pages/employer/auth/profile";
     } catch (e: any) {
       const errorMessage =
         e?.response?.data?.message || "Invalid or expired code.";

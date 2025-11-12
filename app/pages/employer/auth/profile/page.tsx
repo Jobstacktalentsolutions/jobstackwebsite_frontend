@@ -94,7 +94,7 @@ const ProfilePage = () => {
       if (status === 401 || status === 403) {
         // User is not authenticated, redirect to login
         toastError("Please login to access this page");
-        router.push(" /pages/employer/auth/login");
+        // router.push(" /pages/employer/auth/login");
         return;
       }
     } finally {
@@ -332,7 +332,7 @@ const ProfilePage = () => {
           </div>
 
           {/* Company Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col w-full  gap-4">
             <Input
               label="Company/Business Name"
               placeholder="Enter company name"

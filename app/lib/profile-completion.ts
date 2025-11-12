@@ -150,7 +150,7 @@ export async function checkJobSeekerProfileCompletion(): Promise<
 
     // Only redirect to onboarding if status is NOT_STARTED
     if (profile.approvalStatus === ApprovalStatus.NOT_STARTED) {
-      return "/jobseeker/auth/profile";
+      return "/pages/jobseeker/auth/profile";
     }
 
     // If profile is incomplete but status is not NOT_STARTED, don't redirect
@@ -163,7 +163,7 @@ export async function checkJobSeekerProfileCompletion(): Promise<
   } catch (error) {
     console.error("Error checking job seeker profile:", error);
     // On error, redirect to profile page to be safe
-    return "/jobseeker/auth/profile";
+    return "/pages/jobseeker/auth/profile";
   }
 }
 
@@ -183,7 +183,7 @@ export async function checkRecruiterProfileCompletion(): Promise<
       !verification ||
       verification.status === VerificationStatus.NOT_STARTED
     ) {
-      return "/auth/employer/profile";
+      return " /pages/employer/auth/profile";
     }
 
     // If status is PENDING, APPROVED, or REJECTED, don't redirect
