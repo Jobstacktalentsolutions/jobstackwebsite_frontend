@@ -3,9 +3,9 @@ import type { NextRequest } from "next/server";
 
 // Define protected routes and their required roles
 const protectedRoutes = {
-  "/pages/employer": ["RECRUITER"],
-  " /pages/employer/auth/profile": ["RECRUITER"],
-  " /pages/employer/auth/profile/companyProfile": ["RECRUITER"],
+  "/pages/employer": ["EMPLOYER"],
+  " /pages/employer/auth/profile": ["EMPLOYER"],
+  " /pages/employer/auth/profile/companyProfile": ["EMPLOYER"],
   "/dashboard": ["JOB_SEEKER"],
   "/pages/jobseeker/auth/profile": ["JOB_SEEKER"],
   "/admin": ["ADMIN"],
@@ -78,7 +78,7 @@ export function middleware(request: NextRequest) {
 
 function getLoginPathForRole(role: string): string {
   switch (role) {
-    case "RECRUITER":
+    case "EMPLOYER":
       return " /pages/employer/auth/login";
     case "JOB_SEEKER":
       return "/pages/jobseeker/auth/login";
@@ -91,7 +91,7 @@ function getLoginPathForRole(role: string): string {
 
 function getDashboardPathForRole(role: string): string {
   switch (role) {
-    case "RECRUITER":
+    case "EMPLOYER":
       return "/pages/employer/dashboard";
     case "JOB_SEEKER":
       return "/pages/jobseeker/dashboard";

@@ -14,11 +14,11 @@ export interface RecruiterRegistrationDto {
   firstName: string;
   lastName: string;
   phoneNumber: string; // NG format
-  type?: RecruiterType; // Optional for now
+  type?: EmployerType; // Optional for now
 }
 
-// Recruiter Types
-export enum RecruiterType {
+// Employer Types
+export enum EmployerType {
   INDIVIDUAL = "Individual",
   SME = "SME",
   ORGANIZATION = "Organization",
@@ -95,7 +95,7 @@ export interface RecruiterVerification {
     firstName: string;
     lastName: string;
     email: string;
-    type?: RecruiterType;
+    type?: EmployerType;
   };
 }
 

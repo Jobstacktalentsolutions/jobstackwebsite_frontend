@@ -11,7 +11,7 @@ import PasswordField from "@/app/pages/components/passwordField";
 import { rcRegister } from "@/app/api/auth-recruiter.api";
 import { toastSuccess, toastError } from "@/app/lib/toast";
 import type { RecruiterRegistrationDto } from "@/app/types/recruiter.type";
-import { RecruiterType } from "@/app/types/recruiter.type";
+import { EmployerType } from "@/app/types/recruiter.type";
 import { useRouter } from "next/navigation";
 import googleIcon from "@/app/assets/google.svg";
 
@@ -57,16 +57,16 @@ export default function SignUp() {
     setSubmitting(true);
     try {
       // Map UI business type to backend enum
-      const getRecruiterType = (businessType: string): RecruiterType => {
+      const getRecruiterType = (businessType: string): EmployerType => {
         switch (businessType) {
           case "Company":
-            return RecruiterType.ORGANIZATION;
+            return EmployerType.ORGANIZATION;
           case "Individual business":
-            return RecruiterType.INDIVIDUAL;
+            return EmployerType.INDIVIDUAL;
           case "Small business":
-            return RecruiterType.SME;
+            return EmployerType.SME;
           default:
-            return RecruiterType.ORGANIZATION;
+            return EmployerType.ORGANIZATION;
         }
       };
 

@@ -6,7 +6,7 @@ import Input from "@/app/pages/components/input";
 import Button from "@/app/pages/components/button";
 import { Building2, MapPin, Globe, Users } from "lucide-react";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
-import Loading from '@/app/loading'
+import Loading from "@/app/loading";
 import statesAndCities from "@/app/lib/states-and-cities.json";
 import { SearchableSelect } from "@/app/pages/components/SearchableSelect";
 import {
@@ -18,7 +18,7 @@ import {
 import {
   UpdateVerificationInfoDto,
   DocumentRequirement,
-  RecruiterType,
+  EmployerType,
   RecruiterDocumentType,
   RecruiterVerification,
 } from "@/app/types/recruiter.type";
@@ -43,8 +43,8 @@ const ProfilePage = () => {
   const [socialOrWebsiteUrl, setSocialOrWebsiteUrl] = useState("");
 
   // Document state
-  const [recruiterType, setRecruiterType] = useState<RecruiterType>(
-    RecruiterType.INDIVIDUAL
+  const [recruiterType, setRecruiterType] = useState<EmployerType>(
+    EmployerType.INDIVIDUAL
   );
   const [documentRequirements, setDocumentRequirements] = useState<
     DocumentRequirement[]
@@ -301,9 +301,7 @@ const ProfilePage = () => {
   ];
 
   if (loading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
 
   return (
@@ -321,11 +319,11 @@ const ProfilePage = () => {
               </span>
               <span className="text-sm text-blue-700 font-semibold">
                 {recruiterType || "Loading..."}
-                {recruiterType === RecruiterType.INDIVIDUAL &&
+                {recruiterType === EmployerType.INDIVIDUAL &&
                   " (Personal recruiting)"}
-                {recruiterType === RecruiterType.SME &&
+                {recruiterType === EmployerType.SME &&
                   " (Small & Medium Enterprise)"}
-                {recruiterType === RecruiterType.ORGANIZATION &&
+                {recruiterType === EmployerType.ORGANIZATION &&
                   " (Company/Corporate recruiting)"}
               </span>
             </div>
