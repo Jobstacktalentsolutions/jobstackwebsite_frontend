@@ -79,7 +79,7 @@ export default function ForgotPassword() {
             <p className="text-center text-sm text-slate-500">
               Don’t have an account?{" "}
               <Link
-                href=/pages/employer/auth/signUp"
+                href="/pages/employer/auth/signUp"
               className="text-blue-600 hover:underline"
               >
               Sign up
