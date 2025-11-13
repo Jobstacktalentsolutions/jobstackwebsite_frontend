@@ -1,24 +1,17 @@
 "use client";
-
-import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import Button from "@/app/pages/components/button";
 import Input from "@/app/pages/components/input";
-import logo from "@/app/assets/coloredlogo.svg";
 import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import { useState } from "react";
-import Carousel from "@/app/pages/components/carousel";
-import welcome from "@/app/assets/welcomeimage.png";
-import welcome2 from "@/app/assets/welcomeimagetwo.png";
-import welcome3 from "@/app/assets/securitywithstaff.png";
 import { jsSendPasswordResetCode } from "@/app/api/auth-jobseeker.api";
 import { toastError, toastSuccess } from "@/app/lib/toast";
 import { useRouter } from "next/navigation";
 
 export default function ForgotPassword() {
   const router = useRouter();
-  const IMAGES: (StaticImageData | string)[] = [welcome, welcome2, welcome3];
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [submitting, setSubmitting] = useState(false);
