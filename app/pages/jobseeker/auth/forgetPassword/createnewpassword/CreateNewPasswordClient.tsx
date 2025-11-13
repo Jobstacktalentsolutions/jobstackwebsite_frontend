@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import PasswordField from "@/app/pages/components/passwordField";
 import Button from "@/app/pages/components/button";
 import SuccessModal from "@/app/pages/components/sucessModal";

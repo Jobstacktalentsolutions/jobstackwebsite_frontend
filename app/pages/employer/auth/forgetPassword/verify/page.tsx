@@ -1,5 +1,5 @@
 import VerifyClient from "./VerifyClient";
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 export default function Page({ searchParams }: { searchParams: { email?: string } }) {
   const email = searchParams.email ?? "";
 

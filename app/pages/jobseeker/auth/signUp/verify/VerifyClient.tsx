@@ -1,6 +1,6 @@
 "use client";
 
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import { jsVerifyEmail } from "@/app/api/auth-jobseeker.api";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 import Button from "@/app/pages/components/button";
@@ -79,7 +79,7 @@ export default function VerifyClient({ heading, email }: Props) {
       toastSuccess("Email verified successfully");
       // Redirect to profile completion after successful verification
       window.location.href = "/pages/jobseeker/auth/profile";
-      
+
     } catch (e) {
       setError("Invalid or expired code.");
       toastError("Verification failed");
