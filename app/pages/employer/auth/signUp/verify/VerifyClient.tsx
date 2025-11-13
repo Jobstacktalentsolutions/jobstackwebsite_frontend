@@ -1,6 +1,6 @@
 "use client";
 
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import { rcVerifyEmail } from "@/app/api/auth-recruiter.api";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 import Button from "@/app/pages/components/button";

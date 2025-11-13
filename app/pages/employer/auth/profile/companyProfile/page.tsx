@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import Input from "@/app/pages/components/input";
 import Button from "@/app/pages/components/button";
 

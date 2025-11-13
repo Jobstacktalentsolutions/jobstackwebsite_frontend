@@ -6,7 +6,7 @@ import { Mail } from "lucide-react";
 import Button from "@/app/pages/components/button";
 import Input from "@/app/pages/components/input";
 import logo from "@/app/assets/coloredlogo.svg";
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import { useState } from "react";
 import Carousel from "@/app/pages/components/carousel";
 import welcome from "@/app/assets/welcomeimage.png";

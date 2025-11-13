@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { type StaticImageData } from "next/image";
 import Button from "@/app/pages/components/button";
 import SuccessModal from "@/app/pages/components/sucessModal";
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 type Props = {
   /** Main title (H1) – make this vary per page */
   heading: string;
@@ -137,11 +137,12 @@ export default function OtpVerification({
       let ok = false;
       if (onVerify) {
         ok = await onVerify(codeString);
-      } else {
-        //  fallback demo logic to mirror your mock
-        await new Promise((r) => setTimeout(r, 400));
-        ok = codeString === "245012";
       }
+      // else {
+      //   //  fallback demo logic to mirror your mock
+      //   await new Promise((r) => setTimeout(r, 400));
+      //   ok = codeString === "245012";
+      // }
       if (ok) setShowSuccess(true);
       else {
         setError("That code doesn’t look right. Please try again.");
@@ -206,7 +207,7 @@ export default function OtpVerification({
           <div className="mt-4 text-sm text-slate-600">
             {timeLeft > 0 ? (
               <div>
-                Didn&apos;t receive code? 
+                Didn&apos;t receive code?
                 <span className="font-medium text-blue-700">
                   0:{String(timeLeft).padStart(2, "0")}
                 </span>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthPageLayout from "@/app/pages/components/AuthPageLayout";
+import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import Input from "@/app/pages/components/input";
 import Button from "@/app/pages/components/button";
 import { Building2, MapPin, Globe, Users } from "lucide-react";
@@ -248,7 +248,7 @@ const ProfilePage = () => {
       toastInfo(
         "Profile saved. Verification pending. Please wait for approval."
       );
-      router.push("/pages/employer");
+      router.push("/pages/employer/dashboard");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Failed to save profile";
@@ -417,7 +417,7 @@ const ProfilePage = () => {
               return (
                 <div
                   key={upload.documentType}
-                  className="border rounded-lg p-4 space-y-3"
+                  className="border-2 border-red-500 rounded-lg p-4 space-y-3"
                 >
                   <div className="flex items-start justify-between">
                     <div>
