@@ -14,17 +14,17 @@ import {
   updateVerificationInfo,
   uploadVerificationDocument,
   getDocumentRequirements,
-} from "@/app/api/recruiter-verification.api";
+} from "@/app/api/employer-verification.api";
 import {
   UpdateVerificationInfoDto,
   DocumentRequirement,
   EmployerType,
-  RecruiterDocumentType,
-  RecruiterVerification,
-} from "@/app/types/recruiter.type";
+  EmployerDocumentType,
+  EmployerVerification,
+} from "@/app/types/employer.type";
 
 interface DocumentUpload {
-  documentType: RecruiterDocumentType;
+  documentType: EmployerDocumentType;
   file: File | null;
   documentNumber?: string;
   uploaded: boolean;
@@ -43,15 +43,16 @@ const ProfilePage = () => {
   const [socialOrWebsiteUrl, setSocialOrWebsiteUrl] = useState("");
 
   // Document state
-  const [recruiterType, setRecruiterType] = useState<EmployerType>(
+  const [employerType, setEmployerType] = useState<EmployerType>(
     EmployerType.INDIVIDUAL
   );
   const [documentRequirements, setDocumentRequirements] = useState<
     DocumentRequirement[]
   >([]);
   const [documentUploads, setDocumentUploads] = useState<DocumentUpload[]>([]);
-  const [verification, setVerification] =
-    useState<RecruiterVerification | null>(null);
+  const [verification, setVerification] = useState<EmployerVerification | null>(
+    null
+  );
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -69,7 +70,7 @@ const ProfilePage = () => {
       // Get the user's profile which now includes verification
       const profile = await getMyProfile();
       if (profile?.type) {
-        setRecruiterType(profile.type);
+        setEmployerType(profile.type);
       }
 
       // Use verification from profile instead of separate fetch
@@ -104,7 +105,7 @@ const ProfilePage = () => {
 
   // Load document requirements and prefill existing documents
   const loadDocumentRequirements = async (
-    verificationData?: RecruiterVerification | null
+    verificationData?: EmployerVerification | null
   ) => {
     try {
       const requirements = await getDocumentRequirements();
@@ -141,7 +142,7 @@ const ProfilePage = () => {
   };
 
   const handleFileChange = (
-    documentType: RecruiterDocumentType,
+    documentType: EmployerDocumentType,
     file: File | null
   ) => {
     setDocumentUploads((prev) =>
@@ -152,7 +153,7 @@ const ProfilePage = () => {
   };
 
   const handleDocumentNumberChange = (
-    documentType: RecruiterDocumentType,
+    documentType: EmployerDocumentType,
     documentNumber: string
   ) => {
     setDocumentUploads((prev) =>
@@ -259,20 +260,20 @@ const ProfilePage = () => {
     }
   };
 
-  const getDocumentDisplayName = (docType: RecruiterDocumentType): string => {
+  const getDocumentDisplayName = (docType: EmployerDocumentType): string => {
     const requirement = documentRequirements.find(
       (req) => req.documentType === docType
     );
     return requirement?.description || docType.replace(/_/g, " ");
   };
 
-  const requiresDocumentNumber = (docType: RecruiterDocumentType): boolean => {
+  const requiresDocumentNumber = (docType: EmployerDocumentType): boolean => {
     return [
-      RecruiterDocumentType.NATIONAL_ID,
-      RecruiterDocumentType.INTERNATIONAL_PASSPORT,
-      RecruiterDocumentType.TAX_IDENTIFICATION,
-      RecruiterDocumentType.CERTIFICATE_OF_BUSINESS_REGISTRATION,
-      RecruiterDocumentType.CERTIFICATE_OF_INCORPORATION,
+      EmployerDocumentType.NATIONAL_ID,
+      EmployerDocumentType.INTERNATIONAL_PASSPORT,
+      EmployerDocumentType.TAX_IDENTIFICATION,
+      EmployerDocumentType.CERTIFICATE_OF_BUSINESS_REGISTRATION,
+      EmployerDocumentType.CERTIFICATE_OF_INCORPORATION,
     ].includes(docType);
   };
 
@@ -318,12 +319,12 @@ const ProfilePage = () => {
                 Account Type:
               </span>
               <span className="text-sm text-blue-700 font-semibold">
-                {recruiterType || "Loading..."}
-                {recruiterType === EmployerType.INDIVIDUAL &&
+                {employerType || "Loading..."}
+                {employerType === EmployerType.INDIVIDUAL &&
                   " (Personal recruiting)"}
-                {recruiterType === EmployerType.SME &&
+                {employerType === EmployerType.SME &&
                   " (Small & Medium Enterprise)"}
-                {recruiterType === EmployerType.ORGANIZATION &&
+                {employerType === EmployerType.ORGANIZATION &&
                   " (Company/Corporate recruiting)"}
               </span>
             </div>

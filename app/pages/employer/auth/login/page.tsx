@@ -9,7 +9,7 @@ import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import { useState } from "react";
 
 import PasswordField from "@/app/pages/components/passwordField";
-import { rcSendVerificationEmail } from "@/app/api/auth-recruiter.api";
+import { empSendVerificationEmail } from "@/app/api/auth-employer.api";
 import { toastError, toastSuccess, toastInfo } from "@/app/lib/toast";
 import type { LoginDto } from "@/app/types/auth.type";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ import { useAuthActions } from "@/app/hooks/useAuthActions";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginRecruiter } = useAuthActions();
+  const { loginEmployer } = useAuthActions();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +30,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const payload: LoginDto = { email: email.toLowerCase(), password };
-      await loginRecruiter(payload);
+      await loginEmployer(payload);
       toastSuccess("Signed in successfully");
       // Redirect is handled by auth context login function
     } catch (err: any) {
@@ -40,11 +40,13 @@ export default function LoginPage() {
 
       if (/verify\s+your\s+email/i.test(errorMessage)) {
         try {
-          await rcSendVerificationEmail({ email });
-        } catch { }
+          await empSendVerificationEmail({ email });
+        } catch {}
         toastInfo("Please verify your email to continue");
         router.push(
-          ` /pages/employer/auth/login/verify?email=${encodeURIComponent(email)}`
+          ` /pages/employer/auth/login/verify?email=${encodeURIComponent(
+            email
+          )}`
         );
         return;
       }
@@ -120,9 +122,9 @@ export default function LoginPage() {
                   Sign up
                 </Link>
               </p>
-            </ form>
+            </form>
           </div>
-        </div >
+        </div>
       }
     />
   );

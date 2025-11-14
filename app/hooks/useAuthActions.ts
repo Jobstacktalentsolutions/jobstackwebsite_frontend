@@ -1,20 +1,20 @@
 import { useAuth } from "@/app/lib/auth-context";
 import { AuthService } from "@/app/services/auth.service";
 import type { LoginDto } from "@/app/types/auth.type";
-import type { RecruiterRegistrationDto } from "@/app/types/recruiter.type";
+import type { EmployerRegistrationDto } from "@/app/types/employer.type";
 import type { JobSeekerRegistrationDto } from "@/app/types/jobseeker.type";
 
 export function useAuthActions() {
   const { login, logout } = useAuth();
 
-  const loginRecruiter = async (dto: LoginDto) => {
-    const authResult = await AuthService.loginRecruiter(dto);
+  const loginEmployer = async (dto: LoginDto) => {
+    const authResult = await AuthService.loginEmployer(dto);
     login(authResult);
     return authResult;
   };
 
-  const registerRecruiter = async (dto: RecruiterRegistrationDto) => {
-    const authResult = await AuthService.registerRecruiter(dto);
+  const registerEmployer = async (dto: EmployerRegistrationDto) => {
+    const authResult = await AuthService.registerEmployer(dto);
     login(authResult);
     return authResult;
   };
@@ -39,7 +39,7 @@ export function useAuthActions() {
       // Try to logout from server (we don't know the user type, so we'll try both)
       // The interceptor will automatically add the auth token from cookies
       await Promise.allSettled([
-        AuthService.logoutRecruiter(),
+        AuthService.logoutEmployer(),
         AuthService.logoutJobSeeker(),
       ]);
     } finally {
@@ -49,8 +49,8 @@ export function useAuthActions() {
   };
 
   return {
-    loginRecruiter,
-    registerRecruiter,
+    loginEmployer,
+    registerEmployer,
     loginJobSeeker,
     registerJobSeeker,
     logout: logoutUser,

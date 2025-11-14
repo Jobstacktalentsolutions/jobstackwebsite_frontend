@@ -1,7 +1,7 @@
 "use client";
 
 import AuthPageLayout from "@/app/pages/components/authPageLayout";
-import { rcVerifyEmail } from "@/app/api/auth-recruiter.api";
+import { empVerifyEmail } from "@/app/api/auth-employer.api";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 import Button from "@/app/pages/components/button";
 import { useEffect, useRef, useState } from "react";
@@ -75,7 +75,7 @@ export default function VerifyClient({ heading, email }: Props) {
   const handleVerify = async () => {
     try {
       setError(null);
-      await rcVerifyEmail({ email, code: codeString });
+      await empVerifyEmail({ email, code: codeString });
       toastSuccess("Email verified successfully");
       // Redirect to profile completion after successful verification
       window.location.href = "/pages/employer/auth/profile";
@@ -91,10 +91,10 @@ export default function VerifyClient({ heading, email }: Props) {
     try {
       setIsResending(true);
       setError(null);
-      const { rcSendVerificationEmail } = await import(
-        "@/app/api/auth-recruiter.api"
+      const { empSendVerificationEmail } = await import(
+        "@/app/api/auth-employer.api"
       );
-      await rcSendVerificationEmail({ email });
+      await empSendVerificationEmail({ email });
       toastInfo("Verification email resent");
       setTimeLeft(60); // restart timer
     } catch (e) {

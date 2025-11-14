@@ -10,7 +10,7 @@ import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import welcome from "@/app/assets/welcomeimage.png";
 import welcome2 from "@/app/assets/welcomeimagetwo.png";
 import welcome3 from "@/app/assets/securitywithstaff.png";
-import { rcSendPasswordResetCode } from "@/app/api/auth-recruiter.api";
+import { empSendPasswordResetCode } from "@/app/api/auth-employer.api";
 import { toastError, toastSuccess } from "@/app/lib/toast";
 import { useRouter } from "next/navigation";
 
@@ -26,7 +26,7 @@ export default function ForgotPassword() {
     setError(undefined);
     setSubmitting(true);
     try {
-      await rcSendPasswordResetCode({ email });
+      await empSendPasswordResetCode({ email });
       toastSuccess("Reset code sent to your email");
       router.push(
         `/employer/auth/forgetPassword/verify?email=${encodeURIComponent(
@@ -80,14 +80,14 @@ export default function ForgotPassword() {
               Don’t have an account?{" "}
               <Link
                 href="/pages/employer/auth/signUp"
-              className="text-blue-600 hover:underline"
+                className="text-blue-600 hover:underline"
               >
-              Sign up
-            </Link>
-          </p>
-        </form>
-        </ div>
+                Sign up
+              </Link>
+            </p>
+          </form>
+        </div>
       }
     />
-      );
+  );
 }

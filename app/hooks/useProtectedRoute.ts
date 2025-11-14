@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/lib/auth-context";
 
-export type UserRole = "RECRUITER" | "JOB_SEEKER" | "ADMIN";
+export type UserRole = "EMPLOYER" | "JOB_SEEKER" | "ADMIN";
 
 interface UseProtectedRouteOptions {
   allowedRoles?: UserRole[];
@@ -68,7 +68,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
 
 function getRedirectPathForRole(role?: UserRole): string {
   switch (role) {
-    case "RECRUITER":
+    case "EMPLOYER":
       return "/pages/employer/dasboard";
     case "JOB_SEEKER":
       return "pages/jobseeker/dashboard";
@@ -81,7 +81,7 @@ function getRedirectPathForRole(role?: UserRole): string {
 
 function getLoginPathForRole(role?: UserRole): string {
   switch (role) {
-    case "RECRUITER":
+    case "EMPLOYER":
       return " /pages/employer/auth/login";
     case "JOB_SEEKER":
       return "/pages/jobseeker/auth/login";

@@ -1,21 +1,21 @@
-import { rcLogin, rcRegister, rcLogout } from "@/app/api/auth-recruiter.api";
+import { empLogin, empRegister, empLogout } from "@/app/api/auth-employer.api";
 import { jsLogin, jsRegister, jsLogout } from "@/app/api/auth-jobseeker.api";
 import type { LoginDto } from "@/app/types/auth.type";
-import type { RecruiterRegistrationDto } from "@/app/types/recruiter.type";
+import type { EmployerRegistrationDto } from "@/app/types/employer.type";
 import type { JobSeekerRegistrationDto } from "@/app/types/jobseeker.type";
 
 export class AuthService {
-  // Recruiter auth methods
-  static async loginRecruiter(dto: LoginDto) {
-    return await rcLogin(dto);
+  // Employer auth methods
+  static async loginEmployer(dto: LoginDto) {
+    return await empLogin(dto);
   }
 
-  static async registerRecruiter(dto: RecruiterRegistrationDto) {
-    return await rcRegister(dto);
+  static async registerEmployer(dto: EmployerRegistrationDto) {
+    return await empRegister(dto);
   }
 
-  static async logoutRecruiter() {
-    return await rcLogout();
+  static async logoutEmployer() {
+    return await empLogout();
   }
 
   // Job seeker auth methods

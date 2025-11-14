@@ -8,7 +8,7 @@ import type {
   PasswordResetRequestDto,
 } from "./auth.type";
 
-export interface RecruiterRegistrationDto {
+export interface EmployerRegistrationDto {
   email: string;
   password: string;
   firstName: string;
@@ -25,7 +25,7 @@ export enum EmployerType {
 }
 
 // Document Types
-export enum RecruiterDocumentType {
+export enum EmployerDocumentType {
   // Individual documents
   NATIONAL_ID = "NATIONAL_ID",
   INTERNATIONAL_PASSPORT = "INTERNATIONAL_PASSPORT",
@@ -53,16 +53,16 @@ export { VerificationStatus };
 
 // Document Requirement Interface
 export interface DocumentRequirement {
-  documentType: RecruiterDocumentType;
+  documentType: EmployerDocumentType;
   mandatory: boolean;
   description: string;
   purpose: string;
 }
 
 // Verification Document Interface
-export interface RecruiterVerificationDocument {
+export interface EmployerVerificationDocument {
   id: string;
-  documentType: RecruiterDocumentType;
+  documentType: EmployerDocumentType;
   documentNumber?: string;
   verified: boolean;
   createdAt: string;
@@ -76,9 +76,9 @@ export interface RecruiterVerificationDocument {
 }
 
 // Verification Interface
-export interface RecruiterVerification {
+export interface EmployerVerification {
   id: string;
-  recruiterId: string;
+  employerId: string;
   companyName?: string;
   companyAddress?: string;
   state?: string;
@@ -89,8 +89,8 @@ export interface RecruiterVerification {
   reviewedByAdminId?: string;
   reviewedAt?: string;
   rejectionReason?: string;
-  documents: RecruiterVerificationDocument[];
-  recruiter?: {
+  documents: EmployerVerificationDocument[];
+  employer?: {
     id: string;
     firstName: string;
     lastName: string;
@@ -123,7 +123,7 @@ export interface UpdateVerificationInfoDto {
 }
 
 export interface UploadVerificationDocumentDto {
-  documentType: RecruiterDocumentType;
+  documentType: EmployerDocumentType;
   documentNumber?: string;
 }
 

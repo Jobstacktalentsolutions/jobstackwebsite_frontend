@@ -1,34 +1,34 @@
 import { httpClient } from "./http-client";
 import { ResponseDto } from "@/app/types/response.type";
 import type {
-  RecruiterVerification,
-  RecruiterVerificationDocument,
+  EmployerVerification,
+  EmployerVerificationDocument,
   UpdateVerificationInfoDto,
   UploadVerificationDocumentDto,
   AutoVerificationResult,
   DocumentRequirement,
-} from "@/app/types/recruiter.type";
+} from "@/app/types/employer.type";
 
-const base = "/recruiters/verification" as const;
+const base = "/employers/verification" as const;
 
 export async function getMyProfile(): Promise<any> {
   const { data } = await httpClient.get<{ success: boolean; profile: any }>(
-    "/user/recruiter/me"
+    "/user/employer/me"
   );
   return data.profile;
 }
 
-export async function getMyVerification(): Promise<RecruiterVerification | null> {
+export async function getMyVerification(): Promise<EmployerVerification | null> {
   const { data } = await httpClient.get<
-    ResponseDto<RecruiterVerification | null>
+    ResponseDto<EmployerVerification | null>
   >(base);
   return data.data;
 }
 
 export async function updateVerificationInfo(
   dto: UpdateVerificationInfoDto
-): Promise<RecruiterVerification> {
-  const { data } = await httpClient.put<ResponseDto<RecruiterVerification>>(
+): Promise<EmployerVerification> {
+  const { data } = await httpClient.put<ResponseDto<EmployerVerification>>(
     base,
     dto
   );
@@ -39,7 +39,7 @@ export async function uploadVerificationDocument(
   dto: UploadVerificationDocumentDto,
   file: File
 ): Promise<
-  RecruiterVerificationDocument & {
+  EmployerVerificationDocument & {
     autoVerificationResult?: AutoVerificationResult;
   }
 > {
@@ -60,7 +60,7 @@ export async function uploadVerificationDocument(
   // Don't set Content-Type - axios will automatically set it with boundary for FormData
   const { data } = await httpClient.post<
     ResponseDto<
-      RecruiterVerificationDocument & {
+      EmployerVerificationDocument & {
         autoVerificationResult?: AutoVerificationResult;
       }
     >
@@ -69,10 +69,10 @@ export async function uploadVerificationDocument(
 }
 
 export async function getMyVerificationDocuments(): Promise<
-  RecruiterVerificationDocument[]
+  EmployerVerificationDocument[]
 > {
   const { data } = await httpClient.get<
-    ResponseDto<RecruiterVerificationDocument[]>
+    ResponseDto<EmployerVerificationDocument[]>
   >(`${base}/documents`);
   return data.data;
 }

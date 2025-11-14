@@ -3,11 +3,11 @@
  */
 
 import { jsLogin, jsVerifyEmail } from "@/app/api/auth-jobseeker.api";
-import { rcLogin, rcVerifyEmail } from "@/app/api/auth-recruiter.api";
+import { empLogin, empVerifyEmail } from "@/app/api/auth-employer.api";
 import { setAuthTokens } from "./cookies";
 import {
   checkJobSeekerProfileCompletion,
-  checkRecruiterProfileCompletion,
+  checkEmployerProfileCompletion,
 } from "./profile-completion";
 import type {
   LoginDto,
@@ -57,13 +57,11 @@ export async function handleJobSeekerLogin(
 }
 
 /**
- * Handle recruiter login with profile completion check
+ * Handle employer login with profile completion check
  */
-export async function handleRecruiterLogin(
-  dto: LoginDto
-): Promise<LoginResult> {
+export async function handleEmployerLogin(dto: LoginDto): Promise<LoginResult> {
   try {
-    const authResult = await rcLogin(dto);
+    const authResult = await empLogin(dto);
 
     // Store tokens
     setAuthTokens(
@@ -73,7 +71,7 @@ export async function handleRecruiterLogin(
     );
 
     // Check profile completion
-    const redirectPath = await checkRecruiterProfileCompletion();
+    const redirectPath = await checkEmployerProfileCompletion();
 
     return {
       success: true,
@@ -108,16 +106,16 @@ export async function handleJobSeekerEmailVerification(
 }
 
 /**
- * Handle recruiter email verification with profile completion check
+ * Handle employer email verification with profile completion check
  */
-export async function handleRecruiterEmailVerification(
+export async function handleEmployerEmailVerification(
   dto: EmailVerificationConfirmDto
 ): Promise<{ verified: boolean; redirectPath?: string }> {
   try {
-    await rcVerifyEmail(dto);
+    await empVerifyEmail(dto);
 
     // After email verification, check if they need to complete profile
-    const redirectPath = await checkRecruiterProfileCompletion();
+    const redirectPath = await checkEmployerProfileCompletion();
 
     return {
       verified: true,

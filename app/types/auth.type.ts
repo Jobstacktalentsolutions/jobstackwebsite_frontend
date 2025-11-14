@@ -1,4 +1,4 @@
-export type UserRole = "JobSeeker" | "Recruiter" | "Admin";
+export type UserRole = "JobSeeker" | "Employer" | "Admin";
 
 export interface LoginDto {
   email: string;

@@ -11,7 +11,7 @@ export enum ApprovalStatus {
   REJECTED = "REJECTED",
 }
 
-// Verification Status for Recruiters
+// Verification Status for Employers
 export enum VerificationStatus {
   NOT_STARTED = "NOT_STARTED",
   PENDING = "PENDING",
@@ -22,7 +22,7 @@ export enum VerificationStatus {
 // User Roles
 export enum UserRole {
   JOB_SEEKER = "JOB_SEEKER",
-  RECRUITER = "RECRUITER",
+  EMPLOYER = "EMPLOYER",
   ADMIN = "ADMIN",
 }
 

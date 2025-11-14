@@ -6,17 +6,17 @@ import { useProfile } from "@/app/lib/auth-context";
 import { VerificationStatus } from "@/app/lib/enums";
 
 /**
- * Warning banner component that shows when recruiter is not verified
+ * Warning banner component that shows when employer is not verified
  */
 export default function VerificationWarningBanner() {
   const { profile } = useProfile();
 
-  // Only show for recruiters
-  if (!profile?.recruiter) {
+  // Only show for employers
+  if (!profile?.employer) {
     return null;
   }
 
-  const verification = profile.recruiter.verification;
+  const verification = profile.employer.verification;
   const status = verification?.status;
 
   // Only show if verification is pending or rejected (not NOT_STARTED or APPROVED)

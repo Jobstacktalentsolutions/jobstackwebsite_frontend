@@ -8,10 +8,10 @@ import Input from "@/app/pages/components/input";
 import { useState } from "react";
 import Image from "next/image";
 import PasswordField from "@/app/pages/components/passwordField";
-import { rcRegister } from "@/app/api/auth-recruiter.api";
+import { empRegister } from "@/app/api/auth-employer.api";
 import { toastSuccess, toastError } from "@/app/lib/toast";
-import type { RecruiterRegistrationDto } from "@/app/types/recruiter.type";
-import { EmployerType } from "@/app/types/recruiter.type";
+import type { EmployerRegistrationDto } from "@/app/types/employer.type";
+import { EmployerType } from "@/app/types/employer.type";
 import { useRouter } from "next/navigation";
 import googleIcon from "@/app/assets/google.svg";
 
@@ -57,7 +57,7 @@ export default function SignUp() {
     setSubmitting(true);
     try {
       // Map UI business type to backend enum
-      const getRecruiterType = (businessType: string): EmployerType => {
+      const getEmployerType = (businessType: string): EmployerType => {
         switch (businessType) {
           case "Company":
             return EmployerType.ORGANIZATION;
@@ -70,16 +70,16 @@ export default function SignUp() {
         }
       };
 
-      const payload: RecruiterRegistrationDto = {
+      const payload: EmployerRegistrationDto = {
         email: email.toLowerCase(),
         password,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phoneNumber: phoneNumber.trim(),
-        type: getRecruiterType(businessType),
+        type: getEmployerType(businessType),
       };
 
-      await rcRegister(payload);
+      await empRegister(payload);
       toastSuccess("Account created successfully! Please verify your email.");
       router.push(
         ` /pages/employer/auth/signUp/verify?email=${encodeURIComponent(email)}`

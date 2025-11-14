@@ -19,11 +19,11 @@ import {
 } from "./cookies";
 import {
   checkJobSeekerProfileCompletion,
-  checkRecruiterProfileCompletion,
+  checkEmployerProfileCompletion,
   fetchJobSeekerProfile,
-  fetchRecruiterProfile,
+  fetchEmployerProfile,
   type JobSeekerProfile,
-  type RecruiterProfile,
+  type EmployerProfile,
 } from "./profile-completion";
 import { ApprovalStatus, VerificationStatus, UserRole } from "./enums";
 
@@ -38,7 +38,7 @@ export interface User {
 
 export interface UserProfile {
   jobSeeker?: JobSeekerProfile;
-  recruiter?: RecruiterProfile;
+  employer?: EmployerProfile;
 }
 
 export interface AuthContextType {
@@ -122,12 +122,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             router.push("/pages/jobseeker/auth/profile");
           }
         }
-      } else if (user.role === UserRole.RECRUITER) {
-        const recruiterProfile = await fetchRecruiterProfile();
-        setProfile({ recruiter: recruiterProfile });
+      } else if (user.role === UserRole.EMPLOYER) {
+        const employerProfile = await fetchEmployerProfile();
+        setProfile({ employer: employerProfile });
 
         // Only redirect to onboarding if verification status is NOT_STARTED
-        const verification = recruiterProfile.verification;
+        const verification = employerProfile.verification;
         if (
           !verification ||
           verification.status === VerificationStatus.NOT_STARTED
@@ -159,7 +159,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Normalize role from API format to internal format
     const normalizeRole = (role: string): string => {
       if (role === "JobSeeker") return UserRole.JOB_SEEKER;
-      if (role === "Recruiter") return UserRole.RECRUITER;
+      if (role === "Employer") return UserRole.EMPLOYER;
       if (role === "Admin") return UserRole.ADMIN;
       return role.toUpperCase();
     };
@@ -196,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.push(redirectPath);
     } else {
       // Profile is complete, redirect to dashboard
-      if (normalizedRole === UserRole.RECRUITER) {
+      if (normalizedRole === UserRole.EMPLOYER) {
         router.push("/pages/employer");
       } else {
         router.push("/dashboard");
@@ -228,8 +228,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!userRole) return null;
 
     try {
-      if (userRole === UserRole.RECRUITER) {
-        const path = await checkRecruiterProfileCompletion();
+      if (userRole === UserRole.EMPLOYER) {
+        const path = await checkEmployerProfileCompletion();
         return path || null;
       } else if (userRole === UserRole.JOB_SEEKER) {
         const path = await checkJobSeekerProfileCompletion();
@@ -238,7 +238,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Error checking profile completion:", error);
       // If profile check fails, redirect to profile page to be safe
-      if (userRole === UserRole.RECRUITER) {
+      if (userRole === UserRole.EMPLOYER) {
         return " /pages/employer/auth/profile";
       } else if (userRole === UserRole.JOB_SEEKER) {
         return "/pages/jobseeker/auth/profile";

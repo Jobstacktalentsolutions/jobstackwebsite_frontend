@@ -6,7 +6,7 @@ import PasswordField from "@/app/pages/components/passwordField";
 import Button from "@/app/pages/components/button";
 import SuccessModal from "@/app/pages/components/sucessModal";
 import { useRouter } from "next/navigation";
-import { rcResetPassword } from "@/app/api/auth-recruiter.api";
+import { empResetPassword } from "@/app/api/auth-employer.api";
 import { toastSuccess, toastError } from "@/app/lib/toast";
 
 type Props = { resetToken: string };
@@ -48,7 +48,7 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
 
     setSubmitting(true);
     try {
-      await rcResetPassword({ resetToken, newPassword: password });
+      await empResetPassword({ resetToken, newPassword: password });
       toastSuccess("Password reset successfully");
       setOpenModal(true);
     } catch {
@@ -65,9 +65,7 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
       subtext="Almost there! Please create a new, strong password for your account."
       message={
         <>
-          <h3 className="text-[14px]   text-gray-900 mb-2">
-            New Password
-          </h3>
+          <h3 className="text-[14px]   text-gray-900 mb-2">New Password</h3>
           <form className="space-y-4" onSubmit={onSubmit}>
             <PasswordField
               label="Password"

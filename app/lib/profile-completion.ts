@@ -37,7 +37,7 @@ export interface JobSeekerProfile {
   yearsOfExperience?: number;
 }
 
-export interface RecruiterProfile {
+export interface EmployerProfile {
   id: string;
   email: string;
   firstName: string;
@@ -48,12 +48,12 @@ export interface RecruiterProfile {
   companyDescription?: string;
   companyLogoUrl?: string;
   type?: "INDIVIDUAL" | "AGENCY" | "COMPANY";
-  verification?: RecruiterVerification;
+  verification?: EmployerVerification;
 }
 
-export interface RecruiterVerification {
+export interface EmployerVerification {
   id: string;
-  recruiterId: string;
+  employerId: string;
   status: VerificationStatus;
   companyRegistrationNumber?: string;
   taxIdentificationNumber?: string;
@@ -81,12 +81,12 @@ export function isJobSeekerProfileComplete(profile: JobSeekerProfile): boolean {
 }
 
 /**
- * Check if recruiter profile is complete
+ * Check if employer profile is complete
  * A complete profile requires: company info and verification documents submitted
  */
-export function isRecruiterProfileComplete(
-  profile: RecruiterProfile,
-  verification?: RecruiterVerification
+export function isEmployerProfileComplete(
+  profile: EmployerProfile,
+  verification?: EmployerVerification
 ): boolean {
   const hasBasicInfo = !!(
     profile.firstName &&
@@ -115,22 +115,22 @@ export async function fetchJobSeekerProfile(): Promise<JobSeekerProfile> {
 }
 
 /**
- * Fetch recruiter profile from API
+ * Fetch employer profile from API
  */
-export async function fetchRecruiterProfile(): Promise<RecruiterProfile> {
+export async function fetchEmployerProfile(): Promise<EmployerProfile> {
   const { data } = await httpClient.get<
-    ResponseDto<{ profile: RecruiterProfile }>
-  >("/user/recruiter/me");
+    ResponseDto<{ profile: EmployerProfile }>
+  >("/user/employer/me");
   return data.data.profile;
 }
 
 /**
- * Fetch recruiter verification status from API (deprecated - use verification from profile)
+ * Fetch employer verification status from API (deprecated - use verification from profile)
  */
-export async function fetchRecruiterVerification(): Promise<RecruiterVerification | null> {
+export async function fetchEmployerVerification(): Promise<EmployerVerification | null> {
   try {
-    const { data } = await httpClient.get<ResponseDto<RecruiterVerification>>(
-      "/recruiters/verification"
+    const { data } = await httpClient.get<ResponseDto<EmployerVerification>>(
+      "/employers/verification"
     );
     return data.data;
   } catch (error) {
@@ -168,13 +168,11 @@ export async function checkJobSeekerProfileCompletion(): Promise<
 }
 
 /**
- * Check recruiter profile completion and return redirect path if incomplete
+ * Check employer profile completion and return redirect path if incomplete
  */
-export async function checkRecruiterProfileCompletion(): Promise<
-  string | null
-> {
+export async function checkEmployerProfileCompletion(): Promise<string | null> {
   try {
-    const profile = await fetchRecruiterProfile();
+    const profile = await fetchEmployerProfile();
     // Use verification from profile instead of separate fetch
     const verification = profile.verification || null;
 
@@ -192,7 +190,7 @@ export async function checkRecruiterProfileCompletion(): Promise<
 
     return null;
   } catch (error) {
-    console.error("Error checking recruiter profile:", error);
+    console.error("Error checking employer profile:", error);
     // On error, don't redirect - let them access the dashboard
     return null;
   }

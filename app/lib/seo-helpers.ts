@@ -50,9 +50,9 @@ export const profileMetadata: Metadata = generateProtectedPageMetadata(
 );
 
 /**
- * Metadata for recruiter dashboard
+ * Metadata for employer dashboard
  */
-export const recruiterDashboardMetadata: Metadata =
+export const employerDashboardMetadata: Metadata =
   generateProtectedPageMetadata(
     "Employer Dashboard",
     "Manage your job postings and applications",
