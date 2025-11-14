@@ -156,28 +156,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       lastName?: string;
     };
   }) => {
-    // Normalize role from API format to internal format
-    const normalizeRole = (role: string): string => {
-      if (role === "JobSeeker") return UserRole.JOB_SEEKER;
-      if (role === "Employer") return UserRole.EMPLOYER;
-      if (role === "Admin") return UserRole.ADMIN;
-      return role.toUpperCase();
-    };
-
-    const normalizedRole = normalizeRole(authResult.user.role);
+    // Backend now sends consistent role values (JOBSEEKER, EMPLOYER, ADMIN)
+    // No normalization needed - use role as-is
+    const userRole = authResult.user.role as UserRole;
 
     // Store tokens in cookies immediately after login
-    setAuthTokens(
-      authResult.accessToken,
-      authResult.refreshToken,
-      normalizedRole
-    );
+    setAuthTokens(authResult.accessToken, authResult.refreshToken, userRole);
 
-    // Prepare user data with normalized role
+    // Prepare user data
     const userData: User = {
       id: authResult.user.id,
       email: authResult.user.email,
-      role: normalizedRole,
+      role: userRole,
       profileId: authResult.user.profileId || "",
       firstName: authResult.user.firstName,
       lastName: authResult.user.lastName,
@@ -190,16 +180,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userData);
 
     // Check profile completion and redirect accordingly
-    const redirectPath = await checkProfileCompletion(normalizedRole);
+    const redirectPath = await checkProfileCompletion(userRole);
 
     if (redirectPath) {
       router.push(redirectPath);
     } else {
       // Profile is complete, redirect to dashboard
-      if (normalizedRole === UserRole.EMPLOYER) {
-        router.push("/pages/employer");
+      if (userRole === UserRole.EMPLOYER) {
+        router.push("/pages/employer/dashboard");
       } else {
-        router.push("/dashboard");
+        router.push("/pages/jobseeker/dashboard");
       }
     }
   };

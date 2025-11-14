@@ -40,10 +40,12 @@ export default function LoginPage() {
       if (/verify\s+your\s+email/i.test(errorMessage)) {
         try {
           await jsSendVerificationEmail({ email });
-        } catch { }
+        } catch {}
         toastInfo("Please verify your email to continue");
         router.push(
-          ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(email)}`
+          ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(
+            email
+          )}`
         );
         return;
       }

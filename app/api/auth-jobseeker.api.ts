@@ -113,6 +113,8 @@ export async function jsUpdateProfile(updateData: {
   state?: string;
   city?: string;
   skillIds?: string[];
+  minExpectedSalary?: number;
+  maxExpectedSalary?: number;
 }) {
   const { data } = await httpClient.put<{
     success: boolean;

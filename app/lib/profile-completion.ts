@@ -35,6 +35,8 @@ export interface JobSeekerProfile {
   city?: string;
   jobTitle?: string;
   yearsOfExperience?: number;
+  minExpectedSalary?: number;
+  maxExpectedSalary?: number;
 }
 
 export interface EmployerProfile {

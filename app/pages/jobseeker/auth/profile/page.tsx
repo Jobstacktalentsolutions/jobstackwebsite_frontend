@@ -37,6 +37,7 @@ interface ExistingCvInfo {
 }
 
 import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
+import { UserRole } from "@/app/lib/enums";
 
 const JobseekerProfilePage = () => {
   const router = useRouter();
@@ -44,7 +45,7 @@ const JobseekerProfilePage = () => {
 
   // Check authentication - will redirect if not authenticated
   const { isLoading: authLoading } = useProtectedRoute({
-    allowedRoles: ["JOB_SEEKER"],
+    allowedRoles: [UserRole.JOB_SEEKER],
     redirectTo: "/pages/jobseeker/auth/login",
   });
 
@@ -105,20 +106,20 @@ const JobseekerProfilePage = () => {
         // Map skills from profile to SelectedSkill format
         skills: jobSeekerProfile.userSkills
           ? jobSeekerProfile.userSkills.map((userSkill: any) => {
-            const skill = userSkill.skill || userSkill;
-            return {
-              id: skill.id,
-              name: skill.name,
-              proficiency: userSkill.proficiency,
-              yearsExperience: userSkill.yearsExperience,
-            };
-          })
+              const skill = userSkill.skill || userSkill;
+              return {
+                id: skill.id,
+                name: skill.name,
+                proficiency: userSkill.proficiency,
+                yearsExperience: userSkill.yearsExperience,
+              };
+            })
           : jobSeekerProfile.skills
-            ? jobSeekerProfile.skills.map((skill: any) => ({
+          ? jobSeekerProfile.skills.map((skill: any) => ({
               id: skill.id,
               name: skill.name,
             }))
-            : prev.skills || [],
+          : prev.skills || [],
       }));
 
       // Load existing CV if cvDocumentId exists
@@ -273,9 +274,7 @@ const JobseekerProfilePage = () => {
 
   // Show loading while checking authentication
   if (authLoading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
 
   return (

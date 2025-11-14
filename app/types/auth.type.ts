@@ -1,4 +1,10 @@
-export type UserRole = "JobSeeker" | "Employer" | "Admin";
+import { UserRole as UserRoleEnum } from "../lib/enums";
+
+// Use the enum values to match backend
+export type UserRole =
+  | UserRoleEnum.JOB_SEEKER
+  | UserRoleEnum.EMPLOYER
+  | UserRoleEnum.ADMIN;
 
 export interface LoginDto {
   email: string;
