@@ -53,8 +53,9 @@ export async function jsSendVerificationEmail(
   return data.data;
 }
 
+// Verify email - returns AuthResult with tokens
 export async function jsVerifyEmail(dto: EmailVerificationConfirmDto) {
-  const { data } = await httpClient.post<ResponseDto<{ message?: string }>>(
+  const { data } = await httpClient.post<ResponseDto<AuthResult>>(
     `${base}/verify-email`,
     dto
   );

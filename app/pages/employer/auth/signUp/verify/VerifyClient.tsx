@@ -1,8 +1,12 @@
 "use client";
 
 import AuthPageLayout from "@/app/pages/components/authPageLayout";
-import { empVerifyEmail } from "@/app/api/auth-employer.api";
+import {
+  empVerifyEmail,
+  empSendVerificationEmail,
+} from "@/app/api/auth-employer.api";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
+import { setAuthTokens } from "@/app/lib/cookies";
 import Button from "@/app/pages/components/button";
 import { useEffect, useRef, useState } from "react";
 import TimeSlot from "@/app/pages/components/timeLeft";
@@ -16,9 +20,25 @@ export default function VerifyClient({ heading, email }: Props) {
   const [code, setCode] = useState<string[]>(Array(6).fill(""));
   const [timeLeft, setTimeLeft] = useState(60);
   const [isResending, setIsResending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Send verification code on first render
+  useEffect(() => {
+    const sendInitialCode = async () => {
+      try {
+        await empSendVerificationEmail({ email });
+        toastInfo("Verification code sent to your email");
+      } catch (e) {
+        // Silently fail on initial send - user can resend if needed
+        console.error("Failed to send initial verification code:", e);
+      }
+    };
+    sendInitialCode();
+  }, [email]);
 
   // countdown timer
   useEffect(() => {
@@ -73,27 +93,43 @@ export default function VerifyClient({ heading, email }: Props) {
   };
 
   const handleVerify = async () => {
+    if (isVerified || isVerifying) return;
+
     try {
       setError(null);
-      await empVerifyEmail({ email, code: codeString });
+      setIsVerifying(true);
+      const authResult = await empVerifyEmail({ email, code: codeString });
+
+      // Store tokens in cookies before redirecting
+      setAuthTokens(
+        authResult.accessToken,
+        authResult.refreshToken,
+        authResult.user.role
+      );
+
+      setIsVerified(true);
       toastSuccess("Email verified successfully");
-      // Redirect to profile completion after successful verification
-      window.location.href = "/pages/employer/auth/profile";
+
+      // Small delay to show success state, then redirect
+      setTimeout(() => {
+        window.location.href = "/pages/employer/auth/profile";
+      }, 500);
     } catch (e: any) {
       const errorMessage =
         e?.response?.data?.message || "Invalid or expired code.";
       setError(errorMessage);
       toastError("Verification failed");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
   const handleResend = async () => {
+    if (isVerified) return;
+
     try {
       setIsResending(true);
       setError(null);
-      const { empSendVerificationEmail } = await import(
-        "@/app/api/auth-employer.api"
-      );
       await empSendVerificationEmail({ email });
       toastInfo("Verification email resent");
       setTimeLeft(60); // restart timer
@@ -165,10 +201,14 @@ export default function VerifyClient({ heading, email }: Props) {
           {/* Verify button */}
           <Button
             onClick={handleVerify}
-            disabled={!filled}
+            disabled={!filled || isVerified || isVerifying}
             className="mt-6 w-full rounded-xl py-4 text-base disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Verify
+            {isVerifying
+              ? "Verifying..."
+              : isVerified
+              ? "Verified ✓"
+              : "Verify"}
           </Button>
         </>
       }
