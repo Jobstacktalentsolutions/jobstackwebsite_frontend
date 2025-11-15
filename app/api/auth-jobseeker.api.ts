@@ -109,10 +109,13 @@ export async function jsGetCvDocument() {
 export async function jsUpdateProfile(updateData: {
   firstName?: string;
   lastName?: string;
+  jobTitle?: string;
   brief?: string;
+  preferredLocation?: string;
   state?: string;
   city?: string;
   skillIds?: string[];
+  skills?: string[];
   minExpectedSalary?: number;
   maxExpectedSalary?: number;
 }) {
@@ -139,6 +142,46 @@ export async function jsUploadCv(file: File) {
   return data;
 }
 
+// Upload jobseeker profile picture
+export async function jsUploadProfilePicture(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const { data } = await httpClient.post<{
+    success: boolean;
+    pictureUrl: string;
+    documentId: string;
+  }>("/user/jobseeker/profile/picture", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return data;
+}
+
+// Get jobseeker profile picture
+export async function jsGetProfilePicture() {
+  const { data } = await httpClient.get<{
+    success: boolean;
+    document: {
+      id: string;
+      fileName: string;
+      originalName: string;
+      mimeType: string;
+      size: number;
+      type: string;
+      description?: string;
+      createdAt: string;
+    };
+    signedUrl: string;
+  }>("/user/jobseeker/profile/picture");
+  return data;
+}
+
+// Delete jobseeker profile picture
+export async function jsDeleteProfilePicture() {
+  await httpClient.delete("/user/jobseeker/profile/picture");
+}
+
 export default {
   jsRegister,
   jsLogin,
@@ -152,4 +195,7 @@ export default {
   jsGetCvDocument,
   jsUpdateProfile,
   jsUploadCv,
+  jsUploadProfilePicture,
+  jsGetProfilePicture,
+  jsDeleteProfilePicture,
 };

@@ -14,6 +14,7 @@ export interface JobSeekerProfile {
   phoneNumber: string;
   cvUrl?: string;
   cvDocumentId?: string;
+  profilePictureId?: string;
   approvalStatus: ApprovalStatus;
   skills?: Array<{ id: string; name: string }>;
   userSkills?: Array<{

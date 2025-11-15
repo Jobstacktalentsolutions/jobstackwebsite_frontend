@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import profileImage from "@/app/assets/profileImage.svg";
 import editIcon from "@/app/assets/editIcon.svg";
 import threedots from "@/app/assets/threedots.svg";
-import calendar from "@/app/assets/calendar.svg";
 import location from "@/app/assets/locationPin.svg";
 import documentIcon from "@/app/assets/documentIcon.svg";
 import { useAuth } from "@/app/lib/auth-context";
@@ -14,10 +13,21 @@ import {
   fetchJobSeekerProfile,
   type JobSeekerProfile,
 } from "@/app/lib/profile-completion";
-import { jsGetCvDocument } from "@/app/api/auth-jobseeker.api";
+import {
+  jsGetCvDocument,
+  jsGetProfilePicture,
+  jsUpdateProfile,
+} from "@/app/api/auth-jobseeker.api";
+import { getSkills, type Skill } from "@/app/api/skills.api";
 import { ApprovalStatus, UserRole } from "@/app/lib/enums";
 import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
 import Loading from "@/app/loading";
+import { toastSuccess, toastError } from "@/app/lib/toast";
+import { EditModal } from "./components/EditModal";
+import { InlineEditable } from "./components/InlineEditable";
+import { LocationEditor } from "./components/LocationEditor";
+import { SalaryEditor } from "./components/SalaryEditor";
+import statesAndCities from "@/app/lib/states-and-cities.json";
 
 const tagBase =
   "inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700";
@@ -49,8 +59,50 @@ const ProfilePage: React.FC = () => {
     };
     signedUrl: string;
   } | null>(null);
+  const [profilePicture, setProfilePicture] = useState<{
+    document: {
+      id: string;
+      fileName: string;
+      originalName: string;
+      mimeType: string;
+      size: number;
+      type: string;
+      description?: string;
+      createdAt: string;
+    };
+    signedUrl: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Edit state management
+  const [editingFields, setEditingFields] = useState<{
+    bio: boolean;
+    location: boolean;
+    salary: boolean;
+    skills: boolean;
+  }>({
+    bio: false,
+    location: false,
+    salary: false,
+    skills: false,
+  });
+
+  // Mobile modal state
+  const [mobileModal, setMobileModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    content: React.ReactNode;
+  }>({
+    isOpen: false,
+    title: "",
+    content: null,
+  });
+
+  // Skills state
+  const [availableSkills, setAvailableSkills] = useState<Skill[]>([]);
+  const [skillSearchQuery, setSkillSearchQuery] = useState("");
+  const [selectedSkillIds, setSelectedSkillIds] = useState<string[]>([]);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -69,6 +121,17 @@ const ProfilePage: React.FC = () => {
             console.log("No CV document found");
           }
         }
+
+        // Try to fetch profile picture if it exists
+        if (profileData.profilePictureId) {
+          try {
+            const pictureData = await jsGetProfilePicture();
+            setProfilePicture(pictureData);
+          } catch (err) {
+            // Profile picture might not exist, that's okay
+            console.log("No profile picture found");
+          }
+        }
       } catch (err: any) {
         console.error("Error loading profile:", err);
         setError(err?.message || "Failed to load profile");
@@ -79,6 +142,137 @@ const ProfilePage: React.FC = () => {
 
     loadProfile();
   }, []);
+
+  // Load skills when editing skills
+  useEffect(() => {
+    if (editingFields.skills) {
+      const loadSkills = async () => {
+        try {
+          const skills = await getSkills();
+          setAvailableSkills(skills);
+        } catch (err) {
+          console.error("Error loading skills:", err);
+        }
+      };
+      loadSkills();
+    }
+  }, [editingFields.skills]);
+
+  // Initialize selected skills from profile
+  useEffect(() => {
+    if (profile?.userSkills) {
+      setSelectedSkillIds(
+        profile.userSkills.map((us) => us.skill?.id).filter(Boolean) as string[]
+      );
+    }
+  }, [profile]);
+
+  // Show mobile modal
+  const showMobileModal = useCallback(
+    (title: string, content: React.ReactNode) => {
+      setMobileModal({ isOpen: true, title, content });
+    },
+    []
+  );
+
+  // Close mobile modal
+  const closeMobileModal = () => {
+    setMobileModal({ isOpen: false, title: "", content: null });
+  };
+
+  // Save handlers
+  const saveBio = async (value: string) => {
+    try {
+      await jsUpdateProfile({ brief: value });
+      setProfile((prev) => (prev ? { ...prev, brief: value } : null));
+      toastSuccess("Bio updated successfully");
+      setEditingFields((prev) => ({ ...prev, bio: false }));
+      closeMobileModal();
+    } catch (err: any) {
+      toastError(err?.response?.data?.message || "Failed to update bio");
+      throw err;
+    }
+  };
+
+  const saveLocation = async (state: string, city: string) => {
+    try {
+      await jsUpdateProfile({ state, city });
+      setProfile((prev) => (prev ? { ...prev, state, city } : null));
+      toastSuccess("Location updated successfully");
+      setEditingFields((prev) => ({ ...prev, location: false }));
+      closeMobileModal();
+    } catch (err: any) {
+      toastError(err?.response?.data?.message || "Failed to update location");
+      throw err;
+    }
+  };
+
+  const saveSalary = async (
+    min: number | undefined,
+    max: number | undefined
+  ) => {
+    try {
+      await jsUpdateProfile({
+        minExpectedSalary: min,
+        maxExpectedSalary: max,
+      });
+      setProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              minExpectedSalary: min,
+              maxExpectedSalary: max,
+            }
+          : null
+      );
+      toastSuccess("Salary updated successfully");
+      setEditingFields((prev) => ({ ...prev, salary: false }));
+      closeMobileModal();
+    } catch (err: any) {
+      toastError(err?.response?.data?.message || "Failed to update salary");
+      throw err;
+    }
+  };
+
+  const saveSkills = async () => {
+    try {
+      await jsUpdateProfile({ skillIds: selectedSkillIds });
+      const updatedProfile = await fetchJobSeekerProfile();
+      setProfile(updatedProfile);
+      setSelectedSkillIds(
+        updatedProfile.userSkills?.map((us) => us.skill?.id).filter(Boolean) ||
+          []
+      );
+      toastSuccess("Skills updated successfully");
+      setEditingFields((prev) => ({ ...prev, skills: false }));
+      closeMobileModal();
+    } catch (err: any) {
+      toastError(err?.response?.data?.message || "Failed to update skills");
+      throw err;
+    }
+  };
+
+  // Toggle individual field edit
+  const toggleFieldEdit = (field: keyof typeof editingFields) => {
+    setEditingFields((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+  };
+
+  // Filter skills based on search
+  const filteredSkills = availableSkills.filter((skill) =>
+    skill.name.toLowerCase().includes(skillSearchQuery.toLowerCase())
+  );
+
+  // Toggle skill selection
+  const toggleSkill = (skillId: string) => {
+    setSelectedSkillIds((prev) =>
+      prev.includes(skillId)
+        ? prev.filter((id) => id !== skillId)
+        : [...prev, skillId]
+    );
+  };
 
   const getApprovalStatusBadge = (status: ApprovalStatus) => {
     switch (status) {
@@ -167,8 +361,158 @@ const ProfilePage: React.FC = () => {
     `${profile.firstName || ""} ${profile.lastName || ""}`.trim() || "User";
   const displayLocation = formatLocation();
 
+  // Location input renderer
+  const renderLocationInput = (
+    state: string,
+    city: string,
+    onStateChange: (state: string) => void,
+    onCityChange: (city: string) => void
+  ) => {
+    const availableCities =
+      statesAndCities.find((s) => s.name === state)?.cities || [];
+
+    return (
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            State
+          </label>
+          <select
+            value={state}
+            onChange={(e) => {
+              onStateChange(e.target.value);
+              onCityChange("");
+            }}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
+          >
+            <option value="">Select state</option>
+            {statesAndCities.map((s) => (
+              <option key={s.name} value={s.name}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        {state && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              City
+            </label>
+            <select
+              value={city}
+              onChange={(e) => onCityChange(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
+            >
+              <option value="">Select city</option>
+              {availableCities.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Salary input renderer
+  const renderSalaryInput = (
+    min: number | undefined,
+    max: number | undefined,
+    onMinChange: (min: number | undefined) => void,
+    onMaxChange: (max: number | undefined) => void
+  ) => {
+    return (
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            Minimum Salary (₦/month)
+          </label>
+          <input
+            type="number"
+            value={min || ""}
+            onChange={(e) =>
+              onMinChange(e.target.value ? Number(e.target.value) : undefined)
+            }
+            placeholder="e.g., 50000"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            Maximum Salary (₦/month)
+          </label>
+          <input
+            type="number"
+            value={max || ""}
+            onChange={(e) =>
+              onMaxChange(e.target.value ? Number(e.target.value) : undefined)
+            }
+            placeholder="e.g., 200000"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // Skills input renderer
+  const renderSkillsInput = () => {
+    return (
+      <div className="space-y-3">
+        <div>
+          <input
+            type="text"
+            value={skillSearchQuery}
+            onChange={(e) => setSkillSearchQuery(e.target.value)}
+            placeholder="Search skills..."
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm mb-3"
+          />
+        </div>
+        <div className="max-h-60 overflow-y-auto space-y-2">
+          {filteredSkills.length === 0 ? (
+            <p className="text-sm text-slate-500 text-center py-4">
+              No skills found
+            </p>
+          ) : (
+            filteredSkills.map((skill) => (
+              <label
+                key={skill.id}
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedSkillIds.includes(skill.id)}
+                  onChange={() => toggleSkill(skill.id)}
+                  className="w-4 h-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500"
+                />
+                <span className="text-sm text-slate-700">{skill.name}</span>
+              </label>
+            ))
+          )}
+        </div>
+        {selectedSkillIds.length > 0 && (
+          <div className="pt-2 border-t border-slate-200">
+            <p className="text-xs text-slate-500 mb-2">
+              {selectedSkillIds.length} skill(s) selected
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <main className="min-h-screen bg-slate-100">
+      <EditModal
+        isOpen={mobileModal.isOpen}
+        onClose={closeMobileModal}
+        title={mobileModal.title}
+      >
+        {mobileModal.content}
+      </EditModal>
+
       <div className="">
         {/* Top banner */}
         <div className="bg-gradient-to-r from-sky-900 to-sky-700 px-6 pb-10 md:pb-24 pt-8 mb-10 md:px-10 md:mb-20">
@@ -181,9 +525,9 @@ const ProfilePage: React.FC = () => {
             {/* Left: avatar and basic info */}
             <div className="flex text-[#717680] md:absolute w-full items-start gap-4 md:gap-6 bottom-0 md:-bottom-[150px]">
               <div className="h-20 w-20 overflow-hidden rounded-full border-4 border-white/70 bg-slate-200 md:h-24 md:w-24">
-                {profile.profilePictureUrl ? (
+                {profilePicture?.signedUrl ? (
                   <Image
-                    src={profile.profilePictureUrl}
+                    src={profilePicture.signedUrl}
                     alt={fullName}
                     width={96}
                     height={96}
@@ -217,21 +561,6 @@ const ProfilePage: React.FC = () => {
 
             {/* Right: actions */}
             <div className="flex w-full flex-wrap items-center gap-3 justify-end">
-              <button
-                onClick={() =>
-                  router.push("/pages/jobseeker/auth/complete-profile")
-                }
-                className="flex items-center rounded-lg bg-white px-4 py-2 text-xs font-medium text-blue backdrop-blur hover:bg-white/80"
-              >
-                <p>Edit Profile</p>
-                <Image
-                  className="mx-4"
-                  src={editIcon}
-                  alt="edit icon"
-                  width={15}
-                  height={15}
-                />
-              </button>
               <button className="rounded-lg border border-white/70 bg-[#2572A7] px-4 py-2 text-xs font-medium text-white hover:bg-white/80">
                 Share Profile
               </button>
@@ -254,19 +583,25 @@ const ProfilePage: React.FC = () => {
               <section className={cardBase}>
                 <div className={sectionTitle}>
                   <span className="text-2xl">About me</span>
-                  <button
-                    onClick={() =>
-                      router.push("/pages/jobseeker/auth/complete-profile")
-                    }
-                  >
-                    <Image src={editIcon} alt="edit icon" />
-                  </button>
                 </div>
-                <p className="text-sm leading-relaxed text-[#717680]">
-                  {profile.brief ||
-                    profile.bio ||
-                    "No bio available. Click edit to add your bio."}
-                </p>
+                <InlineEditable
+                  value={profile.brief || profile.bio || ""}
+                  onSave={saveBio}
+                  renderInput={(value, onChange) => (
+                    <textarea
+                      value={value}
+                      onChange={(e) => onChange(e.target.value)}
+                      rows={6}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm resize-none"
+                      placeholder="Tell us about yourself..."
+                    />
+                  )}
+                  isEditing={editingFields.bio}
+                  onEditToggle={() => toggleFieldEdit("bio")}
+                  placeholder="No bio available. Click edit to add your bio."
+                  showMobileModal={showMobileModal}
+                  mobileModalTitle="Edit About Me"
+                />
               </section>
             </div>
 
@@ -276,74 +611,118 @@ const ProfilePage: React.FC = () => {
               <section className={cardBase}>
                 <div className={sectionTitle}>
                   <span className="text-2xl">Quick Facts</span>
-                  <button
-                    onClick={() =>
-                      router.push("/pages/jobseeker/auth/complete-profile")
-                    }
-                  >
-                    <Image src={editIcon} alt="edit icon" />
-                  </button>
                 </div>
                 <div className="space-y-4 text-sm">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-slate-400">
-                      Preferred Location
-                    </p>
-                    <p className="mt-1 text-slate-800">{displayLocation}</p>
-                  </div>
+                  <LocationEditor
+                    state={profile.state}
+                    city={profile.city}
+                    preferredLocation={profile.preferredLocation}
+                    onSave={saveLocation}
+                    renderInput={renderLocationInput}
+                    isEditing={editingFields.location}
+                    onEditToggle={() => toggleFieldEdit("location")}
+                    showMobileModal={showMobileModal}
+                    closeMobileModal={closeMobileModal}
+                  />
 
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-slate-400">
-                      Expected Salary
-                    </p>
-                    <p className="mt-1 text-slate-800">
-                      {formatSalary(
-                        profile.minExpectedSalary,
-                        profile.maxExpectedSalary
-                      )}
-                    </p>
-                  </div>
+                  <SalaryEditor
+                    minSalary={profile.minExpectedSalary}
+                    maxSalary={profile.maxExpectedSalary}
+                    onSave={saveSalary}
+                    renderInput={renderSalaryInput}
+                    isEditing={editingFields.salary}
+                    onEditToggle={() => toggleFieldEdit("salary")}
+                    showMobileModal={showMobileModal}
+                    closeMobileModal={closeMobileModal}
+                  />
                 </div>
               </section>
 
               {/* Skills */}
-              <section className={cardBase}>
+              <section className={`${cardBase} group`}>
                 <div className={sectionTitle}>
                   <span className="text-2xl">Skills</span>
                   <button
-                    onClick={() =>
-                      router.push("/pages/jobseeker/auth/complete-profile")
-                    }
+                    onClick={() => {
+                      if (window.innerWidth < 768) {
+                        const modalContent = (
+                          <div className="space-y-4">
+                            {renderSkillsInput()}
+                            <div className="flex gap-3 pt-4 border-t border-slate-200">
+                              <button
+                                onClick={closeMobileModal}
+                                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={saveSkills}
+                                className="flex-1 px-4 py-2.5 rounded-xl bg-sky-600 text-white font-medium hover:bg-sky-700 transition-colors"
+                              >
+                                Save
+                              </button>
+                            </div>
+                          </div>
+                        );
+                        showMobileModal("Edit Skills", modalContent);
+                      } else {
+                        toggleFieldEdit("skills");
+                      }
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-slate-100 transition-all"
                   >
-                    <Image src={editIcon} alt="edit icon" />
+                    <Image
+                      src={editIcon}
+                      alt="edit skills"
+                      width={18}
+                      height={18}
+                    />
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {profile.userSkills && profile.userSkills.length > 0 ? (
-                    profile.userSkills.map((userSkill) => (
-                      <span key={userSkill.id} className={tagBase}>
-                        {userSkill.skill?.name || "Unknown"}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-500">
-                      No skills added yet
-                    </p>
-                  )}
-                </div>
+                {editingFields.skills ? (
+                  <div className="space-y-3">
+                    {renderSkillsInput()}
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        onClick={saveSkills}
+                        className="px-3 py-1.5 rounded-lg bg-sky-600 text-white text-xs font-medium hover:bg-sky-700 transition-colors"
+                      >
+                        Done
+                      </button>
+                      <button
+                        onClick={() =>
+                          setEditingFields((prev) => ({
+                            ...prev,
+                            skills: false,
+                          }))
+                        }
+                        className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {profile.userSkills && profile.userSkills.length > 0 ? (
+                      profile.userSkills.map((userSkill) => (
+                        <span key={userSkill.id} className={tagBase}>
+                          {userSkill.skill?.name || "Unknown"}
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-sm text-slate-500">
+                        No skills added yet
+                      </p>
+                    )}
+                  </div>
+                )}
               </section>
 
               {/* Verified documents */}
               <section className={cardBase}>
                 <div className={sectionTitle}>
                   <span className="text-2xl">Verified Documents</span>
-                  <button
-                    onClick={() =>
-                      router.push("/pages/jobseeker/auth/complete-profile")
-                    }
-                  >
-                    <Image src={editIcon} alt="edit icon" />
-                  </button>
                 </div>
 
                 <ul className="space-y-2 text-sm text-slate-800">
