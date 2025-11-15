@@ -198,9 +198,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Profile is complete, redirect to dashboard
       if (normalizedRole === UserRole.EMPLOYER) {
         router.push("/pages/employer");
-      } else {
+      } else
         router.push("/dashboard");
-      }
     }
   };
 

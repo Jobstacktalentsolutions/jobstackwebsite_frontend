@@ -6,7 +6,7 @@ const protectedRoutes = {
   "/pages/employer": ["EMPLOYER"],
   " /pages/employer/auth/profile": ["EMPLOYER"],
   " /pages/employer/auth/profile/companyProfile": ["EMPLOYER"],
-  "/dashboard": ["JOB_SEEKER"],
+  "/jobseeker/dashboard": ["JOB_SEEKER"],
   "/pages/jobseeker/auth/profile": ["JOB_SEEKER"],
   "/admin": ["ADMIN"],
 };
@@ -85,7 +85,7 @@ function getLoginPathForRole(role: string): string {
     case "ADMIN":
       return "/auth/admin/login";
     default:
-      return " /pages/employer/auth/login";
+      return "/pages/employer/auth/login";
   }
 }
 

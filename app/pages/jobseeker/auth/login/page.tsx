@@ -42,9 +42,9 @@ export default function LoginPage() {
           await jsSendVerificationEmail({ email });
         } catch { }
         toastInfo("Please verify your email to continue");
-        router.push(
-          ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(email)}`
-        );
+        // router.push(
+        //   ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(email)}`
+        // );
         return;
       }
 
