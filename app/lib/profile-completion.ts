@@ -155,6 +155,25 @@ export async function checkJobSeekerProfileCompletion(): Promise<
       return "/pages/jobseeker/auth/complete-profile";
     }
 
+    // Check for required profile fields - redirect if any are missing
+    const requiredFields = [
+      profile.address,
+      profile.jobTitle,
+      profile.brief,
+      profile.preferredLocation,
+      profile.state,
+      profile.city,
+      profile.cvDocumentId,
+    ];
+
+    const hasMissingFields = requiredFields.some(
+      (field) => field === null || field === undefined || field === ""
+    );
+
+    if (hasMissingFields) {
+      return "/pages/jobseeker/auth/complete-profile";
+    }
+
     // If profile is incomplete but status is not NOT_STARTED, don't redirect
     // (they've already started onboarding)
     if (!isJobSeekerProfileComplete(profile)) {

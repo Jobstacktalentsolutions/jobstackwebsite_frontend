@@ -22,6 +22,9 @@ import {
   EmployerDocumentType,
   EmployerVerification,
 } from "@/app/types/employer.type";
+import { useAuth } from "@/app/lib/auth-context";
+import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
+import { UserRole } from "@/app/lib/enums";
 
 interface DocumentUpload {
   documentType: EmployerDocumentType;
@@ -33,6 +36,11 @@ interface DocumentUpload {
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { isLoading: authLoading } = useProtectedRoute({
+    allowedRoles: [UserRole.EMPLOYER],
+    redirectTo: "/pages/employer/auth/login",
+  });
+  const { isLoading: isAuthContextLoading, isAuthenticated } = useAuth();
 
   // Form state
   const [companyName, setCompanyName] = useState("");
@@ -54,14 +62,15 @@ const ProfilePage = () => {
     null
   );
 
-  // UI state
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadVerificationData();
-  }, []);
+    if (!authLoading && isAuthenticated) {
+      loadVerificationData();
+    }
+  }, [authLoading, isAuthenticated]);
 
   const loadVerificationData = async () => {
     try {
@@ -301,8 +310,8 @@ const ProfilePage = () => {
     { value: "500+", label: "500+ employees" },
   ];
 
-  if (loading) {
-    return <Loading text="Loading profile..." />;
+  if (authLoading || isAuthContextLoading || !isAuthenticated || loading) {
+    return <Loading text="Loading..." />;
   }
 
   return (

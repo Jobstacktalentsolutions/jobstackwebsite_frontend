@@ -62,11 +62,9 @@ const JobseekerProfilePage = () => {
     cv: null,
   });
 
-  // Get profile from auth context (already loaded)
   const { profile, refreshProfile } = useProfile();
   const { isLoading: isAuthContextLoading, isAuthenticated } = useAuth();
 
-  // UI state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cvError, setCvError] = useState<string | null>(null);
@@ -279,16 +277,8 @@ const JobseekerProfilePage = () => {
     }
   };
 
-  // Show loading while checking authentication, loading profile data, or loading CV
-  const isProfileDataLoading =
-    isAuthenticated && !profile?.jobSeeker && !authLoading;
-  if (
-    authLoading ||
-    isAuthContextLoading ||
-    isProfileDataLoading ||
-    loadingCv
-  ) {
-    return <Loading text="Loading profile..." />;
+  if (authLoading || isAuthContextLoading || !isAuthenticated) {
+    return <Loading text="Loading..." />;
   }
 
   return (
