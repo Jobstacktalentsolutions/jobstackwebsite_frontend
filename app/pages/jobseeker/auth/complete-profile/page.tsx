@@ -23,6 +23,8 @@ interface JobseekerProfileData {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  jobTitle: string;
+  address: string;
   state: string;
   city: string;
   bio: string;
@@ -55,6 +57,8 @@ const JobseekerProfilePage = () => {
     firstName: "",
     lastName: "",
     phoneNumber: "",
+    jobTitle: "",
+    address: "",
     state: "",
     city: "",
     bio: "",
@@ -101,6 +105,8 @@ const JobseekerProfilePage = () => {
         firstName: jobSeekerProfile.firstName || prev.firstName || "",
         lastName: jobSeekerProfile.lastName || prev.lastName || "",
         phoneNumber: jobSeekerProfile.phoneNumber || prev.phoneNumber || "",
+        jobTitle: jobSeekerProfile.jobTitle || prev.jobTitle || "",
+        address: jobSeekerProfile.address || prev.address || "",
         state: jobSeekerProfile.state || prev.state || "",
         city: jobSeekerProfile.city || prev.city || "",
         bio: jobSeekerProfile.bio || jobSeekerProfile.brief || prev.bio || "",
@@ -217,6 +223,14 @@ const JobseekerProfilePage = () => {
       setError("City/LGA is required");
       return false;
     }
+    if (!profileData.jobTitle.trim()) {
+      setError("Job title is required");
+      return false;
+    }
+    if (!profileData.address.trim()) {
+      setError("Address is required");
+      return false;
+    }
     if (!profileData.bio.trim()) {
       setError("Bio is required");
       return false;
@@ -251,6 +265,8 @@ const JobseekerProfilePage = () => {
       await jsUpdateProfile({
         firstName: profileData.firstName.trim(),
         lastName: profileData.lastName.trim(),
+        jobTitle: profileData.jobTitle.trim(),
+        address: profileData.address.trim(),
         brief: profileData.bio.trim(),
         state: profileData.state.trim(),
         city: profileData.city.trim(),
@@ -321,6 +337,15 @@ const JobseekerProfilePage = () => {
               required
             />
 
+            <Input
+              label="Job Title"
+              placeholder="e.g., Software Engineer, Marketing Manager"
+              iconLeft={<User size={16} />}
+              value={profileData.jobTitle}
+              onChange={(e) => handleInputChange("jobTitle", e.target.value)}
+              required
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <SearchableSelect
                 label="State"
@@ -357,6 +382,15 @@ const JobseekerProfilePage = () => {
                 emptyMessage="No city/LGA found."
               />
             </div>
+
+            <Input
+              label="Address"
+              placeholder="Enter your full address"
+              iconLeft={<MapPin size={16} />}
+              value={profileData.address}
+              onChange={(e) => handleInputChange("address", e.target.value)}
+              required
+            />
           </div>
 
           {/* Professional Information */}

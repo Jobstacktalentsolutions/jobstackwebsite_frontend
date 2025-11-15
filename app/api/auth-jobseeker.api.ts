@@ -112,6 +112,7 @@ export async function jsUpdateProfile(updateData: {
   jobTitle?: string;
   brief?: string;
   preferredLocation?: string;
+  address?: string;
   state?: string;
   city?: string;
   skillIds?: string[];

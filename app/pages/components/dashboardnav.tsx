@@ -9,6 +9,7 @@ import { useAuth } from "@/app/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { jsGetProfilePicture } from "@/app/api/auth-jobseeker.api";
 import Loading from "@/app/loading";
+import { UserRole } from "@/app/lib/enums";
 
 const Dashboardnav = () => {
   const {
@@ -16,12 +17,26 @@ const Dashboardnav = () => {
     profile,
     isAuthenticated,
     isLoading: isAuthLoading,
+    clearAuthState,
   } = useAuth();
   const [isDashboardLoading, setIsDashboardLoading] = useState(true);
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(
     null
   );
   const router = useRouter();
+
+  // Handle signup - clears all auth data and navigates to signup page
+  const handleSignup = () => {
+    // Determine signup path before clearing state
+    const signupPath =
+      user?.role === UserRole.EMPLOYER
+        ? "/pages/employer/auth/signUp"
+        : "/pages/jobseeker/auth/signUp";
+    // Clear all cookies and auth state
+    clearAuthState();
+    // Navigate to signup page
+    router.push(signupPath);
+  };
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -64,15 +79,27 @@ const Dashboardnav = () => {
   return (
     <div className=" w-full flex justify-between px-4 items-center mb-10">
       <Image src={logo} alt="logo image" className="" />
-      <div className="flex items-center w-1/6">
-        <div className="flex items-center w-full">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={handleSignup}
+          className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-colors cursor-pointer text-white font-medium"
+        >
+          Sign up
+        </button>
+        <div className="flex items-center">
           <Image
             src={notification}
             alt="notification icon"
             className=" w bg-sky-50 p-2 w-10 h-10 rounded-full mr-6 cursor-pointer hover:bg-sky-100 transition-colors"
           />
           <button
-            onClick={() => router.push("/pages/jobseeker/profile")}
+            onClick={() => {
+              const profilePath =
+                user?.role === UserRole.EMPLOYER
+                  ? "/pages/employer/profile"
+                  : "/pages/jobseeker/profile";
+              router.push(profilePath);
+            }}
             className="flex items-center gap-2 bg-white/30 px-3 py-2 rounded-full hover:bg-white/40 transition-colors cursor-pointer"
           >
             {profilePictureUrl ? (

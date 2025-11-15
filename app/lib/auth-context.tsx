@@ -59,6 +59,7 @@ export interface AuthContextType {
     };
   }) => Promise<void>;
   logout: () => void;
+  clearAuthState: () => void;
   updateUser: (userData: Partial<User>) => void;
   refreshProfile: () => Promise<void>;
   checkProfileCompletion: () => Promise<string | null>;
@@ -129,7 +130,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           jobSeekerProfile.address,
           jobSeekerProfile.jobTitle,
           jobSeekerProfile.brief,
-          jobSeekerProfile.preferredLocation,
           jobSeekerProfile.state,
           jobSeekerProfile.city,
           jobSeekerProfile.cvDocumentId,
@@ -224,6 +224,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/");
   }, [router]);
 
+  // Clear auth state without navigation (useful for signup flow)
+  const clearAuthState = useCallback(() => {
+    clearAuthTokens();
+    setUser(null);
+    setProfile(null);
+  }, []);
+
   const updateUser = useCallback((userData: Partial<User>) => {
     setUser((prev) => {
       if (!prev) return null;
@@ -270,6 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
+        clearAuthState,
         updateUser,
         refreshProfile,
         checkProfileCompletion,

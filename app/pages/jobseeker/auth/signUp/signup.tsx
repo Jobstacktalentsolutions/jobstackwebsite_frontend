@@ -11,15 +11,15 @@ import { jsRegister } from "@/app/api/auth-jobseeker.api";
 import { toastSuccess, toastError } from "@/app/lib/toast";
 import type { JobSeekerRegistrationDto } from "@/app/types/jobseeker.type";
 import { useRouter, useSearchParams } from "next/navigation";
+import GoogleSignInButton from "@/app/pages/components/GoogleSignInButton";
 
 export default function SignUp() {
-
-
   const [submitting, setSubmitting] = useState(false);
   type Persona = "jobseeker" | "employer";
 
   const searchParams = useSearchParams();
-  const persona: Persona = (searchParams.get("persona") as Persona) || "jobseeker";
+  const persona: Persona =
+    (searchParams.get("persona") as Persona) || "jobseeker";
 
   // Shared
   const [password, setPassword] = useState("");
@@ -32,13 +32,12 @@ export default function SignUp() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
 
-
-
   // Employer fields
   const [name, setName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
-  const [businessType, setBusinessType] = useState<"company" | "individual">("company");
-
+  const [businessType, setBusinessType] = useState<"company" | "individual">(
+    "company"
+  );
 
   const router = useRouter();
 
@@ -46,12 +45,14 @@ export default function SignUp() {
     if (persona === "employer") {
       return {
         heading: "Start hiring today",
-        subtext: "Create your employer account to post roles and manage applicants in minutes.",
+        subtext:
+          "Create your employer account to post roles and manage applicants in minutes.",
       };
     }
     return {
       heading: "Start your journey",
-      subtext: "Create your free account in just a minute. Your dream role is closer than you think.",
+      subtext:
+        "Create your free account in just a minute. Your dream role is closer than you think.",
     };
   }, [persona]);
 
@@ -71,7 +72,11 @@ export default function SignUp() {
 
       const res = await jsRegister(payload);
       toastSuccess("Verification code sent to your email");
-      router.push(` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(email)}`);
+      router.push(
+        ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(
+          email
+        )}`
+      );
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Unable to create account";
@@ -80,7 +85,6 @@ export default function SignUp() {
       setSubmitting(false);
     }
   }
-
 
   return (
     <div className="">
@@ -198,8 +202,9 @@ export default function SignUp() {
               {submitting ? "Creating account..." : "Create an account"}
             </Button>
 
-
-            {err && <p className="text-red-600 text-sm whitespace-pre-line">{err}</p>}
+            {err && (
+              <p className="text-red-600 text-sm whitespace-pre-line">{err}</p>
+            )}
 
             <div className="flex items-center gap-2 mb-10">
               <hr className="flex-grow border-slate-200" />
@@ -207,23 +212,20 @@ export default function SignUp() {
               <hr className="flex-grow border-slate-200" />
             </div>
 
-            <div className="flex w-full justify-center">
-              <button type="button" className="flex mx-4 justify-center p-2 rounded-lg border-gray-500 border-[1px]">Google
-                {/* <Image src={google} alt="google icon" /> */}
-              </button>
-
-            </div>
+            <GoogleSignInButton text="Sign up with Google" className="w-full" />
 
             <p className="text-center text-sm text-slate-500">
               Already have an account?{" "}
-              <Link href="/pages/jobseeker/auth/login" className="text-blue-600 hover:underline">
+              <Link
+                href="/pages/jobseeker/auth/login"
+                className="text-blue-600 hover:underline"
+              >
                 Sign in
               </Link>
             </p>
           </form>
-
         }
       />
     </div>
-  )
+  );
 }

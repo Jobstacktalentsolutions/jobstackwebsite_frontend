@@ -1,11 +1,11 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import Button from "@/app/pages/components/button";
 import Input from "@/app/pages/components/input";
 import AuthPageLayout from "@/app/pages/components/authPageLayout";
+import GoogleSignInButton from "@/app/pages/components/GoogleSignInButton";
 import { useState } from "react";
 import PasswordField from "@/app/pages/components/passwordField";
 import { jsSendVerificationEmail } from "@/app/api/auth-jobseeker.api";
@@ -98,14 +98,7 @@ export default function LoginPage() {
                 <span className="text-sm text-slate-500">or</span>
                 <hr className="flex-grow border-slate-200" />
               </div>
-              <div className="flex">
-                <Button variant="outline" className="w-full">
-                  Sign in with Google
-                </Button>
-                <Button variant="outline" className="w-full ml-4">
-                  Sign in with Apple
-                </Button>
-              </div>
+              <GoogleSignInButton className="w-full" />
 
               <p className="text-center text-sm text-slate-500">
                 Don’t have an account?{" "}

@@ -88,12 +88,16 @@ const ProfilePage: React.FC = () => {
     location: boolean;
     salary: boolean;
     skills: boolean;
+    jobTitle: boolean;
+    address: boolean;
   }>({
     fullName: false,
     bio: false,
     location: false,
     salary: false,
     skills: false,
+    jobTitle: false,
+    address: false,
   });
 
   // Loading states for save operations
@@ -103,12 +107,16 @@ const ProfilePage: React.FC = () => {
     location: boolean;
     salary: boolean;
     skills: boolean;
+    jobTitle: boolean;
+    address: boolean;
   }>({
     fullName: false,
     bio: false,
     location: false,
     salary: false,
     skills: false,
+    jobTitle: false,
+    address: false,
   });
 
   // Mobile modal state
@@ -321,6 +329,38 @@ const ProfilePage: React.FC = () => {
       throw err;
     } finally {
       setSavingStates((prev) => ({ ...prev, skills: false }));
+    }
+  };
+
+  const saveJobTitle = async (value: string) => {
+    setSavingStates((prev) => ({ ...prev, jobTitle: true }));
+    try {
+      await jsUpdateProfile({ jobTitle: value });
+      setProfile((prev) => (prev ? { ...prev, jobTitle: value } : null));
+      toastSuccess("Job title updated successfully");
+      setEditingFields((prev) => ({ ...prev, jobTitle: false }));
+      closeMobileModal();
+    } catch (err: any) {
+      toastError(err?.response?.data?.message || "Failed to update job title");
+      throw err;
+    } finally {
+      setSavingStates((prev) => ({ ...prev, jobTitle: false }));
+    }
+  };
+
+  const saveAddress = async (value: string) => {
+    setSavingStates((prev) => ({ ...prev, address: true }));
+    try {
+      await jsUpdateProfile({ address: value });
+      setProfile((prev) => (prev ? { ...prev, address: value } : null));
+      toastSuccess("Address updated successfully");
+      setEditingFields((prev) => ({ ...prev, address: false }));
+      closeMobileModal();
+    } catch (err: any) {
+      toastError(err?.response?.data?.message || "Failed to update address");
+      throw err;
+    } finally {
+      setSavingStates((prev) => ({ ...prev, address: false }));
     }
   };
 
@@ -1136,6 +1176,46 @@ const ProfilePage: React.FC = () => {
                   <span className="text-2xl">Quick Facts</span>
                 </div>
                 <div className="space-y-4 text-sm">
+                  <InlineEditable
+                    value={profile.jobTitle || ""}
+                    onSave={saveJobTitle}
+                    renderInput={(value, onChange) => (
+                      <input
+                        type="text"
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder="e.g., Software Engineer"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
+                      />
+                    )}
+                    isEditing={editingFields.jobTitle}
+                    onEditToggle={() => toggleFieldEdit("jobTitle")}
+                    label="Job Title"
+                    placeholder="No job title set. Click edit to add."
+                    showMobileModal={showMobileModal}
+                    mobileModalTitle="Edit Job Title"
+                  />
+
+                  <InlineEditable
+                    value={profile.address || ""}
+                    onSave={saveAddress}
+                    renderInput={(value, onChange) => (
+                      <textarea
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        rows={3}
+                        placeholder="Enter your full address"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm resize-none"
+                      />
+                    )}
+                    isEditing={editingFields.address}
+                    onEditToggle={() => toggleFieldEdit("address")}
+                    label="Address"
+                    placeholder="No address set. Click edit to add."
+                    showMobileModal={showMobileModal}
+                    mobileModalTitle="Edit Address"
+                  />
+
                   <LocationEditor
                     state={profile.state}
                     city={profile.city}

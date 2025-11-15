@@ -13,6 +13,7 @@ import welcome3 from "@/app/assets/securitywithstaff.png";
 import { empSendPasswordResetCode } from "@/app/api/auth-employer.api";
 import { toastError, toastSuccess } from "@/app/lib/toast";
 import { useRouter } from "next/navigation";
+import GoogleSignInButton from "@/app/pages/components/GoogleSignInButton";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -67,14 +68,7 @@ export default function ForgotPassword() {
               <span className="text-sm text-slate-500">or</span>
               <hr className="flex-grow border-slate-200" />
             </div>
-            <div className="flex flex-col md:flex-row">
-              <Button variant="outline" className="w-full my-4">
-                Sign in with Google
-              </Button>
-              <Button variant="outline" className="w-full md:ml-4">
-                Sign in with Apple
-              </Button>
-            </div>
+            <GoogleSignInButton className="w-full" />
 
             <p className="text-center text-sm text-slate-500">
               Don’t have an account?{" "}

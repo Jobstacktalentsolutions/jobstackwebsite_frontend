@@ -6,14 +6,13 @@ import { Mail, User2, Phone } from "lucide-react";
 import Button from "@/app/pages/components/button";
 import Input from "@/app/pages/components/input";
 import { useState } from "react";
-import Image from "next/image";
 import PasswordField from "@/app/pages/components/passwordField";
 import { empRegister } from "@/app/api/auth-employer.api";
 import { toastSuccess, toastError } from "@/app/lib/toast";
 import type { EmployerRegistrationDto } from "@/app/types/employer.type";
 import { EmployerType } from "@/app/types/employer.type";
 import { useRouter } from "next/navigation";
-import googleIcon from "@/app/assets/google.svg";
+import GoogleSignInButton from "@/app/pages/components/GoogleSignInButton";
 
 export default function SignUp() {
   const router = useRouter();
@@ -222,15 +221,7 @@ export default function SignUp() {
               <hr className="grow border-slate-200" />
             </div>
 
-            <div className="flex w-full justify-center">
-              <button
-                type="button"
-                className="flex mx-4 px-5 justify-center p-2 rounded-lg border-gray-500 border hover:bg-gray-50 transition-colors"
-              >
-                <Image src={googleIcon} alt="google icon" className="mx-4" />
-                Sign up with Google
-              </button>
-            </div>
+            <GoogleSignInButton text="Sign up with Google" className="w-full" />
 
             <p className="text-center text-sm text-slate-500">
               Already have an account?{" "}
