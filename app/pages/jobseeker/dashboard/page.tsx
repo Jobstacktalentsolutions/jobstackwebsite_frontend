@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { StatCard } from "@/app/pages/components/statcard";
 import { ApplicationJourney } from "@/app/pages/components/applicationJourney";
@@ -25,6 +25,7 @@ import { CategoryOutlined } from "@mui/icons-material";
 
 export default function CandidateDashboard() {
   const { user, isLoading, isAuthenticated } = useAuth();
+    const [menuOpen, setMenuOpen] = useState(false);
 
   if (isLoading || !isAuthenticated) {
     return <Loading text="Loading dashboard..." />;
@@ -33,33 +34,60 @@ export default function CandidateDashboard() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Header */}
 
-      <div className="bg-blue text-white w-full px-25 py-10 rounded-br-[100px]">
-        {" "}
-        <Dashboardnav />
-        <ul className="list-none  flex justify-between cursor-pointer my-4 w-4/5">
-          <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
-            <HomeIcon className="mr-2" /> Overview
-          </li>
-          <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
-            <BriefcaseBusinessIcon className="mr-2" /> Explore jobs
-          </li>
-          <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
-            <CategoryOutlined className="mr-2" />
-            My Applications
-          </li>
-          <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
-            <Building2 className="mr-2" /> Job Recommendations
-          </li>
-          <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
-            <Settings className="mr-2" /> Settings
-          </li>
-        </ul>
-        <div className="my-5">
-          <h2 className="text-4xl mt-5">
-            <span className="text-white/50">Welcome,</span> {user?.firstName}
-          </h2>
-        </div>
-      </div>
+   
+          <div className="bg-blue text-white w-full px-4 md:px-10 lg:px-24 py-6 md:py-10 rounded-br-[40px] md:rounded-br-[100px]">
+              <Dashboardnav onToggleMenu={() => setMenuOpen((prev) => !prev)} />
+
+              {/* DESKTOP / TABLET NAV */}
+              <ul className="hidden md:flex list-none justify-between cursor-pointer my-4 max-w-4xl">
+                  <li className="flex items-center text-sm lg:text-base font-light hover:bg-white/10 hover:rounded-full px-4 py-2">
+                      <HomeIcon className="mr-2 h-4 w-4" /> Overview
+                  </li>
+                  <li className="flex items-center text-sm lg:text-base font-light hover:bg-white/10 hover:rounded-full px-4 py-2">
+                      <BriefcaseBusinessIcon className="mr-2 h-4 w-4" /> Explore jobs
+                  </li>
+                  <li className="flex items-center text-sm lg:text-base font-light hover:bg-white/10 hover:rounded-full px-4 py-2">
+                      <CategoryOutlined className="mr-2" />
+                      My Applications
+                  </li>
+                  <li className="flex items-center text-sm lg:text-base font-light hover:bg-white/10 hover:rounded-full px-4 py-2">
+                      <Building2 className="mr-2 h-4 w-4" /> Job Recommendations
+                  </li>
+                  <li className="flex items-center text-sm lg:text-base font-light hover:bg-white/10 hover:rounded-full px-4 py-2">
+                      <Settings className="mr-2 h-4 w-4" /> Settings
+                  </li>
+              </ul>
+
+              {/* MOBILE NAV: dropdown, full-width buttons */}
+              {menuOpen && (
+                  <ul className="md:hidden mt-2 mb-4 list-none flex flex-col gap-1 rounded-2xl bg-white/10 p-3 text-sm">
+                      <li className="flex items-center rounded-xl px-3 py-2 hover:bg-white/15">
+                          <HomeIcon className="mr-2 h-4 w-4" /> Overview
+                      </li>
+                      <li className="flex items-center rounded-xl px-3 py-2 hover:bg-white/15">
+                          <BriefcaseBusinessIcon className="mr-2 h-4 w-4" /> Explore jobs
+                      </li>
+                      <li className="flex items-center rounded-xl px-3 py-2 hover:bg-white/15">
+                          <CategoryOutlined className="mr-2" />
+                          My Applications
+                      </li>
+                      <li className="flex items-center rounded-xl px-3 py-2 hover:bg-white/15">
+                          <Building2 className="mr-2 h-4 w-4" /> Job Recommendations
+                      </li>
+                      <li className="flex items-center rounded-xl px-3 py-2 hover:bg-white/15">
+                          <Settings className="mr-2 h-4 w-4" /> Settings
+                      </li>
+                  </ul>
+              )}
+
+              {/* Welcome text */}
+              <div className="my-4 md:my-6">
+                  <h2 className="text-2xl text-center md:text-start md:text-4xl mt-3 md:mt-5">
+                      <span className="text-white/60 mr-1">Welcome,</span>
+                      {user?.firstName}
+                  </h2>
+              </div>
+          </div>
 
       <main className="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:px-6">
         {/* KPI cards */}
@@ -103,7 +131,7 @@ export default function CandidateDashboard() {
 
         {/* Roles That Match Your Profile (same as before, omitted for brevity if you like) */}
         <h2 className="text-4xl">Roles that match your profile</h2>
-        <div className=" grid md:grid-cols-3 gap-6">
+        <div className=" flex lg:flex-wrap md:flex-nowrap gap-6">
           <JobCard
             location="Surulere, Lagos"
             verified
@@ -168,7 +196,17 @@ export default function CandidateDashboard() {
 
         {/* Application Journey + Profile Strength */}
         <section className="grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]">
-          <ApplicationJourney />
+                  <ApplicationJourney />
+                  <div className="mb-4 flex items-center justify-between">
+                      <h2 className="text-3xl font-semibold">Profile Strength</h2>
+                      <button
+                          type="button"
+                          
+                          className="text-sm font-medium text-blue-600 hover:underline"
+                      >
+                          Edit
+                      </button>
+                  </div>
           <ProfileStrength
             avatarSrc={avatar}
             onEdit={() => console.log("Edit clicked")}
