@@ -95,6 +95,15 @@ export async function getDocumentRequirements(): Promise<
   return data.data;
 }
 
+export async function getVerificationDocuments(): Promise<
+  EmployerVerificationDocument[]
+> {
+  const { data } = await httpClient.get<
+    ResponseDto<EmployerVerificationDocument[]>
+  >(`${base}/documents`);
+  return data.data;
+}
+
 export default {
   getMyProfile,
   getMyVerification,
@@ -103,4 +112,5 @@ export default {
   getMyVerificationDocuments,
   deleteVerificationDocument,
   getDocumentRequirements,
+  getVerificationDocuments,
 };
