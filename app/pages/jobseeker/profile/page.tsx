@@ -18,6 +18,7 @@ import {
   jsGetProfilePicture,
   jsUpdateProfile,
   jsUploadProfilePicture,
+  jsUploadCv,
 } from "@/app/api/auth-jobseeker.api";
 import { getSkills, type Skill } from "@/app/api/skills.api";
 import { ApprovalStatus, UserRole } from "@/app/lib/enums";
@@ -116,6 +117,9 @@ const ProfilePage: React.FC = () => {
     title: "",
     content: null,
   });
+
+  // CV view modal state
+  const [cvViewModal, setCvViewModal] = useState(false);
 
   // Skills state
   const [availableSkills, setAvailableSkills] = useState<Skill[]>([]);
@@ -370,6 +374,52 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  // CV handlers
+  const handleCvView = () => {
+    setCvViewModal(true);
+  };
+
+  const handleCvDownload = () => {
+    if (cvDocument?.signedUrl) {
+      const link = document.createElement("a");
+      link.href = cvDocument.signedUrl;
+      link.download =
+        cvDocument.document.originalName || cvDocument.document.fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const handleCvUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type (PDF)
+    if (file.type !== "application/pdf") {
+      toastError("Please select a PDF file");
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toastError("File size must be less than 10MB");
+      return;
+    }
+
+    try {
+      await jsUploadCv(file);
+      // Reload CV document
+      const cvData = await jsGetCvDocument();
+      setCvDocument(cvData);
+      toastSuccess("CV updated successfully");
+    } catch (err: any) {
+      toastError(err?.response?.data?.message || "Failed to upload CV");
+    }
+  };
+
   const getApprovalStatusBadge = (status: ApprovalStatus) => {
     switch (status) {
       case ApprovalStatus.APPROVED:
@@ -608,6 +658,88 @@ const ProfilePage: React.FC = () => {
       >
         {mobileModal.content}
       </EditModal>
+
+      {/* CV View Modal (Desktop only) */}
+      {cvViewModal && cvDocument && (
+        <div
+          className="fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm hidden md:flex"
+          onClick={() => setCvViewModal(false)}
+        >
+          <div
+            className="relative w-full h-full max-w-5xl max-h-[90vh] m-4 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-sky-50 to-blue-50">
+              <div className="flex items-center gap-3">
+                <Image
+                  src={documentIcon}
+                  alt="document"
+                  width={24}
+                  height={24}
+                />
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    {cvDocument.document.originalName ||
+                      cvDocument.document.fileName}
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {(cvDocument.document.size / 1024).toFixed(2)} KB
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCvDownload}
+                  className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                  aria-label="Download"
+                >
+                  <svg
+                    className="w-5 h-5 text-slate-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setCvViewModal(false)}
+                  className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                  aria-label="Close"
+                >
+                  <svg
+                    className="w-5 h-5 text-slate-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            {/* PDF Viewer */}
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src={cvDocument.signedUrl}
+                className="w-full h-full border-0"
+                title="CV Preview"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="">
         {/* Top banner */}
@@ -875,6 +1007,133 @@ const ProfilePage: React.FC = () => {
                   mobileModalTitle="Edit About Me"
                 />
               </section>
+
+              {/* CV/Resume */}
+              <section className={cardBase}>
+                <div className={sectionTitle}>
+                  <span className="text-2xl">CV/Resume</span>
+                </div>
+                {cvDocument ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                      <Image
+                        src={documentIcon}
+                        alt="document"
+                        width={24}
+                        height={24}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-900 truncate">
+                          {cvDocument.document.originalName ||
+                            cvDocument.document.fileName}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {(cvDocument.document.size / 1024).toFixed(2)} KB
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {/* Desktop: View and Download buttons */}
+                      <button
+                        onClick={handleCvView}
+                        className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium hover:bg-sky-700 transition-colors"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                        View
+                      </button>
+                      {/* Mobile and Desktop: Download button */}
+                      <button
+                        onClick={handleCvDownload}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        Download
+                      </button>
+                      {/* Change button */}
+                      <label className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors cursor-pointer">
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          onChange={handleCvUpload}
+                          className="hidden"
+                        />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                          />
+                        </svg>
+                        Change
+                      </label>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-sm text-slate-500">
+                      No CV/Resume uploaded yet
+                    </p>
+                    <label className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium hover:bg-sky-700 transition-colors cursor-pointer w-full md:w-auto">
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handleCvUpload}
+                        className="hidden"
+                      />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                        />
+                      </svg>
+                      Upload CV/Resume
+                    </label>
+                  </div>
+                )}
+              </section>
             </div>
 
             {/* Right column */}
@@ -1045,41 +1304,6 @@ const ProfilePage: React.FC = () => {
                 )}
               </section>
 
-              {/* Verified documents */}
-              <section className={cardBase}>
-                <div className={sectionTitle}>
-                  <span className="text-2xl">Verified Documents</span>
-                </div>
-
-                <ul className="space-y-2 text-sm text-slate-800">
-                  {cvDocument && (
-                    <li className="flex items-center gap-2">
-                      <Image
-                        src={documentIcon}
-                        alt="document"
-                        width={16}
-                        height={16}
-                      />
-                      <span>
-                        {cvDocument.document.originalName ||
-                          cvDocument.document.fileName}
-                      </span>
-                    </li>
-                  )}
-                  {!cvDocument && (
-                    <li className="text-slate-500">No documents uploaded</li>
-                  )}
-                </ul>
-
-                <button
-                  onClick={() =>
-                    router.push("/pages/jobseeker/auth/complete-profile")
-                  }
-                  className="mt-4 w-full rounded-xl bg-sky-50 py-2.5 text-sm font-medium text-sky-700 hover:bg-sky-100"
-                >
-                  Upload New Document
-                </button>
-              </section>
             </div>
           </div>
         </div>
