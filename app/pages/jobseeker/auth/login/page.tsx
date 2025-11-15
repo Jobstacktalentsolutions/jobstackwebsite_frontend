@@ -85,7 +85,7 @@ export default function LoginPage() {
                 showHints={false}
               />
               <div className=" flex justify-end">
-                <Link href="/jobseeker/auth/forgetPassword">
+                <Link href="/pages/jobseeker/auth/forgetPassword">
                   Forgot password?
                 </Link>
               </div>

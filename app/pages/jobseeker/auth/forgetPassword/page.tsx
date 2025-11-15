@@ -24,7 +24,9 @@ export default function ForgotPassword() {
       await jsSendPasswordResetCode({ email });
       toastSuccess("Reset code sent to your email");
       router.push(
-        `/jobseeker/auth/forgetPassword/verify?email=${encodeURIComponent(email)}`
+        `/pages/jobseeker/auth/forgetPassword/verify?email=${encodeURIComponent(
+          email
+        )}`
       );
     } catch {
       setError("Failed to send reset code");
@@ -73,17 +75,14 @@ export default function ForgotPassword() {
               Don’t have an account?{" "}
               <Link
                 href="/pages/employer/auth/signUp"
-              className="text-blue-600 hover:underline"
+                className="text-blue-600 hover:underline"
               >
-              Sign up
-            </Link>
-          </p>
-        </form>
-        </ div>
-
-      } />
-
-
-
-      );
+                Sign up
+              </Link>
+            </p>
+          </form>
+        </div>
+      }
+    />
+  );
 }

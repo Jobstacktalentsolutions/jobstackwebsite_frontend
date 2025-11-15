@@ -34,7 +34,7 @@ export default function VerifyClient({
       }
       toastSuccess("Code verified");
       router.push(
-        `/employer/auth/forgetPassword/createNewPassword?resetToken=${encodeURIComponent(
+        `/pages/employer/auth/forgetPassword/createNewPassword?resetToken=${encodeURIComponent(
           token
         )}`
       );

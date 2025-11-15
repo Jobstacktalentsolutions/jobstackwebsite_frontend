@@ -26,7 +26,7 @@ const publicRoutes = [
   "/pages/employer/auth/forgetPassword",
   "/pages/jobseeker/auth/login",
   "/pages/jobseeker/auth/signUp",
-  "/jobseeker/auth/forgetPassword",
+  "/pages/jobseeker/auth/forgetPassword",
 ];
 
 export function middleware(request: NextRequest) {

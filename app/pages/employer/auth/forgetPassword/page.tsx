@@ -29,7 +29,7 @@ export default function ForgotPassword() {
       await empSendPasswordResetCode({ email });
       toastSuccess("Reset code sent to your email");
       router.push(
-        `/employer/auth/forgetPassword/verify?email=${encodeURIComponent(
+        `/pages/employer/auth/forgetPassword/verify?email=${encodeURIComponent(
           email
         )}`
       );
