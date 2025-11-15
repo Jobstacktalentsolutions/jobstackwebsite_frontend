@@ -86,7 +86,7 @@ function getLoginPathForRole(role: string): string {
     case "ADMIN":
       return "/auth/admin/login";
     default:
-      return " /pages/employer/auth/login";
+      return "/pages/employer/auth/login";
   }
 }
 

@@ -25,19 +25,10 @@ export default function ProfileStrength({
     return (
         <section className="w-full max-w-[560px]">
             {/* Header */}
-            <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-3xl font-semibold">{title}</h2>
-                <button
-                    type="button"
-                    onClick={onEdit}
-                    className="text-sm font-medium text-blue-600 hover:underline"
-                >
-                    Edit
-                </button>
-            </div>
+            
 
             {/* Card (solid blue border) */}
-            <div className="relative rounded-2xl border-2 border-blue-400/80 p-6 bg-white shadow-sm">
+            <div className="relative rounded-2xl lg:flex md:flex-col  p-6 bg-white shadow-sm">
                 {/* Soft rounded corner shading (subtle) */}
                 <div className="pointer-events-none absolute inset-0 rounded-2xl ring-0 [box-shadow:inset_0_0_0_1px_rgba(59,130,246,0.08)]" />
 
