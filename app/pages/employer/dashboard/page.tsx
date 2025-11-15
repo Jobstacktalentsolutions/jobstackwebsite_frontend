@@ -1,9 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import GoBackButton from "@/app/pages/components/gobackbutton";
 import Dashboardnav from "@/app/pages/components/dashboardnav";
 import { useAuth } from "@/app/lib/auth-context";
 import Loading from "@/app/loading";
+import { empGetCompanyLogo } from "@/app/api/auth-employer.api";
+import avatar from "@/app/assets/avatar.svg";
 
 import {
   BriefcaseBusinessIcon,
@@ -14,7 +17,27 @@ import {
 import { CategoryOutlined } from "@mui/icons-material";
 
 const EmployerDashboard = () => {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoading, isAuthenticated, profile } = useAuth();
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(
+    null
+  );
+
+  // Fetch profile picture when component loads
+  useEffect(() => {
+    if (!isAuthenticated || isLoading) return;
+
+    const loadProfilePicture = async () => {
+      try {
+        const pictureData = await empGetCompanyLogo();
+        setProfilePictureUrl(pictureData.signedUrl);
+      } catch (err) {
+        // Profile picture might not exist, that's okay
+        setProfilePictureUrl(null);
+      }
+    };
+
+    loadProfilePicture();
+  }, [isAuthenticated, isLoading, profile?.employer]);
 
   // Show loading only while auth is initializing
   // Dashboard doesn't require profile data, only user info (user?.firstName)
@@ -73,7 +96,25 @@ const EmployerDashboard = () => {
             <button className="rounded-full px-3 py-1.5 text-sm font-medium hover:bg-slate-100">
               Messages
             </button>
-            <div className="h-8 w-8 rounded-full bg-slate-200" />
+            {profilePictureUrl ? (
+              <Image
+                src={profilePictureUrl}
+                alt={user?.firstName || "Profile"}
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center">
+                <Image
+                  src={avatar}
+                  alt="Avatar"
+                  width={20}
+                  height={20}
+                  className="rounded-full"
+                />
+              </div>
+            )}
           </nav>
         </div>
       </header>
