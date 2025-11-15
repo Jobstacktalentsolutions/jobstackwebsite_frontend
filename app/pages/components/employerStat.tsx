@@ -1,5 +1,5 @@
 import React from "react";
-import MetricCard from "./MetricCard";
+import MetricCard from "@/app/pages/components/employerMetricCard";
 import { BriefcaseBusinessIcon, Users, UserPlus } from "lucide-react";
 import { CreditCard } from "lucide-react";
 
