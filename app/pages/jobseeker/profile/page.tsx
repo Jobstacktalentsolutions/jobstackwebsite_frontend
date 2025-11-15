@@ -29,6 +29,10 @@ import { EditModal } from "./components/EditModal";
 import { InlineEditable } from "./components/InlineEditable";
 import { LocationEditor } from "./components/LocationEditor";
 import { SalaryEditor } from "./components/SalaryEditor";
+import {
+  SearchableSelect,
+  type SelectOption,
+} from "@/app/pages/components/SearchableSelect";
 import statesAndCities from "@/app/lib/states-and-cities.json";
 
 const tagBase =
@@ -515,46 +519,36 @@ const ProfilePage: React.FC = () => {
     const availableCities =
       statesAndCities.find((s) => s.name === state)?.cities || [];
 
+    const stateOptions: SelectOption[] = statesAndCities.map((s) => ({
+      value: s.name,
+      label: s.name,
+    }));
+
+    const cityOptions: SelectOption[] = availableCities.map((c) => ({
+      value: c,
+      label: c,
+    }));
+
     return (
       <div className="space-y-3">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            State
-          </label>
-          <select
-            value={state}
-            onChange={(e) => {
-              onStateChange(e.target.value);
-              onCityChange("");
-            }}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
-          >
-            <option value="">Select state</option>
-            {statesAndCities.map((s) => (
-              <option key={s.name} value={s.name}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SearchableSelect
+          options={stateOptions}
+          value={state}
+          onChange={(value) => {
+            onStateChange(value);
+            onCityChange("");
+          }}
+          label="State"
+          placeholder="Select state"
+        />
         {state && (
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              City
-            </label>
-            <select
-              value={city}
-              onChange={(e) => onCityChange(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
-            >
-              <option value="">Select city</option>
-              {availableCities.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
+          <SearchableSelect
+            options={cityOptions}
+            value={city}
+            onChange={onCityChange}
+            label="City"
+            placeholder="Select city"
+          />
         )}
       </div>
     );
