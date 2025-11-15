@@ -391,9 +391,7 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleCvUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleCvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -1303,7 +1301,6 @@ const ProfilePage: React.FC = () => {
                   </div>
                 )}
               </section>
-
             </div>
           </div>
         </div>
