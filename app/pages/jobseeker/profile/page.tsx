@@ -218,7 +218,9 @@ const ProfilePage: React.FC = () => {
             {/* Right: actions */}
             <div className="flex w-full flex-wrap items-center gap-3 justify-end">
               <button
-                onClick={() => router.push("/pages/jobseeker/auth/profile")}
+                onClick={() =>
+                  router.push("/pages/jobseeker/auth/complete-profile")
+                }
                 className="flex items-center rounded-lg bg-white px-4 py-2 text-xs font-medium text-blue backdrop-blur hover:bg-white/80"
               >
                 <p>Edit Profile</p>
@@ -253,7 +255,9 @@ const ProfilePage: React.FC = () => {
                 <div className={sectionTitle}>
                   <span className="text-2xl">About me</span>
                   <button
-                    onClick={() => router.push("/pages/jobseeker/auth/profile")}
+                    onClick={() =>
+                      router.push("/pages/jobseeker/auth/complete-profile")
+                    }
                   >
                     <Image src={editIcon} alt="edit icon" />
                   </button>
@@ -273,7 +277,9 @@ const ProfilePage: React.FC = () => {
                 <div className={sectionTitle}>
                   <span className="text-2xl">Quick Facts</span>
                   <button
-                    onClick={() => router.push("/pages/jobseeker/auth/profile")}
+                    onClick={() =>
+                      router.push("/pages/jobseeker/auth/complete-profile")
+                    }
                   >
                     <Image src={editIcon} alt="edit icon" />
                   </button>
@@ -305,7 +311,9 @@ const ProfilePage: React.FC = () => {
                 <div className={sectionTitle}>
                   <span className="text-2xl">Skills</span>
                   <button
-                    onClick={() => router.push("/pages/jobseeker/auth/profile")}
+                    onClick={() =>
+                      router.push("/pages/jobseeker/auth/complete-profile")
+                    }
                   >
                     <Image src={editIcon} alt="edit icon" />
                   </button>
@@ -330,7 +338,9 @@ const ProfilePage: React.FC = () => {
                 <div className={sectionTitle}>
                   <span className="text-2xl">Verified Documents</span>
                   <button
-                    onClick={() => router.push("/pages/jobseeker/auth/profile")}
+                    onClick={() =>
+                      router.push("/pages/jobseeker/auth/complete-profile")
+                    }
                   >
                     <Image src={editIcon} alt="edit icon" />
                   </button>
@@ -357,7 +367,9 @@ const ProfilePage: React.FC = () => {
                 </ul>
 
                 <button
-                  onClick={() => router.push("/pages/jobseeker/auth/profile")}
+                  onClick={() =>
+                    router.push("/pages/jobseeker/auth/complete-profile")
+                  }
                   className="mt-4 w-full rounded-xl bg-sky-50 py-2.5 text-sm font-medium text-sky-700 hover:bg-sky-100"
                 >
                   Upload New Document

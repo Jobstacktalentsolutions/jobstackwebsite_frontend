@@ -1,29 +1,55 @@
-'use client'
-import React from 'react'
-import GoBackButton from "@/app/pages/components/gobackbutton"
-import Dashboardnav from "@/app/pages/components/dashboardnav"
-import { useAuth } from '@/app/lib/auth-context';
+"use client";
+import React from "react";
+import GoBackButton from "@/app/pages/components/gobackbutton";
+import Dashboardnav from "@/app/pages/components/dashboardnav";
+import { useAuth } from "@/app/lib/auth-context";
+import Loading from "@/app/loading";
 
-import { BriefcaseBusinessIcon, Building2, HomeIcon, Settings } from 'lucide-react'
-import { CategoryOutlined } from '@mui/icons-material'
+import {
+  BriefcaseBusinessIcon,
+  Building2,
+  HomeIcon,
+  Settings,
+} from "lucide-react";
+import { CategoryOutlined } from "@mui/icons-material";
 
 const EmployerDashboard = () => {
-  const { user } = useAuth();
+  const { user, isLoading, isAuthenticated, profile } = useAuth();
+
+  // Show loading while auth is loading or profile is being fetched
+  if (isLoading || (isAuthenticated && !profile)) {
+    return <Loading text="Loading dashboard..." />;
+  }
 
   return (
-      <div>
-          {/* <GoBackButton /> */}
-          <div className="flex ">
-        <div className='bg-blue text-white w-full px-25 py-10 rounded-br-[100px]'>  <Dashboardnav />
+    <div>
+      {/* <GoBackButton /> */}
+      <div className="flex ">
+        <div className="bg-blue text-white w-full px-25 py-10 rounded-br-[100px]">
+          {" "}
+          <Dashboardnav />
           <ul className="list-none  flex justify-between cursor-pointer my-4 w-4/5">
-            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2"><HomeIcon className='mr-2'/> Overview</li>
-            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2"><BriefcaseBusinessIcon className='mr-2' /> Explore jobs</li>
-            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2"><CategoryOutlined className='mr-2' />My Applications</li>
-            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2"><Building2 className='mr-2' /> Job Recommendations</li>
-            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2"><Settings className='mr-2' /> Settings</li>
+            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
+              <HomeIcon className="mr-2" /> Overview
+            </li>
+            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
+              <BriefcaseBusinessIcon className="mr-2" /> Explore jobs
+            </li>
+            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
+              <CategoryOutlined className="mr-2" />
+              My Applications
+            </li>
+            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
+              <Building2 className="mr-2" /> Job Recommendations
+            </li>
+            <li className="flex items-center text-base font-light hover:bg-white/10 hover:rounded-full px-5 py-2">
+              <Settings className="mr-2" /> Settings
+            </li>
           </ul>
           <div className="my-5">
-            <h2 className='text-4xl mt-5'><span className='text-white/50'>Welcome,</span> { user?.firstName}</h2>
+            <h2 className="text-4xl mt-5">
+              <span className="text-white/50">Welcome,</span> {user?.firstName}
+            </h2>
           </div>
         </div>
       </div>
@@ -203,8 +229,8 @@ const EmployerDashboard = () => {
                   </div>
                 </div>
                 <span className="flex items-center gap-1 whitespace-nowrap text-xs text-slate-400">
-                  <span className="h-1 w-1 rounded-full bg-slate-400" />
-                  1 day ago
+                  <span className="h-1 w-1 rounded-full bg-slate-400" />1 day
+                  ago
                 </span>
               </div>
 
@@ -247,8 +273,8 @@ const EmployerDashboard = () => {
                   </div>
                 </div>
                 <span className="flex items-center gap-1 whitespace-nowrap text-xs text-slate-400">
-                  <span className="h-1 w-1 rounded-full bg-slate-400" />
-                  3 days ago
+                  <span className="h-1 w-1 rounded-full bg-slate-400" />3 days
+                  ago
                 </span>
               </div>
 
@@ -291,8 +317,8 @@ const EmployerDashboard = () => {
                   </div>
                 </div>
                 <span className="flex items-center gap-1 whitespace-nowrap text-xs text-slate-400">
-                  <span className="h-1 w-1 rounded-full bg-slate-400" />
-                  1 week ago
+                  <span className="h-1 w-1 rounded-full bg-slate-400" />1 week
+                  ago
                 </span>
               </div>
 
@@ -387,7 +413,9 @@ const EmployerDashboard = () => {
                     <p className="text-[11px] font-medium text-slate-700">
                       Office Assistant
                     </p>
-                    <p className="mt-1 text-[11px] text-slate-400">ProBiz Ltd</p>
+                    <p className="mt-1 text-[11px] text-slate-400">
+                      ProBiz Ltd
+                    </p>
                   </div>
                 </div>
               </div>
@@ -475,12 +503,8 @@ const EmployerDashboard = () => {
           </section>
         </section>
       </main>
+    </div>
+  );
+};
 
-
-      </div>
-
-  )
-}
-
-export default EmployerDashboard
-
+export default EmployerDashboard;

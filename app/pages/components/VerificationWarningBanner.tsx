@@ -44,7 +44,7 @@ export default function VerificationWarningBanner() {
             <p className="text-sm text-amber-800">{getMessage()}</p>
           </div>
           <Link
-            href=" /pages/employer/auth/profile"
+            href=" /pages/employer/auth/complete-profile"
             className="text-sm font-medium text-amber-900 hover:text-amber-700 underline flex-shrink-0"
           >
             Complete Profile →

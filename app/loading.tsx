@@ -6,7 +6,7 @@ export type LoadingProps = {
   text?: string;
 };
 
-const Loading: React.FC<LoadingProps> = ({ text = "Loading..." }) => {
+const Loading: React.FC<LoadingProps> = ({ text = "Jobstack..." }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white text-[#2572A7]">
       <div className="text-3xl md:text-5xl font-semibold">

@@ -55,7 +55,7 @@ const ProfilePage = () => {
   );
 
   // UI state
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -302,7 +302,7 @@ const ProfilePage = () => {
   ];
 
   if (loading) {
-    return <Loading />;
+    return <Loading text="Loading profile..." />;
   }
 
   return (

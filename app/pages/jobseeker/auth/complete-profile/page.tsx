@@ -38,6 +38,7 @@ interface ExistingCvInfo {
 
 import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
 import { UserRole } from "@/app/lib/enums";
+import { useAuth } from "@/app/lib/auth-context";
 
 const JobseekerProfilePage = () => {
   const router = useRouter();
@@ -63,12 +64,14 @@ const JobseekerProfilePage = () => {
 
   // Get profile from auth context (already loaded)
   const { profile, refreshProfile } = useProfile();
+  const { isLoading: isAuthContextLoading, isAuthenticated } = useAuth();
 
   // UI state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cvError, setCvError] = useState<string | null>(null);
   const [existingCv, setExistingCv] = useState<ExistingCvInfo | null>(null);
+  const [loadingCv, setLoadingCv] = useState(false);
 
   const maxFileSizeMB = 10;
   const acceptedCvFormats = [".pdf", ".doc", ".docx"];
@@ -124,6 +127,7 @@ const JobseekerProfilePage = () => {
 
       // Load existing CV if cvDocumentId exists
       if (jobSeekerProfile.cvDocumentId) {
+        setLoadingCv(true);
         jsGetCvDocument()
           .then((cvData) => {
             if (cvData?.document) {
@@ -138,6 +142,9 @@ const JobseekerProfilePage = () => {
           .catch((cvErr) => {
             // CV might not exist or might be in different format, that's okay
             console.log("No existing CV found or error loading CV:", cvErr);
+          })
+          .finally(() => {
+            setLoadingCv(false);
           });
       }
     }
@@ -272,9 +279,16 @@ const JobseekerProfilePage = () => {
     }
   };
 
-  // Show loading while checking authentication
-  if (authLoading) {
-    return <Loading />;
+  // Show loading while checking authentication, loading profile data, or loading CV
+  const isProfileDataLoading =
+    isAuthenticated && !profile?.jobSeeker && !authLoading;
+  if (
+    authLoading ||
+    isAuthContextLoading ||
+    isProfileDataLoading ||
+    loadingCv
+  ) {
+    return <Loading text="Loading profile..." />;
   }
 
   return (
