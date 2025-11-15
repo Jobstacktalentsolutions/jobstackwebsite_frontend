@@ -29,7 +29,7 @@ export default function VerifyClient({ message, email }: VerifyClientProps) {
       }
       toastSuccess("Code verified");
       router.push(
-        `/jobseeker/auth/forgetPassword/createNewPassword?resetToken=${encodeURIComponent(
+        `/pages/jobseeker/auth/forgetPassword/createNewPassword?resetToken=${encodeURIComponent(
           token
         )}`
       );

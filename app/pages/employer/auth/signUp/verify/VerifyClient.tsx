@@ -112,7 +112,7 @@ export default function VerifyClient({ heading, email }: Props) {
 
       // Small delay to show success state, then redirect
       setTimeout(() => {
-        window.location.href = "/pages/employer/auth/profile";
+        window.location.href = "/pages/employer/auth/complete-profile";
       }, 500);
     } catch (e: any) {
       const errorMessage =

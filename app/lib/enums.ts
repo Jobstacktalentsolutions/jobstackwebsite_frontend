@@ -19,9 +19,9 @@ export enum VerificationStatus {
   REJECTED = "REJECTED",
 }
 
-// User Roles
+// User Roles - must match backend UserRole enum values
 export enum UserRole {
-  JOB_SEEKER = "JOB_SEEKER",
+  JOB_SEEKER = "JOBSEEKER",
   EMPLOYER = "EMPLOYER",
   ADMIN = "ADMIN",
 }

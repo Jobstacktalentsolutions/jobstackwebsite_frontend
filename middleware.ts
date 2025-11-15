@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Define protected routes and their required roles
+// Role values must match backend UserRole enum: JOBSEEKER, EMPLOYER, ADMIN
 const protectedRoutes = {
   "/pages/employer": ["EMPLOYER"],
-  " /pages/employer/auth/profile": ["EMPLOYER"],
-  " /pages/employer/auth/profile/companyProfile": ["EMPLOYER"],
-  "/jobseeker/dashboard": ["JOB_SEEKER"],
-  "/pages/jobseeker/auth/profile": ["JOB_SEEKER"],
+  " /pages/employer/auth/complete-profile": ["EMPLOYER"],
+  "/dashboard": ["JOBSEEKER"],
+  "/pages/jobseeker/auth/complete-profile": ["JOBSEEKER"],
+  "/pages/jobseeker/dashboard": ["JOBSEEKER"],
   "/admin": ["ADMIN"],
 };
 
@@ -23,7 +24,7 @@ const publicRoutes = [
   "/pages/employer/auth/forgetPassword",
   "/pages/jobseeker/auth/login",
   "/pages/jobseeker/auth/signUp",
-  "/jobseeker/auth/forgetPassword",
+  "/pages/jobseeker/auth/forgetPassword",
 ];
 
 export function middleware(request: NextRequest) {
@@ -80,7 +81,7 @@ function getLoginPathForRole(role: string): string {
   switch (role) {
     case "EMPLOYER":
       return " /pages/employer/auth/login";
-    case "JOB_SEEKER":
+    case "JOBSEEKER":
       return "/pages/jobseeker/auth/login";
     case "ADMIN":
       return "/auth/admin/login";
@@ -93,7 +94,7 @@ function getDashboardPathForRole(role: string): string {
   switch (role) {
     case "EMPLOYER":
       return "/pages/employer/dashboard";
-    case "JOB_SEEKER":
+    case "JOBSEEKER":
       return "/pages/jobseeker/dashboard";
     case "ADMIN":
       return "/admin/dashboard";

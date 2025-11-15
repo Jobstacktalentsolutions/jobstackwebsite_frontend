@@ -5,6 +5,7 @@ import { Mail } from "lucide-react";
 import Button from "@/app/pages/components/button";
 import Input from "@/app/pages/components/input";
 import AuthPageLayout from "@/app/pages/components/authPageLayout";
+import GoogleSignInButton from "@/app/pages/components/GoogleSignInButton";
 
 import { useState } from "react";
 
@@ -104,14 +105,7 @@ export default function LoginPage() {
                 <span className="text-sm text-slate-500">or</span>
                 <hr className="flex-grow border-slate-200" />
               </div>
-              <div className="flex flex-col md:flex-row">
-                <Button variant="outline" className="w-full mb-4">
-                  Sign in with Google
-                </Button>
-                <Button variant="outline" className="w-full md:ml-4">
-                  Sign in with Apple
-                </Button>
-              </div>
+              <GoogleSignInButton className="w-full" />
 
               <p className="text-center text-sm text-slate-500">
                 Don&apos;t have an account?{" "}

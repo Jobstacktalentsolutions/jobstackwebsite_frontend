@@ -8,6 +8,7 @@ import { useState } from "react";
 import { jsSendPasswordResetCode } from "@/app/api/auth-jobseeker.api";
 import { toastError, toastSuccess } from "@/app/lib/toast";
 import { useRouter } from "next/navigation";
+import GoogleSignInButton from "@/app/pages/components/GoogleSignInButton";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -24,7 +25,9 @@ export default function ForgotPassword() {
       await jsSendPasswordResetCode({ email });
       toastSuccess("Reset code sent to your email");
       router.push(
-        `/jobseeker/auth/forgetPassword/verify?email=${encodeURIComponent(email)}`
+        `/pages/jobseeker/auth/forgetPassword/verify?email=${encodeURIComponent(
+          email
+        )}`
       );
     } catch {
       setError("Failed to send reset code");
@@ -60,30 +63,20 @@ export default function ForgotPassword() {
               <span className="text-sm text-slate-500">or</span>
               <hr className="flex-grow border-slate-200" />
             </div>
-            <div className="flex">
-              <Button variant="outline" className="w-full">
-                Sign in with Google
-              </Button>
-              <Button variant="outline" className="w-full ml-4">
-                Sign in with Apple
-              </Button>
-            </div>
+            <GoogleSignInButton className="w-full" />
 
             <p className="text-center text-sm text-slate-500">
               Don’t have an account?{" "}
               <Link
-                href="/pages/employer/auth/signUp"
-              className="text-blue-600 hover:underline"
+                href="/pages/jobseeker/auth/signUp"
+                className="text-blue-600 hover:underline"
               >
-              Sign up
-            </Link>
-          </p>
-        </form>
-        </ div>
-
-      } />
-
-
-
-      );
+                Sign up
+              </Link>
+            </p>
+          </form>
+        </div>
+      }
+    />
+  );
 }

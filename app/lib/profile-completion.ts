@@ -14,6 +14,7 @@ export interface JobSeekerProfile {
   phoneNumber: string;
   cvUrl?: string;
   cvDocumentId?: string;
+  profilePictureId?: string;
   approvalStatus: ApprovalStatus;
   skills?: Array<{ id: string; name: string }>;
   userSkills?: Array<{
@@ -35,6 +36,8 @@ export interface JobSeekerProfile {
   city?: string;
   jobTitle?: string;
   yearsOfExperience?: number;
+  minExpectedSalary?: number;
+  maxExpectedSalary?: number;
 }
 
 export interface EmployerProfile {
@@ -150,7 +153,26 @@ export async function checkJobSeekerProfileCompletion(): Promise<
 
     // Only redirect to onboarding if status is NOT_STARTED
     if (profile.approvalStatus === ApprovalStatus.NOT_STARTED) {
-      return "/pages/jobseeker/auth/profile";
+      return "/pages/jobseeker/auth/complete-profile";
+    }
+
+    // Check for required profile fields - redirect if any are missing
+    const requiredFields = [
+      profile.address,
+      profile.jobTitle,
+      profile.brief,
+      profile.preferredLocation,
+      profile.state,
+      profile.city,
+      profile.cvDocumentId,
+    ];
+
+    const hasMissingFields = requiredFields.some(
+      (field) => field === null || field === undefined || field === ""
+    );
+
+    if (hasMissingFields) {
+      return "/pages/jobseeker/auth/complete-profile";
     }
 
     // If profile is incomplete but status is not NOT_STARTED, don't redirect
@@ -163,7 +185,7 @@ export async function checkJobSeekerProfileCompletion(): Promise<
   } catch (error) {
     console.error("Error checking job seeker profile:", error);
     // On error, redirect to profile page to be safe
-    return "/pages/jobseeker/auth/profile";
+    return "/pages/jobseeker/auth/complete-profile";
   }
 }
 
@@ -181,7 +203,7 @@ export async function checkEmployerProfileCompletion(): Promise<string | null> {
       !verification ||
       verification.status === VerificationStatus.NOT_STARTED
     ) {
-      return " /pages/employer/auth/profile";
+      return " /pages/employer/auth/complete-profile";
     }
 
     // If status is PENDING, APPROVED, or REJECTED, don't redirect

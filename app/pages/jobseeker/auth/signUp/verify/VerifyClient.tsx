@@ -112,7 +112,7 @@ export default function VerifyClient({ heading, email }: Props) {
 
       // Small delay to show success state, then redirect
       setTimeout(() => {
-        window.location.href = "/pages/jobseeker/auth/profile";
+        window.location.href = "/pages/jobseeker/auth/complete-profile";
       }, 500);
     } catch (e) {
       setError("Invalid or expired code.");

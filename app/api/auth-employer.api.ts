@@ -84,6 +84,25 @@ export async function empResetPassword(dto: PasswordResetDto) {
   return data.data;
 }
 
+// Get employer company logo/profile picture
+export async function empGetCompanyLogo() {
+  const { data } = await httpClient.get<{
+    success: boolean;
+    document: {
+      id: string;
+      fileName: string;
+      originalName: string;
+      mimeType: string;
+      size: number;
+      type: string;
+      description?: string;
+      createdAt: string;
+    };
+    signedUrl: string;
+  }>("/user/employer/profile/company-logo");
+  return data;
+}
+
 export default {
   empRegister,
   empLogin,
@@ -94,4 +113,5 @@ export default {
   empSendPasswordResetCode,
   empConfirmPasswordResetCode,
   empResetPassword,
+  empGetCompanyLogo,
 };

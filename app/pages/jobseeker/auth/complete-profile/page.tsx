@@ -23,6 +23,8 @@ interface JobseekerProfileData {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  jobTitle: string;
+  address: string;
   state: string;
   city: string;
   bio: string;
@@ -37,6 +39,8 @@ interface ExistingCvInfo {
 }
 
 import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
+import { UserRole } from "@/app/lib/enums";
+import { useAuth } from "@/app/lib/auth-context";
 
 const JobseekerProfilePage = () => {
   const router = useRouter();
@@ -44,7 +48,7 @@ const JobseekerProfilePage = () => {
 
   // Check authentication - will redirect if not authenticated
   const { isLoading: authLoading } = useProtectedRoute({
-    allowedRoles: ["JOB_SEEKER"],
+    allowedRoles: [UserRole.JOB_SEEKER],
     redirectTo: "/pages/jobseeker/auth/login",
   });
 
@@ -53,6 +57,8 @@ const JobseekerProfilePage = () => {
     firstName: "",
     lastName: "",
     phoneNumber: "",
+    jobTitle: "",
+    address: "",
     state: "",
     city: "",
     bio: "",
@@ -60,14 +66,14 @@ const JobseekerProfilePage = () => {
     cv: null,
   });
 
-  // Get profile from auth context (already loaded)
   const { profile, refreshProfile } = useProfile();
+  const { isLoading: isAuthContextLoading, isAuthenticated } = useAuth();
 
-  // UI state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cvError, setCvError] = useState<string | null>(null);
   const [existingCv, setExistingCv] = useState<ExistingCvInfo | null>(null);
+  const [loadingCv, setLoadingCv] = useState(false);
 
   const maxFileSizeMB = 10;
   const acceptedCvFormats = [".pdf", ".doc", ".docx"];
@@ -99,30 +105,33 @@ const JobseekerProfilePage = () => {
         firstName: jobSeekerProfile.firstName || prev.firstName || "",
         lastName: jobSeekerProfile.lastName || prev.lastName || "",
         phoneNumber: jobSeekerProfile.phoneNumber || prev.phoneNumber || "",
+        jobTitle: jobSeekerProfile.jobTitle || prev.jobTitle || "",
+        address: jobSeekerProfile.address || prev.address || "",
         state: jobSeekerProfile.state || prev.state || "",
         city: jobSeekerProfile.city || prev.city || "",
         bio: jobSeekerProfile.bio || jobSeekerProfile.brief || prev.bio || "",
         // Map skills from profile to SelectedSkill format
         skills: jobSeekerProfile.userSkills
           ? jobSeekerProfile.userSkills.map((userSkill: any) => {
-            const skill = userSkill.skill || userSkill;
-            return {
-              id: skill.id,
-              name: skill.name,
-              proficiency: userSkill.proficiency,
-              yearsExperience: userSkill.yearsExperience,
-            };
-          })
+              const skill = userSkill.skill || userSkill;
+              return {
+                id: skill.id,
+                name: skill.name,
+                proficiency: userSkill.proficiency,
+                yearsExperience: userSkill.yearsExperience,
+              };
+            })
           : jobSeekerProfile.skills
-            ? jobSeekerProfile.skills.map((skill: any) => ({
+          ? jobSeekerProfile.skills.map((skill: any) => ({
               id: skill.id,
               name: skill.name,
             }))
-            : prev.skills || [],
+          : prev.skills || [],
       }));
 
       // Load existing CV if cvDocumentId exists
       if (jobSeekerProfile.cvDocumentId) {
+        setLoadingCv(true);
         jsGetCvDocument()
           .then((cvData) => {
             if (cvData?.document) {
@@ -137,6 +146,9 @@ const JobseekerProfilePage = () => {
           .catch((cvErr) => {
             // CV might not exist or might be in different format, that's okay
             console.log("No existing CV found or error loading CV:", cvErr);
+          })
+          .finally(() => {
+            setLoadingCv(false);
           });
       }
     }
@@ -211,6 +223,14 @@ const JobseekerProfilePage = () => {
       setError("City/LGA is required");
       return false;
     }
+    if (!profileData.jobTitle.trim()) {
+      setError("Job title is required");
+      return false;
+    }
+    if (!profileData.address.trim()) {
+      setError("Address is required");
+      return false;
+    }
     if (!profileData.bio.trim()) {
       setError("Bio is required");
       return false;
@@ -245,6 +265,8 @@ const JobseekerProfilePage = () => {
       await jsUpdateProfile({
         firstName: profileData.firstName.trim(),
         lastName: profileData.lastName.trim(),
+        jobTitle: profileData.jobTitle.trim(),
+        address: profileData.address.trim(),
         brief: profileData.bio.trim(),
         state: profileData.state.trim(),
         city: profileData.city.trim(),
@@ -271,11 +293,8 @@ const JobseekerProfilePage = () => {
     }
   };
 
-  // Show loading while checking authentication
-  if (authLoading) {
-    return (
-      <Loading />
-    );
+  if (authLoading || isAuthContextLoading || !isAuthenticated) {
+    return <Loading text="Loading..." />;
   }
 
   return (
@@ -318,6 +337,15 @@ const JobseekerProfilePage = () => {
               required
             />
 
+            <Input
+              label="Job Title"
+              placeholder="e.g., Software Engineer, Marketing Manager"
+              iconLeft={<User size={16} />}
+              value={profileData.jobTitle}
+              onChange={(e) => handleInputChange("jobTitle", e.target.value)}
+              required
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <SearchableSelect
                 label="State"
@@ -354,6 +382,15 @@ const JobseekerProfilePage = () => {
                 emptyMessage="No city/LGA found."
               />
             </div>
+
+            <Input
+              label="Address"
+              placeholder="Enter your full address"
+              iconLeft={<MapPin size={16} />}
+              value={profileData.address}
+              onChange={(e) => handleInputChange("address", e.target.value)}
+              required
+            />
           </div>
 
           {/* Professional Information */}
