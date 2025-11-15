@@ -11,7 +11,7 @@ import house from "@/app/assets/house.svg";
 import office from "@/app/assets/office.svg";
 import tinystar from "@/app/assets/tinyStar.svg";
 import solutions from "@/app/assets/solutions.svg";
-import Nav from "@/app/pages/components/employerNav";
+import Nav from "@/app/pages/components/employerNav"
 import hero from "@/app/assets/employersheroimg.svg";
 import dummyImage from "@/app/assets/dummyImage.png";
 import { Hospital } from "lucide-react";
