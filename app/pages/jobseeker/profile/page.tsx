@@ -78,15 +78,13 @@ const ProfilePage: React.FC = () => {
 
   // Edit state management
   const [editingFields, setEditingFields] = useState<{
-    firstName: boolean;
-    lastName: boolean;
+    fullName: boolean;
     bio: boolean;
     location: boolean;
     salary: boolean;
     skills: boolean;
   }>({
-    firstName: false,
-    lastName: false,
+    fullName: false,
     bio: false,
     location: false,
     salary: false,
@@ -95,15 +93,13 @@ const ProfilePage: React.FC = () => {
 
   // Loading states for save operations
   const [savingStates, setSavingStates] = useState<{
-    firstName: boolean;
-    lastName: boolean;
+    fullName: boolean;
     bio: boolean;
     location: boolean;
     salary: boolean;
     skills: boolean;
   }>({
-    firstName: false,
-    lastName: false,
+    fullName: false,
     bio: false,
     location: false,
     salary: false,
@@ -203,35 +199,37 @@ const ProfilePage: React.FC = () => {
   };
 
   // Save handlers
-  const saveFirstName = async (value: string) => {
-    setSavingStates((prev) => ({ ...prev, firstName: true }));
-    try {
-      await jsUpdateProfile({ firstName: value });
-      setProfile((prev) => (prev ? { ...prev, firstName: value } : null));
-      toastSuccess("First name updated successfully");
-      setEditingFields((prev) => ({ ...prev, firstName: false }));
-      closeMobileModal();
-    } catch (err: any) {
-      toastError(err?.response?.data?.message || "Failed to update first name");
-      throw err;
-    } finally {
-      setSavingStates((prev) => ({ ...prev, firstName: false }));
+  const saveFullName = async (value: string) => {
+    // Validate that name contains a space
+    if (!value.trim().includes(" ")) {
+      toastError(
+        "Please enter your full name with a space between first and last name"
+      );
+      return;
     }
-  };
 
-  const saveLastName = async (value: string) => {
-    setSavingStates((prev) => ({ ...prev, lastName: true }));
+    const trimmedValue = value.trim();
+    const parts = trimmedValue.split(/\s+/);
+    if (parts.length < 2) {
+      toastError("Please enter both first and last name separated by a space");
+      return;
+    }
+
+    const firstName = parts[0];
+    const lastName = parts.slice(1).join(" ");
+
+    setSavingStates((prev) => ({ ...prev, fullName: true }));
     try {
-      await jsUpdateProfile({ lastName: value });
-      setProfile((prev) => (prev ? { ...prev, lastName: value } : null));
-      toastSuccess("Last name updated successfully");
-      setEditingFields((prev) => ({ ...prev, lastName: false }));
+      await jsUpdateProfile({ firstName, lastName });
+      setProfile((prev) => (prev ? { ...prev, firstName, lastName } : null));
+      toastSuccess("Name updated successfully");
+      setEditingFields((prev) => ({ ...prev, fullName: false }));
       closeMobileModal();
     } catch (err: any) {
-      toastError(err?.response?.data?.message || "Failed to update last name");
+      toastError(err?.response?.data?.message || "Failed to update name");
       throw err;
     } finally {
-      setSavingStates((prev) => ({ ...prev, lastName: false }));
+      setSavingStates((prev) => ({ ...prev, fullName: false }));
     }
   };
 
@@ -666,68 +664,86 @@ const ProfilePage: React.FC = () => {
               <div className="text-white flex-1">
                 <div className="flex flex-wrap items-center gap-2 pb-2">
                   <div className="flex items-center gap-2">
-                    {editingFields.firstName ? (
+                    {editingFields.fullName ? (
                       <input
                         type="text"
-                        defaultValue={profile.firstName}
+                        defaultValue={fullName}
                         onBlur={async (e) => {
-                          if (e.target.value !== profile.firstName) {
-                            await saveFirstName(e.target.value);
+                          const value = e.target.value.trim();
+                          if (value !== fullName && value.includes(" ")) {
+                            await saveFullName(value);
+                          } else if (value && !value.includes(" ")) {
+                            toastError(
+                              "Please include a space between first and last name"
+                            );
+                            setEditingFields((prev) => ({
+                              ...prev,
+                              fullName: false,
+                            }));
+                          } else {
+                            setEditingFields((prev) => ({
+                              ...prev,
+                              fullName: false,
+                            }));
                           }
-                          setEditingFields((prev) => ({
-                            ...prev,
-                            firstName: false,
-                          }));
                         }}
                         onKeyDown={async (e) => {
                           if (e.key === "Enter") {
-                            const value = e.currentTarget.value;
-                            if (value !== profile.firstName) {
-                              await saveFirstName(value);
+                            const value = e.currentTarget.value.trim();
+                            if (value !== fullName) {
+                              if (!value.includes(" ")) {
+                                toastError(
+                                  "Please include a space between first and last name"
+                                );
+                                setEditingFields((prev) => ({
+                                  ...prev,
+                                  fullName: false,
+                                }));
+                                return;
+                              }
+                              await saveFullName(value);
                             }
                             setEditingFields((prev) => ({
                               ...prev,
-                              firstName: false,
+                              fullName: false,
                             }));
                           }
                           if (e.key === "Escape") {
                             setEditingFields((prev) => ({
                               ...prev,
-                              firstName: false,
+                              fullName: false,
                             }));
                           }
                         }}
-                        className="text-2xl font-semibold md:text-3xl bg-white/90 text-slate-900 px-2 py-1 rounded border border-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 w-32 md:w-40"
-                        placeholder="First name"
+                        className="text-2xl font-semibold md:text-3xl bg-white/90 text-slate-900 px-2 py-1 rounded border border-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 min-w-[200px] md:min-w-[300px]"
+                        placeholder="Full name (first last)"
                         autoFocus
                       />
                     ) : (
                       <h1 className="text-2xl font-semibold md:text-3xl">
-                        {profile.firstName}
+                        {fullName}
                       </h1>
                     )}
-                    {!editingFields.firstName && (
+                    {!editingFields.fullName && (
                       <button
                         onClick={() => {
                           if (window.innerWidth < 768) {
                             const modalContent = (
                               <div className="space-y-4">
                                 <label className="block text-sm font-medium text-slate-700">
-                                  First Name
+                                  Full Name
                                 </label>
                                 <input
                                   type="text"
-                                  defaultValue={profile.firstName}
-                                  onBlur={async (e) => {
-                                    if (e.target.value !== profile.firstName) {
-                                      await saveFirstName(e.target.value);
-                                    }
-                                    closeMobileModal();
-                                  }}
+                                  defaultValue={fullName}
                                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
-                                  placeholder="First name"
+                                  placeholder="Full name (first last)"
                                   autoFocus
                                 />
+                                <p className="text-xs text-slate-500">
+                                  Please include a space between first and last
+                                  name
+                                </p>
                                 <div className="flex gap-3 pt-2">
                                   <button
                                     onClick={closeMobileModal}
@@ -738,17 +754,19 @@ const ProfilePage: React.FC = () => {
                                   <button
                                     onClick={async () => {
                                       const input = document.querySelector(
-                                        'input[placeholder="First name"]'
+                                        'input[placeholder="Full name (first last)"]'
                                       ) as HTMLInputElement;
-                                      if (input?.value !== profile.firstName) {
-                                        await saveFirstName(input?.value || "");
+                                      const value = input?.value?.trim() || "";
+                                      if (value && value !== fullName) {
+                                        await saveFullName(value);
+                                      } else {
+                                        closeMobileModal();
                                       }
-                                      closeMobileModal();
                                     }}
-                                    disabled={savingStates.firstName}
+                                    disabled={savingStates.fullName}
                                     className="flex-1 px-4 py-2.5 rounded-xl bg-sky-600 text-white font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                                   >
-                                    {savingStates.firstName ? (
+                                    {savingStates.fullName ? (
                                       <>
                                         <svg
                                           className="animate-spin h-4 w-4 text-white"
@@ -779,145 +797,13 @@ const ProfilePage: React.FC = () => {
                                 </div>
                               </div>
                             );
-                            showMobileModal("Edit First Name", modalContent);
+                            showMobileModal("Edit Full Name", modalContent);
                           } else {
-                            toggleFieldEdit("firstName");
+                            toggleFieldEdit("fullName");
                           }
                         }}
                         className="p-1 rounded hover:bg-white/20 transition-all"
-                        aria-label="Edit first name"
-                      >
-                        <Image
-                          src={editIcon}
-                          alt="edit"
-                          width={14}
-                          height={14}
-                          className="invert opacity-70"
-                        />
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {editingFields.lastName ? (
-                      <input
-                        type="text"
-                        defaultValue={profile.lastName}
-                        onBlur={async (e) => {
-                          if (e.target.value !== profile.lastName) {
-                            await saveLastName(e.target.value);
-                          }
-                          setEditingFields((prev) => ({
-                            ...prev,
-                            lastName: false,
-                          }));
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            const value = e.currentTarget.value;
-                            if (value !== profile.lastName) {
-                              await saveLastName(value);
-                            }
-                            setEditingFields((prev) => ({
-                              ...prev,
-                              lastName: false,
-                            }));
-                          }
-                          if (e.key === "Escape") {
-                            setEditingFields((prev) => ({
-                              ...prev,
-                              lastName: false,
-                            }));
-                          }
-                        }}
-                        className="text-2xl font-semibold md:text-3xl bg-white/90 text-slate-900 px-2 py-1 rounded border border-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 w-32 md:w-40"
-                        placeholder="Last name"
-                        autoFocus
-                      />
-                    ) : (
-                      <h1 className="text-2xl font-semibold md:text-3xl">
-                        {profile.lastName}
-                      </h1>
-                    )}
-                    {!editingFields.lastName && (
-                      <button
-                        onClick={() => {
-                          if (window.innerWidth < 768) {
-                            const modalContent = (
-                              <div className="space-y-4">
-                                <label className="block text-sm font-medium text-slate-700">
-                                  Last Name
-                                </label>
-                                <input
-                                  type="text"
-                                  defaultValue={profile.lastName}
-                                  onBlur={async (e) => {
-                                    if (e.target.value !== profile.lastName) {
-                                      await saveLastName(e.target.value);
-                                    }
-                                    closeMobileModal();
-                                  }}
-                                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
-                                  placeholder="Last name"
-                                  autoFocus
-                                />
-                                <div className="flex gap-3 pt-2">
-                                  <button
-                                    onClick={closeMobileModal}
-                                    className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors"
-                                  >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    onClick={async () => {
-                                      const input = document.querySelector(
-                                        'input[placeholder="Last name"]'
-                                      ) as HTMLInputElement;
-                                      if (input?.value !== profile.lastName) {
-                                        await saveLastName(input?.value || "");
-                                      }
-                                      closeMobileModal();
-                                    }}
-                                    disabled={savingStates.lastName}
-                                    className="flex-1 px-4 py-2.5 rounded-xl bg-sky-600 text-white font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
-                                  >
-                                    {savingStates.lastName ? (
-                                      <>
-                                        <svg
-                                          className="animate-spin h-4 w-4 text-white"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                          ></circle>
-                                          <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                          ></path>
-                                        </svg>
-                                        <span>Saving...</span>
-                                      </>
-                                    ) : (
-                                      "Save"
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                            showMobileModal("Edit Last Name", modalContent);
-                          } else {
-                            toggleFieldEdit("lastName");
-                          }
-                        }}
-                        className="p-1 rounded hover:bg-white/20 transition-all"
-                        aria-label="Edit last name"
+                        aria-label="Edit full name"
                       >
                         <Image
                           src={editIcon}
