@@ -14,10 +14,12 @@ import {
 import { CategoryOutlined } from "@mui/icons-material";
 
 const EmployerDashboard = () => {
-  const { user, isLoading, isAuthenticated, profile } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
 
-  // Show loading while auth is loading or profile is being fetched
-  if (isLoading || (isAuthenticated && !profile)) {
+  // Show loading only while auth is initializing
+  // Dashboard doesn't require profile data, only user info (user?.firstName)
+  // Don't wait for profile to load as it's fetched asynchronously and not needed here
+  if (isLoading || !isAuthenticated) {
     return <Loading text="Loading dashboard..." />;
   }
 

@@ -24,10 +24,9 @@ import {
 import { CategoryOutlined } from "@mui/icons-material";
 
 export default function CandidateDashboard() {
-  const { user, isLoading, isAuthenticated, profile } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
 
-  // Show loading while auth is loading or profile is being fetched
-  if (isLoading || (isAuthenticated && !profile)) {
+  if (isLoading || !isAuthenticated) {
     return <Loading text="Loading dashboard..." />;
   }
   return (

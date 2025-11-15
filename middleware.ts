@@ -6,9 +6,7 @@ import type { NextRequest } from "next/server";
 const protectedRoutes = {
   "/pages/employer": ["EMPLOYER"],
   " /pages/employer/auth/complete-profile": ["EMPLOYER"],
-  // " /pages/employer/auth/profile/companyProfile": ["EMPLOYER"],
   "/dashboard": ["JOBSEEKER"],
-  "/pages/jobseeker/auth/complete-profile": ["JOBSEEKER"],
   "/pages/jobseeker/auth/complete-profile": ["JOBSEEKER"],
   "/pages/jobseeker/dashboard": ["JOBSEEKER"],
   "/admin": ["ADMIN"],
