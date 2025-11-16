@@ -130,98 +130,84 @@ export default function CandidateDashboard() {
         </section>
 
         {/* Roles That Match Your Profile (same as before, omitted for brevity if you like) */}
-        <h2 className="text-4xl">Roles that match your profile</h2>
-        <div className=" flex lg:flex-wrap md:flex-nowrap gap-6">
-          <JobCard
-            location="Surulere, Lagos"
-            verified
-            timePosted="1 day ago"
-            title="Childminder / Nanny"
-            description="We need a caring and patient nanny for our 2-year-old son while we are at work."
-            workType="On-site"
-            schedule="Monday – Friday (7am – 5pm)"
-            salary="₦35,000 / month"
-          />
-          <JobCard
-            location="Surulere, Lagos"
-            verified
-            timePosted="1 day ago"
-            title="Childminder / Nanny"
-            description="We need a caring and patient nanny for our 2-year-old son while we are at work."
-            workType="On-site"
-            schedule="Monday – Friday (7am – 5pm)"
-            salary="₦35,000 / month"
-          />
-          <JobCard
-            location="Surulere, Lagos"
-            verified
-            timePosted="1 day ago"
-            title="Childminder / Nanny"
-            description="We need a caring and patient nanny for our 2-year-old son while we are at work."
-            workType="On-site"
-            schedule="Monday – Friday (7am – 5pm)"
-            salary="₦35,000 / month"
-          />
-          <JobCard
-            location="Surulere, Lagos"
-            verified
-            timePosted="1 day ago"
-            title="Childminder / Nanny"
-            description="We need a caring and patient nanny for our 2-year-old son while we are at work."
-            workType="On-site"
-            schedule="Monday – Friday (7am – 5pm)"
-            salary="₦35,000 / month"
-          />
-          <JobCard
-            location="Surulere, Lagos"
-            verified
-            timePosted="1 day ago"
-            title="Childminder / Nanny"
-            description="We need a caring and patient nanny for our 2-year-old son while we are at work."
-            workType="On-site"
-            schedule="Monday – Friday (7am – 5pm)"
-            salary="₦35,000 / month"
-          />
-          <JobCard
-            location="Surulere, Lagos"
-            verified
-            timePosted="1 day ago"
-            title="Childminder / Nanny"
-            description="We need a caring and patient nanny for our 2-year-old son while we are at work."
-            workType="On-site"
-            schedule="Monday – Friday (7am – 5pm)"
-            salary="₦35,000 / month"
-          />
-        </div>
+              <h2 className="text-4xl">Roles that match your profile</h2>
+              <div className="w-full lg:overflow-x-auto lg:scrollbar-hide">
+                  <div className=" flex flex-wrap lg:flex-nowrap gap-6">
+
+                      <JobCard
+                          location="Surulere, Lagos"
+                          verified
+                          timePosted="1 day ago"
+                          title="Childminder / Nanny"
+                          description="We need a caring and patient nanny for our 2-year-old son while we are at work."
+                          workType="On-site"
+                          schedule="Monday – Friday (7am – 5pm)"
+                          salary="₦35,000 / month"
+                      />
+                      <JobCard
+                          location="Surulere, Lagos"
+                          verified
+                          timePosted="1 day ago"
+                          title="Childminder / Nanny"
+                          description="We need a caring and patient nanny for our 2-year-old son while we are at work."
+                          workType="On-site"
+                          schedule="Monday – Friday (7am – 5pm)"
+                          salary="₦35,000 / month"
+                      />
+                      <JobCard
+                          location="Surulere, Lagos"
+                          verified
+                          timePosted="1 day ago"
+                          title="Childminder / Nanny"
+                          description="We need a caring and patient nanny for our 2-year-old son while we are at work."
+                          workType="On-site"
+                          schedule="Monday – Friday (7am – 5pm)"
+                          salary="₦35,000 / month"
+                      />
+                      <JobCard
+                          location="Surulere, Lagos"
+                          verified
+                          timePosted="1 day ago"
+                          title="Childminder / Nanny"
+                          description="We need a caring and patient nanny for our 2-year-old son while we are at work."
+                          workType="On-site"
+                          schedule="Monday – Friday (7am – 5pm)"
+                          salary="₦35,000 / month"
+                      />
+                      <JobCard
+                          location="Surulere, Lagos"
+                          verified
+                          timePosted="1 day ago"
+                          title="Childminder / Nanny"
+                          description="We need a caring and patient nanny for our 2-year-old son while we are at work."
+                          workType="On-site"
+                          schedule="Monday – Friday (7am – 5pm)"
+                          salary="₦35,000 / month"
+                      />
+                  </div>
+       </div>
 
         {/* Application Journey + Profile Strength */}
         <section className="grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]">
                   <ApplicationJourney />
-                  <div className="mb-4 flex items-center justify-between">
-                      <h2 className="text-3xl font-semibold">Profile Strength</h2>
-                      <button
-                          type="button"
-                          
-                          className="text-sm font-medium text-blue-600 hover:underline"
-                      >
-                          Edit
-                      </button>
-                  </div>
-          <ProfileStrength
-            avatarSrc={avatar}
-            onEdit={() => console.log("Edit clicked")}
-            items={[
-              { label: "Verified Government ID", percent: 50 },
-              { label: "Profile Photo (Clear headshot)", percent: 90 },
-              {
-                label: "Detailed Work Experience (At least one role)",
-                percent: 85,
-              },
-              { label: "CV/Resume Uploaded", percent: 80 },
-              { label: "Educational Background Filled", percent: 95 },
-              { label: "Profile Bio/Summary Written", percent: 75 },
-            ]}
-          />
+                  <div>
+                     
+                      <ProfileStrength
+                          avatarSrc={avatar}
+                          onEdit={() => console.log("Edit clicked")}
+                          items={[
+                              { label: "Verified Government ID", percent: 50 },
+                              { label: "Profile Photo (Clear headshot)", percent: 90 },
+                              {
+                                  label: "Detailed Work Experience (At least one role)",
+                                  percent: 85,
+                              },
+                              { label: "CV/Resume Uploaded", percent: 80 },
+                              { label: "Educational Background Filled", percent: 95 },
+                              { label: "Profile Bio/Summary Written", percent: 75 },
+                          ]}
+                      />
+                 </div>
         </section>
       </main>
     </div>

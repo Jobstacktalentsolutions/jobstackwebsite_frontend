@@ -11,7 +11,7 @@ import house from "@/app/assets/house.svg";
 import office from "@/app/assets/office.svg";
 import tinystar from "@/app/assets/tinyStar.svg";
 import solutions from "@/app/assets/solutions.svg";
-import Nav from "@/app/pages/components/employerNav"
+import Nav from "@/app/pages/components/employerNav";
 import hero from "@/app/assets/employersheroimg.svg";
 import dummyImage from "@/app/assets/dummyImage.png";
 import { Hospital } from "lucide-react";
@@ -81,12 +81,12 @@ function EmployerDashboard() {
       {/* HERO */}
       <section className="bg-[#1e5b86] ">
         <div className="mx-auto  max-w-9xl px-6 md:px-10 py-20 md:py-30">
-          <div className="flex items-center justify-between gap-10 my-10 mx-20 md:">
-            <div className="text-white">
-              <h1 className="text-5xl max-w-7xl font-medium leading-tight md:text-6xl">
-                Hire Quality Talent, <br /> Fast.
+          <div className="flex flex-col md:flex-row items-center justify-between gap-10 my-10 md:mx-20 ">
+            <div className="text-white flex-col justify-center items-center md:flex-row md:items-center">
+              <h1 className="text-3xl md:text-5xl  font-medium leading-tight text-center lg:text-start">
+                Hire Quality Talent, <br className='hidden md:block' /> Fast.
               </h1>
-              <p className="mt-4  text-white/80 font-light">
+              <p className="mt-4  text-white/80 font-light text-center lg:text-start">
                 Post your job to thousands of verified, active job seekers.
                 <br /> Fill your roles in days, not months.
               </p>
@@ -240,7 +240,7 @@ function EmployerDashboard() {
               Testimonials
             </span>
           </div>
-          <div className="mb-30">
+          <div className="mb-10 md:mb-30">
             <h2 className="  text-center text-5xl -tracking-normal my-5">
               Solutions for Your Business
             </h2>
@@ -250,8 +250,8 @@ function EmployerDashboard() {
           </div>
 
           <div className="mt-12 grid grid-cols-1 items-center gap-8 md:grid-cols-3">
-            <div className="order-2 text-center md:order-1 md:text-left mr-30 ">
-              <div className="flex flex-col justify-center items-center mb-30">
+            <div className="order-2 text-center md:order-1 md:text-left md:mr-30 ">
+              <div className="flex flex-col justify-center items-center md:mb-30">
                 <p className="text-5xl  ">1</p>
                 <h3 className="mt-2   tracking-normal  text-[20px]">
                   Verified Candidates
@@ -284,8 +284,8 @@ function EmployerDashboard() {
               </div>
             </div>
 
-            <div className="order-3 text-center md:text-left ml-30">
-              <div className="flex flex-col justify-center items-center mb-30">
+            <div className="order-3 text-center md:text-left md:ml-30">
+              <div className="flex flex-col justify-center items-center md:mb-30">
                 <p className="text-5xl   ">3</p>
                 <h3 className="mt-2   text-[20px]">
                   All-in-One Dashboard
@@ -310,16 +310,16 @@ function EmployerDashboard() {
       {/* CTA BANNER + FOOTER */}
       <section className="bg-[#20567d]">
         <div className="mx-auto max-w-7xl px-6 md:px-10 py-16">
-          <div className="grid items-center gap-10 rounded-3xl bg-[#346b92]/90 px-25 py-10 md:grid-cols-2">
-            <div className="text-white ">
+          <div className="grid items-center gap-10 rounded-3xl bg-[#346b92]/90 px-5 md:px-25 py-10 md:grid-cols-2">
+            <div className="text-white flex flex-col items-center md:items-start ">
               <div className="mb-5 inline-flex items-center gap-2 rounded-3xl bg-white px-3 py-3 text-sm">
                 <Image src={tinystar} alt="tiny star" />
                 <span className="text-black">Hire Talents</span>
               </div>
-              <h3 className="text-5xl   tracking-normal font-dmsans">
+              <h3 className="text-5xl  text-center tracking-normal font-dmsans">
                 Start Hiring Smarter Today
               </h3>
-              <p className="my-8  font-sans text-[14px] font-extralight text-white/80">
+              <p className="my-8   text-center font-sans text-[14px] font-extralight text-white/80">
                 Join thousands of companies saving time and money on
                 recruitment.
               </p>

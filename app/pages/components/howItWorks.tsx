@@ -77,13 +77,13 @@ export default function HowItWorks() {
 
     return (
         <section className="bg-white font-sans">
-            <div className="flex flex-col items-center my-30">
+            <div className="flex flex-col items-center my-15 md:my-30">
                 <div className="border px-4 py-3 rounded-full border-gray-400 flex"> <Image src={tinystar} alt='tiny black  star' className="mr-2" /> <p>How it works</p></div>
-                <h1 className="  text-5xl -tracking-normal my-5">Better Talents, Better Results</h1>
+                <h1 className="  text-5xl text-center md:text-start -tracking-normal m-5">Better Talents, Better Results</h1>
                 <p className="capitalize ">Streamline your hiring process in 3 steps</p>
             </div>
-            <div className="flex  w-full justify-evenly items-center">
-                <Image src={howitworks} alt='' width={500} className="h-1/2" />
+            <div className="flex flex-col-reverse md:flex-row  w-full justify-evenly items-center">
+                <Image src={howitworks} alt='' width={500} className="h-1/2 my-7" />
                 <div className=""><HiringProcess /></div>
             </div>
         </section>

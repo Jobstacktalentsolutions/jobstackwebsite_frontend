@@ -1,7 +1,7 @@
 // components/JobCard.tsx
 import { FC } from "react";
 import Image from 'next/image'
-import {  Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import greenverifed from '@/app/assets/greenverified.svg'
 
 interface JobCardProps {
@@ -26,15 +26,15 @@ const JobCard: FC<JobCardProps> = ({
     salary,
 }) => {
     return (
-        <div className="bg-white rounded-2xl shadow-sm p-5 hover:shadow-md transition-all cursor-pointer border border-gray-100">
+        <div className="bg-white rounded-2xl relative w-[850px] h-300px lg:w-[300px]   shadow-sm p-5 hover:shadow-md transition-all cursor-pointer border border-gray-100">
             {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-blue-500 rounded-md"></div>
-                    <p className="text-gray-700 font-medium flex items-center">
+            <div className="flex justify-between mb-3 flex-col">
+                <div className="flex flex-col  space-x-2">
+                    <div className="w-6 h-6 bg-blue-500  rounded-md" />
+                    <p className="text-gray-700 my-2 font-medium flex items-center">
                         {location}
                         {verified && (
-                            <Image src={greenverifed } alt="green verified"/>
+                            <Image src={greenverifed} alt="green verified" />
                         )}
                     </p>
                 </div>

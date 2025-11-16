@@ -32,7 +32,7 @@ export default function HowItWorks() {
     const s3 = useTransform(scrollYProgress, [0.66, 1.0], ["0%", "100%"]);
 
     return (
-        <section ref={ref} className="mx-auto max-w-5xl px-4 py-16 grid grid-cols-[36px_1fr] gap-x-6 md:grid-cols-[44px_1fr] font-sans">
+        <section ref={ref} className="mx-auto max-w-5xl px-4 py-16 flex  md:grid  gap-x-6 md:grid-cols-[44px_1fr] font-sans ">
             {/* Left rail with three lines */}
             {/* Left rail with three lines flowing top to bottom */}
             <div className="relative flex flex-col items-center">

@@ -29,6 +29,14 @@ export default function ProfileStrength({
 
             {/* Card (solid blue border) */}
             <div className="relative rounded-2xl lg:flex md:flex-col  p-6 bg-white shadow-sm">
+                <div className="flex justify-between my-5"><h2 className="text-3xl font-semibold">Profile Strength</h2>
+                    <button
+                        type="button"
+
+                        className="text-sm font-medium text-blue-600 hover:underline"
+                    >
+                        Edit
+                    </button></div>
                 {/* Soft rounded corner shading (subtle) */}
                 <div className="pointer-events-none absolute inset-0 rounded-2xl ring-0 [box-shadow:inset_0_0_0_1px_rgba(59,130,246,0.08)]" />
 
