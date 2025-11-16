@@ -84,6 +84,29 @@ export async function empResetPassword(dto: PasswordResetDto) {
   return data.data;
 }
 
+// Get employer profile
+export async function empGetProfile() {
+  const { data } = await httpClient.get<{ success: boolean; profile: any }>(
+    "/user/employer/me"
+  );
+  return data.profile;
+}
+
+// Update employer profile
+export async function empUpdateProfile(updateData: {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  address?: string;
+  type?: string;
+}) {
+  const { data } = await httpClient.put<{
+    success: boolean;
+    profile: any;
+  }>("/user/employer/profile", updateData);
+  return data;
+}
+
 // Get employer company logo/profile picture
 export async function empGetCompanyLogo() {
   const { data } = await httpClient.get<{
@@ -103,6 +126,26 @@ export async function empGetCompanyLogo() {
   return data;
 }
 
+// Upload company logo
+export async function empUploadCompanyLogo(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const { data } = await httpClient.post<{
+    success: boolean;
+    logoUrl: string;
+  }>("/user/employer/profile/company-logo", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return data;
+}
+
+// Delete company logo
+export async function empDeleteCompanyLogo() {
+  await httpClient.delete("/user/employer/profile/company-logo");
+}
+
 export default {
   empRegister,
   empLogin,
@@ -113,5 +156,9 @@ export default {
   empSendPasswordResetCode,
   empConfirmPasswordResetCode,
   empResetPassword,
+  empGetProfile,
+  empUpdateProfile,
   empGetCompanyLogo,
+  empUploadCompanyLogo,
+  empDeleteCompanyLogo,
 };
