@@ -11,11 +11,10 @@ import house from "@/app/assets/house.svg";
 import office from "@/app/assets/office.svg";
 import tinystar from "@/app/assets/tinyStar.svg";
 import solutions from "@/app/assets/solutions.svg";
-import Nav from "@/app/pages/components/employerNav";
+import EmployerNav from "@/app/pages/components/employerNav";
 import hero from "@/app/assets/employersheroimg.svg";
 import dummyImage from "@/app/assets/dummyImage.png";
 import { Hospital } from "lucide-react";
-import Link from "next/link";
 import Footer from "@/app/pages/components/footer";
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/lib/auth-context';
@@ -74,9 +73,9 @@ function EmployerDashboard() {
     ],
   ];
   return (
-    <main className="min-h-screen font-sans text-slate-900 [font-family:Inter,system-ui]">
+    <main className="min-h-screen font-sans text-slate-900 ">
       {/* NAV */}
-      <Nav />
+      <EmployerNav />
 
       {/* HERO */}
       <section className="bg-[#1e5b86] ">

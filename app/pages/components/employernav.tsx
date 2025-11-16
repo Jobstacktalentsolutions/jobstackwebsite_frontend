@@ -14,7 +14,7 @@ function Logo() {
     );
 }
 
-export default function Nav() {
+export default function EmployerNav() {
     const [open, setOpen] = useState(false);
 
     // Close on viewport upsize
