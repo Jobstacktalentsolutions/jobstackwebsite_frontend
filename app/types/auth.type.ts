@@ -48,6 +48,7 @@ export interface AuthResult {
     profileId?: string;
     firstName?: string;
     lastName?: string;
+    companyName?: string;
   };
   expiresAt: string | Date;
   sessionId: string;

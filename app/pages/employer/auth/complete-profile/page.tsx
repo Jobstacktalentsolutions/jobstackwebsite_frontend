@@ -241,9 +241,12 @@ const ProfilePage = () => {
         companyAddress: companyAddress.trim(),
         state: state.trim(),
         city: city.trim(),
-        companySize: companySize.trim(),
         socialOrWebsiteUrl: socialOrWebsiteUrl.trim(),
       };
+
+      if (employerType !== EmployerType.INDIVIDUAL) {
+        verificationDto.companySize = companySize.trim();
+      }
 
       await updateVerificationInfo(verificationDto);
 
@@ -349,14 +352,16 @@ const ProfilePage = () => {
               onChange={(e) => setCompanyName(e.target.value)}
               required
             />
-            <SearchableSelect
-              label="Company Size"
-              options={companySizeOptions}
-              value={companySize}
-              onChange={setCompanySize}
-              placeholder="Select company size..."
-              icon={<Users size={16} />}
-            />
+            {employerType !== EmployerType.INDIVIDUAL && (
+              <SearchableSelect
+                label="Company Size"
+                options={companySizeOptions}
+                value={companySize}
+                onChange={setCompanySize}
+                placeholder="Select company size..."
+                icon={<Users size={16} />}
+              />
+            )}
           </div>
 
           <Input

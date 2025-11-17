@@ -34,6 +34,7 @@ export interface User {
   profileId: string;
   firstName?: string;
   lastName?: string;
+  companyName?: string;
 }
 
 export interface UserProfile {
@@ -56,6 +57,7 @@ export interface AuthContextType {
       profileId?: string;
       firstName?: string;
       lastName?: string;
+      companyName?: string;
     };
   }) => Promise<void>;
   logout: () => void;
@@ -177,6 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profileId?: string;
       firstName?: string;
       lastName?: string;
+      companyName?: string;
     };
   }) => {
     // Backend now sends consistent role values (JOBSEEKER, EMPLOYER, ADMIN)
@@ -194,6 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profileId: authResult.user.profileId || "",
       firstName: authResult.user.firstName,
       lastName: authResult.user.lastName,
+      companyName: authResult.user.companyName,
     };
 
     // Store user data in cookies
@@ -217,19 +221,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = useCallback(() => {
-    clearAuthTokens();
-    setUser(null);
-    setProfile(null);
-    router.push("/");
-  }, [router]);
-
-  // Clear auth state without navigation (useful for signup flow)
-  const clearAuthState = useCallback(() => {
+  const resetAuthState = useCallback(() => {
     clearAuthTokens();
     setUser(null);
     setProfile(null);
   }, []);
+
+  const logout = useCallback(() => {
+    resetAuthState();
+    router.push("/");
+  }, [router, resetAuthState]);
+
+  // Clear auth state without navigation (useful for signup flow)
+  const clearAuthState = useCallback(() => {
+    resetAuthState();
+  }, [resetAuthState]);
 
   const updateUser = useCallback((userData: Partial<User>) => {
     setUser((prev) => {
