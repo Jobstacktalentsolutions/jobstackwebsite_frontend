@@ -6,7 +6,7 @@ import {
   jsSendVerificationEmail,
 } from "@/app/api/auth-jobseeker.api";
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
-import { setAuthTokens } from "@/app/lib/cookies";
+import { setAuthTokens, setUserData } from "@/app/lib/cookies";
 import Button from "@/app/pages/components/button";
 import { useEffect, useRef, useState } from "react";
 import TimeSlot from "@/app/pages/components/timeLeft";
@@ -106,6 +106,15 @@ export default function VerifyClient({ heading, email }: Props) {
         authResult.refreshToken,
         authResult.user.role
       );
+      // Persist user metadata so AuthContext can hydrate immediately
+      setUserData({
+        id: authResult.user.id,
+        email: authResult.user.email,
+        role: authResult.user.role,
+        profileId: authResult.user.profileId || "",
+        firstName: authResult.user.firstName,
+        lastName: authResult.user.lastName,
+      });
 
       setIsVerified(true);
       toastSuccess("Email verified successfully");
@@ -143,7 +152,7 @@ export default function VerifyClient({ heading, email }: Props) {
       heading={heading}
       subtext={
         <p>
-          We sent a 6-digit code to ${email}. <br />
+          We sent a 6-digit code to {email}. <br />
           Please enter it below to continue.
         </p>
       }

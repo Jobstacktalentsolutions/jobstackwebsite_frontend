@@ -47,7 +47,7 @@ const JobseekerProfilePage = () => {
   const cvInputRef = useRef<HTMLInputElement>(null);
 
   // Check authentication - will redirect if not authenticated
-  const { isLoading: authLoading } = useProtectedRoute({
+  const { isLoading: authGuardLoading, isAuthorized } = useProtectedRoute({
     allowedRoles: [UserRole.JOB_SEEKER],
     redirectTo: "/pages/jobseeker/auth/login",
   });
@@ -67,7 +67,7 @@ const JobseekerProfilePage = () => {
   });
 
   const { profile, refreshProfile } = useProfile();
-  const { isLoading: isAuthContextLoading, isAuthenticated } = useAuth();
+  const { isLoading: isAuthContextLoading } = useAuth();
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -293,8 +293,12 @@ const JobseekerProfilePage = () => {
     }
   };
 
-  if (authLoading || isAuthContextLoading || !isAuthenticated) {
+  if (authGuardLoading || isAuthContextLoading) {
     return <Loading text="Loading..." />;
+  }
+
+  if (!isAuthorized) {
+    return null;
   }
 
   return (

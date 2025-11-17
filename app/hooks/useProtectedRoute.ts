@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/lib/auth-context";
 import { UserRole } from "@/app/lib/enums";
@@ -21,10 +21,15 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
   const { allowedRoles, requireAuth = true, redirectTo } = options;
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useAuth();
+  // Track when auth context has finished its initial hydration
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
   useEffect(() => {
     // Wait for auth to load
     if (isLoading) return;
+    if (!hasCheckedAuth) {
+      setHasCheckedAuth(true);
+    }
 
     // Check if authentication is required
     if (requireAuth && !isAuthenticated) {
@@ -51,10 +56,14 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
     requireAuth,
     redirectTo,
     router,
+    hasCheckedAuth,
   ]);
 
+  // Guard should report loading until auth check has completed once
+  const guardLoading = isLoading || !hasCheckedAuth;
+
   return {
-    isLoading,
+    isLoading: guardLoading,
     isAuthenticated,
     user,
     isAuthorized:
