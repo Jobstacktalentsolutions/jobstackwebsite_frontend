@@ -113,6 +113,7 @@ export async function jsUpdateProfile(updateData: {
   brief?: string;
   preferredLocation?: string;
   address?: string;
+  phoneNumber?: string;
   state?: string;
   city?: string;
   skillIds?: string[];

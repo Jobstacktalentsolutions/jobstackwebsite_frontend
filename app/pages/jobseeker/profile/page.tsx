@@ -90,6 +90,7 @@ const ProfilePage: React.FC = () => {
     skills: boolean;
     jobTitle: boolean;
     address: boolean;
+    phoneNumber: boolean;
   }>({
     fullName: false,
     bio: false,
@@ -98,6 +99,7 @@ const ProfilePage: React.FC = () => {
     skills: false,
     jobTitle: false,
     address: false,
+    phoneNumber: false,
   });
 
   // Loading states for save operations
@@ -109,6 +111,7 @@ const ProfilePage: React.FC = () => {
     skills: boolean;
     jobTitle: boolean;
     address: boolean;
+    phoneNumber: boolean;
   }>({
     fullName: false,
     bio: false,
@@ -117,6 +120,7 @@ const ProfilePage: React.FC = () => {
     skills: false,
     jobTitle: false,
     address: false,
+    phoneNumber: false,
   });
 
   // Mobile modal state
@@ -361,6 +365,25 @@ const ProfilePage: React.FC = () => {
       throw err;
     } finally {
       setSavingStates((prev) => ({ ...prev, address: false }));
+    }
+  };
+
+  // Persist updated phone number
+  const savePhoneNumber = async (value: string) => {
+    setSavingStates((prev) => ({ ...prev, phoneNumber: true }));
+    try {
+      await jsUpdateProfile({ phoneNumber: value });
+      setProfile((prev) => (prev ? { ...prev, phoneNumber: value } : null));
+      toastSuccess("Phone number updated successfully");
+      setEditingFields((prev) => ({ ...prev, phoneNumber: false }));
+      closeMobileModal();
+    } catch (err: any) {
+      toastError(
+        err?.response?.data?.message || "Failed to update phone number"
+      );
+      throw err;
+    } finally {
+      setSavingStates((prev) => ({ ...prev, phoneNumber: false }));
     }
   };
 
@@ -1170,6 +1193,54 @@ const ProfilePage: React.FC = () => {
 
             {/* Right column */}
             <div className="space-y-6">
+              {/* Contact info */}
+              <section className={cardBase}>
+                <div className={sectionTitle}>
+                  <span className="text-2xl">Contact Info</span>
+                </div>
+                <div className="space-y-4 text-sm">
+                  <InlineEditable
+                    value={profile.phoneNumber || ""}
+                    onSave={savePhoneNumber}
+                    renderInput={(value, onChange) => (
+                      <input
+                        type="tel"
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder="+234 800 000 0000"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm"
+                      />
+                    )}
+                    isEditing={editingFields.phoneNumber}
+                    onEditToggle={() => toggleFieldEdit("phoneNumber")}
+                    label="Phone Number"
+                    placeholder="No phone number set. Click edit to add."
+                    showMobileModal={showMobileModal}
+                    mobileModalTitle="Edit Phone Number"
+                  />
+
+                  <InlineEditable
+                    value={profile.address || ""}
+                    onSave={saveAddress}
+                    renderInput={(value, onChange) => (
+                      <textarea
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        rows={3}
+                        placeholder="Enter your full address"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm resize-none"
+                      />
+                    )}
+                    isEditing={editingFields.address}
+                    onEditToggle={() => toggleFieldEdit("address")}
+                    label="Address"
+                    placeholder="No address set. Click edit to add."
+                    showMobileModal={showMobileModal}
+                    mobileModalTitle="Edit Address"
+                  />
+                </div>
+              </section>
+
               {/* Quick facts */}
               <section className={cardBase}>
                 <div className={sectionTitle}>
@@ -1194,26 +1265,6 @@ const ProfilePage: React.FC = () => {
                     placeholder="No job title set. Click edit to add."
                     showMobileModal={showMobileModal}
                     mobileModalTitle="Edit Job Title"
-                  />
-
-                  <InlineEditable
-                    value={profile.address || ""}
-                    onSave={saveAddress}
-                    renderInput={(value, onChange) => (
-                      <textarea
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        rows={3}
-                        placeholder="Enter your full address"
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm resize-none"
-                      />
-                    )}
-                    isEditing={editingFields.address}
-                    onEditToggle={() => toggleFieldEdit("address")}
-                    label="Address"
-                    placeholder="No address set. Click edit to add."
-                    showMobileModal={showMobileModal}
-                    mobileModalTitle="Edit Address"
                   />
 
                   <LocationEditor
