@@ -4,15 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import logo from '@/app/assets/logo_white.svg';
 
-function Logo() {
-    return (
-        <Link href="/" className="flex items-center gap-2">
-            <Image src={logo} alt="TalentHub" className="h-8 w-auto" priority />
-            <span className="sr-only">TalentHub</span>
-        </Link>
-    );
-}
-
 export default function EmployerNav() {
     const [open, setOpen] = useState(false);
 
@@ -25,54 +16,53 @@ export default function EmployerNav() {
         return () => window.removeEventListener('resize', handler);
     }, []);
 
-    const DesktopLinks = () => (
-        <ul className="flex flex-col gap-3 md:gap-6 md:flex-row md:items-center">
-            <li>
-                <Link
-                    className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
-                    href="/pages/employer/dashboard"
-                >
-                    Home
-                </Link>
-            </li>
-            <li>
-                <Link
-                    className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
-                    href="#"
-                >
-                    About
-                </Link>
-            </li>
-            <li>
-                <Link
-                    className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
-                    href="#"
-                >
-                    Browse jobs
-                </Link>
-            </li>
-            <li>
-                <Link
-                    className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
-                    href="#"
-                >
-                    Blog
-                </Link>
-            </li>
-        </ul>
-    );
-
-    return (
+ return (
         <header className="absolute inset-x-0 top-0 bg-white/5  backdrop-blur-md border   px-6 shadow-lg z-50 border-b border-white/20 mb-5">
             <nav
                 className="mx-auto flex max-w-7xl items-center  justify-between py-5 sm:px-6 lg:px-8   "
                 aria-label="Primary"
             >
-                <Logo />
+                <Link href="/" className="flex items-center gap-2">
+                    <Image src={logo} alt="TalentHub" className="h-8 w-auto" priority />
+
+                </Link>
 
                 {/* Desktop nav (center) */}
                 <div className="hidden  md:flex md:justify-center ">
-                    <DesktopLinks />
+                    <ul className="flex flex-col gap-3 md:gap-6 md:flex-row md:items-center">
+                        <li>
+                            <Link
+                                className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
+                                href="/pages/employer/dashboard"
+                            >
+                                Home
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
+                                href="#"
+                            >
+                                About
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
+                                href="#"
+                            >
+                                Browse jobs
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className="text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 font-medium"
+                                href="#"
+                            >
+                                Blog
+                            </Link>
+                        </li>
+                    </ul>
                 </div>
 
                 {/* Right actions (desktop) */}

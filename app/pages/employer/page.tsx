@@ -11,7 +11,7 @@ import house from "@/app/assets/house.svg";
 import office from "@/app/assets/office.svg";
 import tinystar from "@/app/assets/tinyStar.svg";
 import solutions from "@/app/assets/solutions.svg";
-import EmployerNav from "../components/employerNav";
+// import EmployerNav from "../components/employerNav";
 import hero from "@/app/assets/employersheroimg.svg";
 import dummyImage from "@/app/assets/dummyImage.png";
 import { Hospital } from "lucide-react";
@@ -75,7 +75,7 @@ function EmployerDashboard() {
   return (
     <main className="min-h-screen font-sans text-slate-900 ">
       {/* NAV */}
-      <EmployerNav />
+      {/* <EmployerNav /> */}
 
       {/* HERO */}
       <section className="bg-[#1e5b86] ">
