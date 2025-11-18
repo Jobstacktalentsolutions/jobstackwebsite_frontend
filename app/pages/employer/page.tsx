@@ -11,11 +11,11 @@ import house from "@/app/assets/house.svg";
 import office from "@/app/assets/office.svg";
 import tinystar from "@/app/assets/tinyStar.svg";
 import solutions from "@/app/assets/solutions.svg";
-import EmployerNav from "@/app/pages/components/employerNav";
+import EmployerNav from "../components/employerNav";
 import hero from "@/app/assets/employersheroimg.svg";
 import dummyImage from "@/app/assets/dummyImage.png";
 import { Hospital } from "lucide-react";
-import Footer from "@/app/pages/components/footer";
+import Footer from "../components/footer";
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/lib/auth-context';
 
