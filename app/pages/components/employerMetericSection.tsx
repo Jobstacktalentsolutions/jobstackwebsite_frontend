@@ -1,6 +1,6 @@
 import React from "react";
 
-const EmploymentMetricSection = () => {
+const EmployerMetricSection = () => {
     return (
         <section className="rounded-2xl bg-white border border-slate-100 p-4 md:p-5 shadow-sm">
             <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -29,4 +29,4 @@ const EmploymentMetricSection = () => {
     );
 };
 
-export default EmploymentMetricSection;
+export default EmployerMetricSection;

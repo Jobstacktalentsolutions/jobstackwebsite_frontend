@@ -1,7 +1,7 @@
 import React from "react";
 import EmployerHeader from "@/app/pages/components/employerHeader";
 import EmployerStatsRow from "@/app/pages/components/employerStat";
-import EmploymentMetricSection from "@/app/pages/components/employerMetericSection";
+import EmployerMetricSection from "@/app/pages/components/employerMetericSection";
 import HighlightedEmployeeCard from "@/app/pages/components/employeeCard";
 
 const EmployerDashboardPage = () => {
@@ -13,7 +13,7 @@ const EmployerDashboardPage = () => {
         <EmployerStatsRow />
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[2fr,1.1fr]">
-          <EmploymentMetricSection />
+          <EmployerMetricSection />
           <HighlightedEmployeeCard />
         </div>
       </section>

@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect, useRef, useState } from "react";
 import AuthPageLayout from "@/app/pages/components/authPageLayout";
 import {
   empVerifyEmail,
@@ -8,7 +8,6 @@ import {
 import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 import { setAuthTokens, setUserData } from "@/app/lib/cookies";
 import Button from "@/app/pages/components/button";
-import { useEffect, useRef, useState } from "react";
 import TimeSlot from "@/app/pages/components/timeLeft";
 
 interface Props {
