@@ -86,7 +86,7 @@ export default function SignUp() {
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || "Unable to create account";
-      setPwError(errorMessage);
+      
       toastError(errorMessage);
     } finally {
       setSubmitting(false);

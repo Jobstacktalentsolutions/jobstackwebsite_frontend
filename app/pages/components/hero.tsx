@@ -19,14 +19,14 @@ export default function Hero() {
         }
     };
     return (
-        <section className="relative bg-brand" id="top">
+        <section className="relative bg-brand " id="top">
             {/* Decorative top border */}
             <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
 
-            <div className="relative mx-auto max-w-7xl px-4 pb-0 pt-20 sm:px-6 md:pt-28 lg:px-8 
+            <div className="relative mx-auto max-w-7xl px-4 pb-0 pt-20 sm:px-6 md:pt-32 lg:px-8 
             lg:pt-32">
                 {/* Headline */}
-                <h1 className="mx-auto sm:max-w-9xl md:w-full  text-center font-[400] leading-16 tracking-normal semiwhite sm:text-5xl lg:text-6xl">
+                <h1 className="mx-auto sm:max-w-9xl md:w-full md:mt-5 text-center font-[400] leading-16 tracking-normal semiwhite sm:text-5xl lg:text-6xl">
                     Find Your Dream Job or Hire Top
                     <span className="block"> Talent</span>
                 </h1>

@@ -158,7 +158,7 @@ export default function OtpVerification({
       heading={heading}
       message={
         <>
-          <div>
+          <div className="flex items-center border-2 border-green-500">
             <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
             <p className="mt-2 text-xl font-medium text-gray-400">
               {text ?? (
@@ -179,10 +179,10 @@ export default function OtpVerification({
           </div>
 
           {/* Inputs */}
-          <div className="flex gap-3">
+          <div className="flex items-center justify-center gap-3 border-2 border-red-500" >
             {code.map((digit, i) => {
               const base =
-                "h-14 w-14 rounded-lg border text-center text-xl font-medium outline-none transition-all";
+                " h-7 w-7 md:h-14 md:w-14  rounded-lg border text-center text-xl font-medium outline-none transition-all";
               const normal =
                 "border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100";
               const errored = error ? "border-red-400 ring-2 ring-red-100" : "";

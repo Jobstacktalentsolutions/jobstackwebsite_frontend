@@ -324,20 +324,17 @@ const ProfilePage = () => {
       message={
         <form className="space-y-6 max-w-2xl" onSubmit={handleSubmit}>
           {/* Account Type Display */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-              <span className="text-base font-medium text-blue-800">
+          <div className="bg-blue-50 flex items-center w-full border border-blue-200 rounded-lg py-4 px-2">
+            <div className="flex items-center  gap-2">
+              {/* <div className="w-2 h-2 bg-blue-600 rounded-full"></div> */}
+              <span className=" block text-[16px]  font-sans   text-slate-600 ">
                 Account Type:
               </span>
-              <span className="text-sm text-blue-700 font-semibold">
+              <span className="text-[16px] text-[#2572A7] font-semibold">
                 {employerType || "Loading..."}
-                {employerType === EmployerType.INDIVIDUAL &&
-                  " (Personal recruiting)"}
-                {employerType === EmployerType.SME &&
-                  " (Small & Medium Enterprise)"}
-                {employerType === EmployerType.ORGANIZATION &&
-                  " (Company/Corporate recruiting)"}
+                {employerType === EmployerType.INDIVIDUAL }
+                {employerType === EmployerType.SME }
+                {employerType === EmployerType.ORGANIZATION}
               </span>
             </div>
           </div>
@@ -413,12 +410,11 @@ const ProfilePage = () => {
 
           {/* Document Upload Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800">
+            <h3 className="mb-2 block text-[18px] md:text-base font-sans  text-slate-600 ">
               Required Documents
             </h3>
-            <p className="text-sm text-slate-600">
-              Upload the following documents to verify your account. Mandatory
-              documents are marked with *.
+            <p className="text-[16px] text-slate-600">
+              Upload the following documents to verify your account. 
             </p>
 
             {documentUploads.map((upload) => {
@@ -430,15 +426,15 @@ const ProfilePage = () => {
               return (
                 <div
                   key={upload.documentType}
-                  className="border-2 border-red-500 rounded-lg p-4 space-y-3"
+                  className=" rounded-lg space-y-3"
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium text-slate-800">
+                      <h4 className="font-normal text-slate-800">
                         {getDocumentDisplayName(upload.documentType)}
-                        {requirement.mandatory && (
+                        {/* {requirement.mandatory && (
                           <span className="text-red-500 ml-1">*</span>
-                        )}
+                        )} */}
                       </h4>
                       <p className="text-sm text-slate-600">
                         {requirement.purpose}
@@ -477,7 +473,7 @@ const ProfilePage = () => {
                             e.target.files?.[0] || null
                           )
                         }
-                        className="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                        className="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-[#2572A7]/90 file:text-white hover:file:bg-[#2572A7]"
                       />
                       {upload.file && (
                         <Button

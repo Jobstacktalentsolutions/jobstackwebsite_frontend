@@ -157,7 +157,7 @@ export default function VerifyClient({ heading, email }: Props) {
       message={
         <>
           {/* Code inputs */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-center md:justify-start">
             {code.map((digit, i) => {
               const base =
                 "h-14 w-14 rounded-lg border text-center text-xl font-medium outline-none transition-all";
