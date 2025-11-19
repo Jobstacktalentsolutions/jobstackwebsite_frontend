@@ -65,7 +65,7 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
       subtext="Almost there! Please create a new, strong password for your account."
       message={
         <>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">New Password</h3>
+        
           <form className="space-y-4" onSubmit={onSubmit}>
             <PasswordField
               label="Password"

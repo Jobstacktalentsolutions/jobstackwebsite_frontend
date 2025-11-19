@@ -77,7 +77,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
 function getRedirectPathForRole(role?: UserRole): string {
   switch (role) {
     case UserRole.EMPLOYER:
-      return "/pages/employer/dasboard";
+      return "/pages/employer/dashboard";
     case UserRole.JOB_SEEKER:
       return "pages/jobseeker/dashboard";
     case UserRole.ADMIN:

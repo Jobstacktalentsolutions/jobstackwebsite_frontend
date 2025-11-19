@@ -38,7 +38,7 @@ const HighlightedEmployeeCard = () => {
                 </div>
             </dl>
 
-            <button className="mt-4 w-full rounded-full bg-blue text-white py-2 text-sm font-medium hover:bg-blue/90 transition-colors">
+            <button className="mt-4 w-full border-[#2572A7] border-[1px] rounded-[8px] text-blue  bg-white py-2 text-sm font-medium hover:bg-blue hover:text-white transition-colors">
                 View Details
             </button>
         </aside>
