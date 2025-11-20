@@ -102,7 +102,7 @@ const Dashboardnav: React.FC<DashboardnavProps> = ({ onToggleMenu }) => {
   }, [isProfileMenuOpen]);
 
   if (isAuthLoading || isDashboardLoading) {
-    return <Loading text="Jobstack..." />;
+    return <Loading text="Jobstack..."  />;
   }
 
   return (

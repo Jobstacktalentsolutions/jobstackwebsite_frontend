@@ -26,7 +26,7 @@ const JobCard: FC<JobCardProps> = ({
     salary,
 }) => {
     return (
-        <div className="bg-white rounded-2xl relative w-[850px] h-300px lg:w-[300px]   shadow-sm p-5 hover:shadow-md transition-all cursor-pointer border border-gray-100">
+        <div className="bg-white rounded-2xl relative w-[850px] h-300px lg:w-[500px]   shadow-sm p-5 hover:shadow-md transition-all cursor-pointer border border-gray-100">
             {/* Header */}
             <div className="flex justify-between mb-3 flex-col">
                 <div className="flex flex-col  space-x-2">

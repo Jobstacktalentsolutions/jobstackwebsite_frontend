@@ -20,7 +20,7 @@ export default function NotFound() {
                 </div>
 
                 <h1 className="text-3xl md:text-4xl font-bold my-2">
-                    Oh no! wrong page
+                    Oh no! Wrong page
                 </h1>
                 <p className="text-sm text-center md:text-base text-slate-700 mb-6">
                     Looks like your ice cream is melting. The page you are looking for does

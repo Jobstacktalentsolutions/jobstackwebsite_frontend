@@ -11,7 +11,7 @@ const EmployerHeader = () => {
     const { user } = useAuth();
 
     return (
-        <header className="bg-blue text-white w-full px-4 md:px-10 lg:px-24 py-6 md:py-10 rounded-br-[40px] md:rounded-br-[80px]">
+        <header className="bg-[#0F2E43] text-white w-full px-4 md:px-10 lg:px-24 py-6 :py-10 rounded-br-[40px] md:rounded-br-[80px]">
             <Dashboardnav onToggleMenu={() => setMenuOpen((prev) => !prev)} />
 
             <EmployerTabs menuOpen={menuOpen} />

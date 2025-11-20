@@ -60,7 +60,7 @@ const EmployerTabs: React.FC<EmployerTabsProps> = ({ menuOpen }) => {
                         return (
                             <li
                                 key={tab.label}
-                                className={`flex items-center rounded-xl px-3 py-2 transition-colors ${isActive ? "bg-white text-blue" : "hover:bg-white/15"
+                                className={`flex items-center rounded-xl px-3 py-2 transition-colors ${isActive ? "bg-white/35 text-blue" : "hover:bg-white/15"
                                     }`}
                             >
                                 <Icon className="mr-2 h-4 w-4" />

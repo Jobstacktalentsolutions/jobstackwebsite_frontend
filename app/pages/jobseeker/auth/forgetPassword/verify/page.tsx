@@ -10,12 +10,12 @@ export default async function Page({ searchParams }: { searchParams: { email?: s
 
         message={
           <>
-            <p>
+            {/* <p>
 
               We sent a 6-digit verification code to{" "}
               <span className="text-blue-600">{email}</span>. <br /> Please enter it
               below to continue.
-            </p>
+            </p> */}
           </>
         }
         email={email}
