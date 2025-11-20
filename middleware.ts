@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 // Role values must match backend UserRole enum: JOBSEEKER, EMPLOYER, ADMIN
 const protectedRoutes = {
   "/pages/employer": ["EMPLOYER"],
-  " /pages/employer/auth/complete-profile": ["EMPLOYER"],
+  "/pages/employer/auth/complete-profile": ["EMPLOYER"],
   "/dashboard": ["JOBSEEKER"],
   "/pages/jobseeker/auth/complete-profile": ["JOBSEEKER"],
   "/pages/jobseeker/dashboard": ["JOBSEEKER"],
@@ -19,7 +19,7 @@ const publicRoutes = [
   "/jobs",
   "/blog",
   "/postajob",
-  " /pages/employer/auth/login",
+  "/pages/employer/auth/login",
   "/pages/employer/auth/signUp",
   "/pages/employer/auth/forgetPassword",
   "/pages/jobseeker/auth/login",
@@ -80,7 +80,7 @@ export function middleware(request: NextRequest) {
 function getLoginPathForRole(role: string): string {
   switch (role) {
     case "EMPLOYER":
-      return " /pages/employer/auth/login";
+      return "/pages/employer/auth/login";
     case "JOBSEEKER":
       return "/pages/jobseeker/auth/login";
     case "ADMIN":

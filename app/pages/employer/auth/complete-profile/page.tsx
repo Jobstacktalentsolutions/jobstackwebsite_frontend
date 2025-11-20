@@ -25,6 +25,7 @@ import {
 import { useAuth } from "@/app/lib/auth-context";
 import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
 import { UserRole } from "@/app/lib/enums";
+import { markProfileSkipSession } from "@/app/lib/profile-reminders";
 
 interface DocumentUpload {
   documentType: EmployerDocumentType;
@@ -104,7 +105,7 @@ const ProfilePage = () => {
       if (status === 401 || status === 403) {
         // User is not authenticated, redirect to login
         toastError("Please login to access this page");
-        // router.push(" /pages/employer/auth/login");
+        // router.push("/pages/employer/auth/login");
         return;
       }
     } finally {
@@ -272,6 +273,12 @@ const ProfilePage = () => {
     }
   };
 
+  const handleSkip = () => {
+    markProfileSkipSession(UserRole.EMPLOYER);
+    toastInfo("You can complete this later. We'll remind you next login.");
+    router.push("/pages/employer/dashboard");
+  };
+
   const getDocumentDisplayName = (docType: EmployerDocumentType): string => {
     const requirement = documentRequirements.find(
       (req) => req.documentType === docType
@@ -322,186 +329,197 @@ const ProfilePage = () => {
       heading="Complete Your Employer Profile"
       subtext="Complete your profile and upload required documents to start hiring top talent"
       message={
-        <form className="space-y-6 max-w-2xl" onSubmit={handleSubmit}>
-          {/* Account Type Display */}
-          <div className="bg-blue-50 flex items-center w-full border border-blue-200 rounded-lg py-4 px-2">
-            <div className="flex items-center  gap-2">
-              {/* <div className="w-2 h-2 bg-blue-600 rounded-full"></div> */}
-              <span className=" block text-[16px]  font-sans   text-slate-600 ">
-                Account Type:
-              </span>
-              <span className="text-[16px] text-[#2572A7] font-semibold">
-                {employerType || "Loading..."}
-                {employerType === EmployerType.INDIVIDUAL}
-                {employerType === EmployerType.SME}
-                {employerType === EmployerType.ORGANIZATION}
-              </span>
+        <div className="space-y-6 max-w-2xl">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="text-sm font-medium text-slate-500 hover:text-slate-900 underline-offset-4 hover:underline"
+            >
+              Skip for now
+            </button>
+          </div>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Account Type Display */}
+            <div className="bg-blue-50 flex items-center w-full border border-blue-200 rounded-lg py-4 px-2">
+              <div className="flex items-center  gap-2">
+                {/* <div className="w-2 h-2 bg-blue-600 rounded-full"></div> */}
+                <span className=" block text-[16px]  font-sans   text-slate-600 ">
+                  Account Type:
+                </span>
+                <span className="text-[16px] text-[#2572A7] font-semibold">
+                  {employerType || "Loading..."}
+                  {employerType === EmployerType.INDIVIDUAL}
+                  {employerType === EmployerType.SME}
+                  {employerType === EmployerType.ORGANIZATION}
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Company Information */}
-          <div className="flex flex-col w-full  gap-4">
-            <Input
-              label="Company/Business Name"
-              placeholder="Enter company name"
-              iconLeft={<Building2 size={16} />}
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              required
-            />
-            {employerType !== EmployerType.INDIVIDUAL && (
-              <SearchableSelect
-                label="Company Size"
-                options={companySizeOptions}
-                value={companySize}
-                onChange={setCompanySize}
-                placeholder="Select company size..."
-                icon={<Users size={16} />}
+            {/* Company Information */}
+            <div className="flex flex-col w-full  gap-4">
+              <Input
+                label="Company/Business Name"
+                placeholder="Enter company name"
+                iconLeft={<Building2 size={16} />}
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                required
               />
-            )}
-          </div>
+              {employerType !== EmployerType.INDIVIDUAL && (
+                <SearchableSelect
+                  label="Company Size"
+                  options={companySizeOptions}
+                  value={companySize}
+                  onChange={setCompanySize}
+                  placeholder="Select company size..."
+                  icon={<Users size={16} />}
+                />
+              )}
+            </div>
 
-          <Input
-            label="Business Address"
-            placeholder="Enter street address"
-            iconLeft={<MapPin size={16} />}
-            value={companyAddress}
-            onChange={(e) => setCompanyAddress(e.target.value)}
-            required
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SearchableSelect
-              label="State"
-              options={stateOptions}
-              value={state}
-              onChange={(value) => {
-                setState(value);
-                setCity(""); // Reset city when state changes
-              }}
-              placeholder="Search and select state..."
+            <Input
+              label="Business Address"
+              placeholder="Enter street address"
+              iconLeft={<MapPin size={16} />}
+              value={companyAddress}
+              onChange={(e) => setCompanyAddress(e.target.value)}
               required
-              icon={<MapPin size={16} />}
-              emptyMessage="No state found."
             />
 
-            <SearchableSelect
-              label="City/LGA"
-              options={cityOptions}
-              value={city}
-              onChange={setCity}
-              placeholder={
-                state ? "Search and select city/LGA..." : "Select state first"
-              }
-              required
-              disabled={!state}
-              icon={<MapPin size={16} />}
-              emptyMessage="No city/LGA found."
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SearchableSelect
+                label="State"
+                options={stateOptions}
+                value={state}
+                onChange={(value) => {
+                  setState(value);
+                  setCity(""); // Reset city when state changes
+                }}
+                placeholder="Search and select state..."
+                required
+                icon={<MapPin size={16} />}
+                emptyMessage="No state found."
+              />
+
+              <SearchableSelect
+                label="City/LGA"
+                options={cityOptions}
+                value={city}
+                onChange={setCity}
+                placeholder={
+                  state ? "Search and select city/LGA..." : "Select state first"
+                }
+                required
+                disabled={!state}
+                icon={<MapPin size={16} />}
+                emptyMessage="No city/LGA found."
+              />
+            </div>
+
+            <Input
+              label="Website or Social Media URL"
+              placeholder="https://company.com or social media link"
+              iconLeft={<Globe size={16} />}
+              value={socialOrWebsiteUrl}
+              onChange={(e) => setSocialOrWebsiteUrl(e.target.value)}
             />
-          </div>
 
-          <Input
-            label="Website or Social Media URL"
-            placeholder="https://company.com or social media link"
-            iconLeft={<Globe size={16} />}
-            value={socialOrWebsiteUrl}
-            onChange={(e) => setSocialOrWebsiteUrl(e.target.value)}
-          />
+            {/* Document Upload Section */}
+            <div className="space-y-4">
+              <h3 className="mb-2 block text-[18px] md:text-base font-sans  text-slate-600 ">
+                Required Documents
+              </h3>
+              <p className="text-[16px] text-slate-600">
+                Upload the following documents to verify your account.
+              </p>
 
-          {/* Document Upload Section */}
-          <div className="space-y-4">
-            <h3 className="mb-2 block text-[18px] md:text-base font-sans  text-slate-600 ">
-              Required Documents
-            </h3>
-            <p className="text-[16px] text-slate-600">
-              Upload the following documents to verify your account.
-            </p>
+              {documentUploads.map((upload) => {
+                const requirement = documentRequirements.find(
+                  (req) => req.documentType === upload.documentType
+                );
+                if (!requirement) return null;
 
-            {documentUploads.map((upload) => {
-              const requirement = documentRequirements.find(
-                (req) => req.documentType === upload.documentType
-              );
-              if (!requirement) return null;
-
-              return (
-                <div
-                  key={upload.documentType}
-                  className=" rounded-lg space-y-3"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="font-normal text-slate-800">
-                        {getDocumentDisplayName(upload.documentType)}
-                        {/* {requirement.mandatory && (
+                return (
+                  <div
+                    key={upload.documentType}
+                    className=" rounded-lg space-y-3"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="font-normal text-slate-800">
+                          {getDocumentDisplayName(upload.documentType)}
+                          {/* {requirement.mandatory && (
                           <span className="text-red-500 ml-1">*</span>
                         )} */}
-                      </h4>
-                      <p className="text-sm text-slate-600">
-                        {requirement.purpose}
-                      </p>
-                    </div>
-                    {upload.uploaded && (
-                      <span className="text-green-600 text-sm font-medium">
-                        ✓ Uploaded
-                      </span>
-                    )}
-                  </div>
-
-                  {requiresDocumentNumber(upload.documentType) && (
-                    <Input
-                      label="Document Number"
-                      placeholder="Enter document number"
-                      value={upload.documentNumber}
-                      onChange={(e) =>
-                        handleDocumentNumberChange(
-                          upload.documentType,
-                          e.target.value
-                        )
-                      }
-                      disabled={upload.uploaded}
-                    />
-                  )}
-
-                  {!upload.uploaded && (
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="file"
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        onChange={(e) =>
-                          handleFileChange(
-                            upload.documentType,
-                            e.target.files?.[0] || null
-                          )
-                        }
-                        className="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-[#2572A7]/90 file:text-white hover:file:bg-[#2572A7]"
-                      />
-                      {upload.file && (
-                        <Button
-                          type="button"
-                          onClick={() => uploadDocument(upload)}
-                          disabled={upload.uploading}
-                          className="px-4 py-2"
-                        >
-                          {upload.uploading ? "Uploading..." : "Upload"}
-                        </Button>
+                        </h4>
+                        <p className="text-sm text-slate-600">
+                          {requirement.purpose}
+                        </p>
+                      </div>
+                      {upload.uploaded && (
+                        <span className="text-green-600 text-sm font-medium">
+                          ✓ Uploaded
+                        </span>
                       )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+                    {requiresDocumentNumber(upload.documentType) && (
+                      <Input
+                        label="Document Number"
+                        placeholder="Enter document number"
+                        value={upload.documentNumber}
+                        onChange={(e) =>
+                          handleDocumentNumberChange(
+                            upload.documentType,
+                            e.target.value
+                          )
+                        }
+                        disabled={upload.uploaded}
+                      />
+                    )}
 
-          <Button
-            type="submit"
-            className="w-full py-4 text-base font-medium"
-            disabled={submitting}
-          >
-            {submitting ? "Saving Profile..." : "Save & Continue"}
-          </Button>
-        </form>
+                    {!upload.uploaded && (
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                          onChange={(e) =>
+                            handleFileChange(
+                              upload.documentType,
+                              e.target.files?.[0] || null
+                            )
+                          }
+                          className="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-[#2572A7]/90 file:text-white hover:file:bg-[#2572A7]"
+                        />
+                        {upload.file && (
+                          <Button
+                            type="button"
+                            onClick={() => uploadDocument(upload)}
+                            disabled={upload.uploading}
+                            className="px-4 py-2"
+                          >
+                            {upload.uploading ? "Uploading..." : "Upload"}
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {error && <p className="text-red-600 text-sm">{error}</p>}
+
+            <Button
+              type="submit"
+              className="w-full py-4 text-base font-medium"
+              disabled={submitting}
+            >
+              {submitting ? "Saving Profile..." : "Save & Continue"}
+            </Button>
+          </form>
+        </div>
       }
     />
   );

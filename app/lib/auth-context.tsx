@@ -27,7 +27,7 @@ import {
   type JobSeekerProfile,
   type EmployerProfile,
 } from "./profile-completion";
-import { ApprovalStatus, VerificationStatus, UserRole } from "./enums";
+import { UserRole } from "./enums";
 import {
   clearAllProfileSkipSessions,
   clearProfileSkipSession,

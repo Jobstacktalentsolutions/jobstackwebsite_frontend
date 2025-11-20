@@ -8,7 +8,7 @@ import SkillsSelector, {
   type SelectedSkill,
 } from "@/app/pages/components/SkillsSelector";
 import { User, MapPin, Phone, FileText, Download, X } from "lucide-react";
-import { toastSuccess, toastError } from "@/app/lib/toast";
+import { toastSuccess, toastError, toastInfo } from "@/app/lib/toast";
 import { useProfile } from "@/app/lib/auth-context";
 import {
   jsGetCvDocument,
@@ -41,6 +41,7 @@ interface ExistingCvInfo {
 import { useProtectedRoute } from "@/app/hooks/useProtectedRoute";
 import { UserRole } from "@/app/lib/enums";
 import { useAuth } from "@/app/lib/auth-context";
+import { markProfileSkipSession } from "@/app/lib/profile-reminders";
 
 const JobseekerProfilePage = () => {
   const router = useRouter();
@@ -293,6 +294,14 @@ const JobseekerProfilePage = () => {
     }
   };
 
+  const handleSkip = () => {
+    markProfileSkipSession(UserRole.JOB_SEEKER);
+    toastInfo(
+      "You can finish your profile later. We'll remind you next login."
+    );
+    router.push("/pages/jobseeker/dashboard");
+  };
+
   if (authGuardLoading || isAuthContextLoading) {
     return <Loading text="Loading..." />;
   }
@@ -306,233 +315,250 @@ const JobseekerProfilePage = () => {
       heading="Complete Your Profile"
       subtext="Help employers find you by completing your professional profile"
       message={
-        <form className="space-y-6 max-w-2xl" onSubmit={handleSubmit}>
-          {/* Personal Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800">
-              Personal Information
-            </h3>
+        <div className="space-y-6 max-w-2xl">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="text-sm font-medium text-slate-500 hover:text-slate-900 underline-offset-4 hover:underline"
+            >
+              Skip for now
+            </button>
+          </div>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Personal Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-800">
+                Personal Information
+              </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="First Name"
+                  placeholder="Enter your first name"
+                  iconLeft={<User size={16} />}
+                  value={profileData.firstName}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
+                  required
+                />
+                <Input
+                  label="Last Name"
+                  placeholder="Enter your last name"
+                  iconLeft={<User size={16} />}
+                  value={profileData.lastName}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
               <Input
-                label="First Name"
-                placeholder="Enter your first name"
-                iconLeft={<User size={16} />}
-                value={profileData.firstName}
-                onChange={(e) => handleInputChange("firstName", e.target.value)}
-                required
-              />
-              <Input
-                label="Last Name"
-                placeholder="Enter your last name"
-                iconLeft={<User size={16} />}
-                value={profileData.lastName}
-                onChange={(e) => handleInputChange("lastName", e.target.value)}
-                required
-              />
-            </div>
-
-            <Input
-              label="Phone Number"
-              placeholder="+234 800 000 0000"
-              iconLeft={<Phone size={16} />}
-              value={profileData.phoneNumber}
-              onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-              required
-            />
-
-            <Input
-              label="Job Title"
-              placeholder="e.g., Software Engineer, Marketing Manager"
-              iconLeft={<User size={16} />}
-              value={profileData.jobTitle}
-              onChange={(e) => handleInputChange("jobTitle", e.target.value)}
-              required
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <SearchableSelect
-                label="State"
-                options={stateOptions}
-                value={profileData.state}
-                onChange={(value) => {
-                  setProfileData((prev) => ({
-                    ...prev,
-                    state: value,
-                    city: "",
-                  }));
-                }}
-                placeholder="Search and select state..."
-                required
-                icon={<MapPin size={16} />}
-                emptyMessage="No state found."
-              />
-
-              <SearchableSelect
-                label="City/LGA"
-                options={cityOptions}
-                value={profileData.city}
-                onChange={(value) => {
-                  setProfileData((prev) => ({ ...prev, city: value }));
-                }}
-                placeholder={
-                  profileData.state
-                    ? "Search and select city/LGA..."
-                    : "Select state first"
+                label="Phone Number"
+                placeholder="+234 800 000 0000"
+                iconLeft={<Phone size={16} />}
+                value={profileData.phoneNumber}
+                onChange={(e) =>
+                  handleInputChange("phoneNumber", e.target.value)
                 }
                 required
-                disabled={!profileData.state}
-                icon={<MapPin size={16} />}
-                emptyMessage="No city/LGA found."
               />
-            </div>
 
-            <Input
-              label="Address"
-              placeholder="Enter your full address"
-              iconLeft={<MapPin size={16} />}
-              value={profileData.address}
-              onChange={(e) => handleInputChange("address", e.target.value)}
-              required
-            />
-          </div>
+              <Input
+                label="Job Title"
+                placeholder="e.g., Software Engineer, Marketing Manager"
+                iconLeft={<User size={16} />}
+                value={profileData.jobTitle}
+                onChange={(e) => handleInputChange("jobTitle", e.target.value)}
+                required
+              />
 
-          {/* Professional Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800">
-              Professional Information
-            </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SearchableSelect
+                  label="State"
+                  options={stateOptions}
+                  value={profileData.state}
+                  onChange={(value) => {
+                    setProfileData((prev) => ({
+                      ...prev,
+                      state: value,
+                      city: "",
+                    }));
+                  }}
+                  placeholder="Search and select state..."
+                  required
+                  icon={<MapPin size={16} />}
+                  emptyMessage="No state found."
+                />
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Professional Bio <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                placeholder="Tell us about yourself, your career goals, and what makes you unique..."
-                value={profileData.bio}
-                onChange={(e) => handleInputChange("bio", e.target.value)}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+                <SearchableSelect
+                  label="City/LGA"
+                  options={cityOptions}
+                  value={profileData.city}
+                  onChange={(value) => {
+                    setProfileData((prev) => ({ ...prev, city: value }));
+                  }}
+                  placeholder={
+                    profileData.state
+                      ? "Search and select city/LGA..."
+                      : "Select state first"
+                  }
+                  required
+                  disabled={!profileData.state}
+                  icon={<MapPin size={16} />}
+                  emptyMessage="No city/LGA found."
+                />
+              </div>
+
+              <Input
+                label="Address"
+                placeholder="Enter your full address"
+                iconLeft={<MapPin size={16} />}
+                value={profileData.address}
+                onChange={(e) => handleInputChange("address", e.target.value)}
                 required
               />
             </div>
-          </div>
 
-          {/* Skills Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800">
-              Skills & Expertise
-            </h3>
-            <SkillsSelector
-              selectedSkills={profileData.skills}
-              onSkillsChange={handleSkillsChange}
-              maxSkills={15}
-              showProficiency={true}
-              showExperience={true}
-            />
-          </div>
+            {/* Professional Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-800">
+                Professional Information
+              </h3>
 
-          {/* CV Upload */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800">
-              CV/Resume Upload
-            </h3>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Professional Bio <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  placeholder="Tell us about yourself, your career goals, and what makes you unique..."
+                  value={profileData.bio}
+                  onChange={(e) => handleInputChange("bio", e.target.value)}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+                  required
+                />
+              </div>
+            </div>
 
-            {/* Show existing CV if available */}
-            {existingCv && !profileData.cv && (
-              <div className="border border-green-300 bg-green-50 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-8 w-8 text-green-600" />
-                    <div>
-                      <p className="text-sm font-medium text-green-900">
-                        {existingCv.fileName}
-                      </p>
-                      <p className="text-xs text-green-700">
-                        Existing CV uploaded
-                      </p>
+            {/* Skills Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-800">
+                Skills & Expertise
+              </h3>
+              <SkillsSelector
+                selectedSkills={profileData.skills}
+                onSkillsChange={handleSkillsChange}
+                maxSkills={15}
+                showProficiency={true}
+                showExperience={true}
+              />
+            </div>
+
+            {/* CV Upload */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-800">
+                CV/Resume Upload
+              </h3>
+
+              {/* Show existing CV if available */}
+              {existingCv && !profileData.cv && (
+                <div className="border border-green-300 bg-green-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-8 w-8 text-green-600" />
+                      <div>
+                        <p className="text-sm font-medium text-green-900">
+                          {existingCv.fileName}
+                        </p>
+                        <p className="text-xs text-green-700">
+                          Existing CV uploaded
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={existingCv.signedUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded hover:bg-green-200 transition-colors flex items-center gap-1"
+                      >
+                        <Download size={14} />
+                        View
+                      </a>
+                      <button
+                        type="button"
+                        onClick={handleRemoveExistingCv}
+                        className="p-1.5 text-green-700 hover:text-green-900 hover:bg-green-200 rounded transition-colors"
+                        title="Remove existing CV"
+                      >
+                        <X size={16} />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={existingCv.signedUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded hover:bg-green-200 transition-colors flex items-center gap-1"
-                    >
-                      <Download size={14} />
-                      View
-                    </a>
-                    <button
-                      type="button"
-                      onClick={handleRemoveExistingCv}
-                      className="p-1.5 text-green-700 hover:text-green-900 hover:bg-green-200 rounded transition-colors"
-                      title="Remove existing CV"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Upload new CV section */}
-            {(!existingCv || profileData.cv) && (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                <div className="text-center">
-                  <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="mt-4">
-                    <label htmlFor="cv-upload" className="cursor-pointer">
-                      <span className="mt-2 block text-sm font-medium text-gray-900">
-                        {existingCv
-                          ? "Replace CV/Resume"
-                          : "Upload your CV/Resume"}
-                      </span>
-                      <span className="mt-1 block text-sm text-gray-500">
-                        PDF, DOC, or DOCX up to {maxFileSizeMB}MB
-                      </span>
-                    </label>
-                    <input
-                      id="cv-upload"
-                      ref={cvInputRef}
-                      type="file"
-                      accept={acceptedCvFormats.join(",")}
-                      onChange={handleCvChange}
-                      className="sr-only"
-                    />
-                  </div>
-                  <div className="mt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => cvInputRef.current?.click()}
-                    >
-                      Choose File
-                    </Button>
-                  </div>
-                  {profileData.cv && (
-                    <div className="mt-2 text-sm text-green-600">
-                      ✓ {profileData.cv.name}
+              {/* Upload new CV section */}
+              {(!existingCv || profileData.cv) && (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                  <div className="text-center">
+                    <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="mt-4">
+                      <label htmlFor="cv-upload" className="cursor-pointer">
+                        <span className="mt-2 block text-sm font-medium text-gray-900">
+                          {existingCv
+                            ? "Replace CV/Resume"
+                            : "Upload your CV/Resume"}
+                        </span>
+                        <span className="mt-1 block text-sm text-gray-500">
+                          PDF, DOC, or DOCX up to {maxFileSizeMB}MB
+                        </span>
+                      </label>
+                      <input
+                        id="cv-upload"
+                        ref={cvInputRef}
+                        type="file"
+                        accept={acceptedCvFormats.join(",")}
+                        onChange={handleCvChange}
+                        className="sr-only"
+                      />
                     </div>
-                  )}
-                  {cvError && (
-                    <div className="mt-2 text-sm text-red-600">{cvError}</div>
-                  )}
+                    <div className="mt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => cvInputRef.current?.click()}
+                      >
+                        Choose File
+                      </Button>
+                    </div>
+                    {profileData.cv && (
+                      <div className="mt-2 text-sm text-green-600">
+                        ✓ {profileData.cv.name}
+                      </div>
+                    )}
+                    {cvError && (
+                      <div className="mt-2 text-sm text-red-600">{cvError}</div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+            {error && <p className="text-red-600 text-sm">{error}</p>}
 
-          <Button
-            type="submit"
-            className="w-full py-4 text-base font-medium"
-            disabled={submitting}
-          >
-            {submitting ? "Saving Profile..." : "Complete Profile"}
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              className="w-full py-4 text-base font-medium"
+              disabled={submitting}
+            >
+              {submitting ? "Saving Profile..." : "Complete Profile"}
+            </Button>
+          </form>
+        </div>
       }
     />
   );

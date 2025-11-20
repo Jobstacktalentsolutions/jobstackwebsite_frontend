@@ -73,9 +73,7 @@ export default function SignUp() {
       const res = await jsRegister(payload);
       toastSuccess("Verification code sent to your email");
       router.push(
-        ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(
-          email
-        )}`
+        `/pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(email)}`
       );
     } catch (err: any) {
       const errorMessage =
