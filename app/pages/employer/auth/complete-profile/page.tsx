@@ -332,8 +332,8 @@ const ProfilePage = () => {
               </span>
               <span className="text-[16px] text-[#2572A7] font-semibold">
                 {employerType || "Loading..."}
-                {employerType === EmployerType.INDIVIDUAL }
-                {employerType === EmployerType.SME }
+                {employerType === EmployerType.INDIVIDUAL}
+                {employerType === EmployerType.SME}
                 {employerType === EmployerType.ORGANIZATION}
               </span>
             </div>
@@ -414,7 +414,7 @@ const ProfilePage = () => {
               Required Documents
             </h3>
             <p className="text-[16px] text-slate-600">
-              Upload the following documents to verify your account. 
+              Upload the following documents to verify your account.
             </p>
 
             {documentUploads.map((upload) => {
