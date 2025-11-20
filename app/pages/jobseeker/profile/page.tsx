@@ -34,6 +34,7 @@ import {
   type SelectOption,
 } from "@/app/pages/components/SearchableSelect";
 import statesAndCities from "@/app/lib/states-and-cities.json";
+import { MoveLeft } from "lucide-react";
 
 const tagBase =
   "inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700";
@@ -801,6 +802,7 @@ const ProfilePage: React.FC = () => {
         <div className="bg-gradient-to-r from-sky-900 to-sky-700 px-6 pb-10 md:pb-24 pt-8 mb-10 md:px-10 md:mb-20">
           {/* Decorative stripes, optional */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-40 opacity-20">
+            <button onClick={()=> router.back()}>    <MoveLeft /></button>
             <div className="h-full bg-[radial-gradient(circle_at_top,_#fff_0,_transparent_60%)]" />
           </div>
 
