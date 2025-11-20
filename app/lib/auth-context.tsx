@@ -118,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const jobSeekerProfile = await fetchJobSeekerProfile();
         setProfile({ jobSeeker: jobSeekerProfile });
 
+        console.log("jobseekerProfile", jobSeekerProfile);
         // Check if approvalStatus is NOT_STARTED
         if (jobSeekerProfile.approvalStatus === ApprovalStatus.NOT_STARTED) {
           const currentPath = window.location.pathname;
@@ -134,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           jobSeekerProfile.brief,
           jobSeekerProfile.state,
           jobSeekerProfile.city,
-          jobSeekerProfile.cvDocumentId,
+          // jobSeekerProfile.cvDocumentId,
         ];
 
         const hasMissingFields = requiredFields.some(
@@ -159,7 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ) {
           // Only redirect if not already on profile page
           const currentPath = window.location.pathname;
-          if (!currentPath.includes(" /pages/employer/authcomplete-profile")) {
+          if (!currentPath.includes(" /pages/employer/auth/complete-profile")) {
             router.push(" /pages/employer/auth/complete-profile");
           }
         }
