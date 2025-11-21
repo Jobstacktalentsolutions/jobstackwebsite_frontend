@@ -19,6 +19,17 @@ httpClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const isFormData =
+      typeof FormData !== "undefined" && config.data instanceof FormData;
+    if (isFormData && config.headers) {
+      if (typeof (config.headers as any).delete === "function") {
+        (config.headers as any).delete("Content-Type");
+      } else {
+        delete config.headers["Content-Type"];
+      }
+    }
+
     return config;
   },
   (error) => {
