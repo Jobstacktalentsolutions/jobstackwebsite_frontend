@@ -22,10 +22,17 @@ import {
   checkEmployerProfileCompletion,
   fetchJobSeekerProfile,
   fetchEmployerProfile,
+  needsJobSeekerProfileCompletion,
+  needsEmployerProfileCompletion,
   type JobSeekerProfile,
   type EmployerProfile,
 } from "./profile-completion";
-import { ApprovalStatus, VerificationStatus, UserRole } from "./enums";
+import { UserRole } from "./enums";
+import {
+  clearAllProfileSkipSessions,
+  clearProfileSkipSession,
+  hasProfileSkipSession,
+} from "./profile-reminders";
 
 export interface User {
   id: string;
@@ -118,50 +125,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const jobSeekerProfile = await fetchJobSeekerProfile();
         setProfile({ jobSeeker: jobSeekerProfile });
 
-        // Check if approvalStatus is NOT_STARTED
-        if (jobSeekerProfile.approvalStatus === ApprovalStatus.NOT_STARTED) {
+        console.log("jobseekerProfile", jobSeekerProfile);
+        const shouldPrompt = needsJobSeekerProfileCompletion(jobSeekerProfile);
+        const skipActive = hasProfileSkipSession(UserRole.JOB_SEEKER);
+
+        if (shouldPrompt) {
           const currentPath = window.location.pathname;
-          if (!currentPath.includes("/pages/jobseeker/auth/complete-profile")) {
+          if (
+            !skipActive &&
+            !currentPath.includes("/pages/jobseeker/auth/complete-profile")
+          ) {
             router.push("/pages/jobseeker/auth/complete-profile");
             return;
           }
-        }
-
-        // Check for required profile fields - redirect if any are missing
-        const requiredFields = [
-          jobSeekerProfile.address,
-          jobSeekerProfile.jobTitle,
-          jobSeekerProfile.brief,
-          jobSeekerProfile.state,
-          jobSeekerProfile.city,
-          jobSeekerProfile.cvDocumentId,
-        ];
-
-        const hasMissingFields = requiredFields.some(
-          (field) => field === null || field === undefined || field === ""
-        );
-
-        if (hasMissingFields) {
-          const currentPath = window.location.pathname;
-          if (!currentPath.includes("/pages/jobseeker/auth/complete-profile")) {
-            router.push("/pages/jobseeker/auth/complete-profile");
-          }
+        } else {
+          clearProfileSkipSession(UserRole.JOB_SEEKER);
         }
       } else if (user.role === UserRole.EMPLOYER) {
         const employerProfile = await fetchEmployerProfile();
         setProfile({ employer: employerProfile });
 
-        // Only redirect to onboarding if verification status is NOT_STARTED
         const verification = employerProfile.verification;
-        if (
-          !verification ||
-          verification.status === VerificationStatus.NOT_STARTED
-        ) {
-          // Only redirect if not already on profile page
+        const shouldPrompt = needsEmployerProfileCompletion(
+          employerProfile,
+          verification || null
+        );
+        const skipActive = hasProfileSkipSession(UserRole.EMPLOYER);
+
+        if (shouldPrompt) {
           const currentPath = window.location.pathname;
-          if (!currentPath.includes(" /pages/employer/authcomplete-profile")) {
-            router.push(" /pages/employer/auth/complete-profile");
+          if (
+            !skipActive &&
+            !currentPath.includes("/pages/employer/auth/complete-profile")
+          ) {
+            router.push("/pages/employer/auth/complete-profile");
           }
+        } else {
+          clearProfileSkipSession(UserRole.EMPLOYER);
         }
       }
     } catch (error) {
@@ -188,6 +188,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Store tokens in cookies immediately after login
     setAuthTokens(authResult.accessToken, authResult.refreshToken, userRole);
+
+    // Each login should reset any previous skip sessions
+    clearProfileSkipSession(userRole);
 
     // Prepare user data
     const userData: User = {
@@ -225,6 +228,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     clearAuthTokens();
     setUser(null);
     setProfile(null);
+    clearAllProfileSkipSessions();
   }, []);
 
   const logout = useCallback(() => {
@@ -265,7 +269,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Error checking profile completion:", error);
       // If profile check fails, redirect to profile page to be safe
       if (userRole === UserRole.EMPLOYER) {
-        return " /pages/employer/auth/complete-profile";
+        return "/pages/employer/auth/complete-profile";
       } else if (userRole === UserRole.JOB_SEEKER) {
         return "/pages/jobseeker/auth/complete-profile";
       }

@@ -25,7 +25,7 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
   };
 
   const goToLogin = () => {
-    router.push(" /pages/employer/auth/login");
+    router.push("/pages/employer/auth/login");
     handleCloseModal();
   };
 
@@ -65,7 +65,6 @@ const CreateNewPasswordClient: React.FC<Props> = ({ resetToken }) => {
       subtext="Almost there! Please create a new, strong password for your account."
       message={
         <>
-     
           <form className="space-y-4" onSubmit={onSubmit}>
             <PasswordField
               label="Password"

@@ -43,7 +43,7 @@ export default function LoginPage() {
         } catch {}
         toastInfo("Please verify your email to continue");
         router.push(
-          ` /pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(
+          `/pages/jobseeker/auth/signUp/verify?email=${encodeURIComponent(
             email
           )}`
         );

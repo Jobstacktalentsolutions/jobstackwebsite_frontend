@@ -58,12 +58,20 @@ export interface EmployerVerification {
   id: string;
   employerId: string;
   status: VerificationStatus;
+  companyName?: string;
+  companyAddress?: string;
+  companySize?: string;
+  state?: string;
+  city?: string;
+  socialOrWebsiteUrl?: string;
   companyRegistrationNumber?: string;
   taxIdentificationNumber?: string;
   businessAddress?: string;
   documents?: Array<{
     id: string;
     type: string;
+    documentType?: string;
+    documentNumber?: string;
     fileName: string;
   }>;
 }
@@ -73,14 +81,7 @@ export interface EmployerVerification {
  * A complete profile requires: CV uploaded and basic info filled
  */
 export function isJobSeekerProfileComplete(profile: JobSeekerProfile): boolean {
-  return !!(
-    profile.firstName &&
-    profile.lastName &&
-    profile.phoneNumber &&
-    profile.cvUrl &&
-    profile.bio &&
-    profile.location
-  );
+  return !needsJobSeekerProfileCompletion(profile);
 }
 
 /**
@@ -91,18 +92,7 @@ export function isEmployerProfileComplete(
   profile: EmployerProfile,
   verification?: EmployerVerification
 ): boolean {
-  const hasBasicInfo = !!(
-    profile.firstName &&
-    profile.lastName &&
-    profile.phoneNumber &&
-    profile.companyName &&
-    profile.type
-  );
-
-  const hasVerificationDocs =
-    verification?.documents && verification.documents.length > 0;
-
-  return hasBasicInfo && !!hasVerificationDocs;
+  return !needsEmployerProfileCompletion(profile, verification);
 }
 
 /**
@@ -150,38 +140,9 @@ export async function checkJobSeekerProfileCompletion(): Promise<
 > {
   try {
     const profile = await fetchJobSeekerProfile();
-
-    // Only redirect to onboarding if status is NOT_STARTED
-    if (profile.approvalStatus === ApprovalStatus.NOT_STARTED) {
-      return "/pages/jobseeker/auth/complete-profile";
-    }
-
-    // Check for required profile fields - redirect if any are missing
-    const requiredFields = [
-      profile.address,
-      profile.jobTitle,
-      profile.brief,
-      profile.preferredLocation,
-      profile.state,
-      profile.city,
-      profile.cvDocumentId,
-    ];
-
-    const hasMissingFields = requiredFields.some(
-      (field) => field === null || field === undefined || field === ""
-    );
-
-    if (hasMissingFields) {
-      return "/pages/jobseeker/auth/complete-profile";
-    }
-
-    // If profile is incomplete but status is not NOT_STARTED, don't redirect
-    // (they've already started onboarding)
-    if (!isJobSeekerProfileComplete(profile)) {
-      return null;
-    }
-
-    return null;
+    return needsJobSeekerProfileCompletion(profile)
+      ? "/pages/jobseeker/auth/complete-profile"
+      : null;
   } catch (error) {
     console.error("Error checking job seeker profile:", error);
     // On error, redirect to profile page to be safe
@@ -198,22 +159,95 @@ export async function checkEmployerProfileCompletion(): Promise<string | null> {
     // Use verification from profile instead of separate fetch
     const verification = profile.verification || null;
 
-    // If verification is null or status is NOT_STARTED, redirect to onboarding
-    if (
-      !verification ||
-      verification.status === VerificationStatus.NOT_STARTED
-    ) {
-      return " /pages/employer/auth/complete-profile";
-    }
-
-    // If status is PENDING, APPROVED, or REJECTED, don't redirect
-    // (they've already started onboarding or completed it)
-    // Only redirect if status is NOT_STARTED
-
-    return null;
+    return needsEmployerProfileCompletion(profile, verification)
+      ? "/pages/employer/auth/complete-profile"
+      : null;
   } catch (error) {
     console.error("Error checking employer profile:", error);
     // On error, don't redirect - let them access the dashboard
     return null;
   }
+}
+
+function hasValue(value?: string | number | null) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") {
+    return value.trim().length > 0;
+  }
+  return true;
+}
+
+function hasJobSeekerRequiredFields(profile: JobSeekerProfile): boolean {
+  const requiredStrings = [
+    profile.firstName,
+    profile.lastName,
+    profile.phoneNumber,
+    profile.jobTitle,
+    profile.address,
+    profile.state,
+    profile.city,
+    profile.brief || profile.bio,
+  ];
+
+  const hasSkills =
+    (profile.userSkills && profile.userSkills.length > 0) ||
+    (profile.skills && profile.skills.length > 0);
+
+  const hasCv = Boolean(profile.cvDocumentId) || Boolean(profile.cvUrl);
+
+  return requiredStrings.every(hasValue) && !!hasSkills && !!hasCv;
+}
+
+function hasEmployerRequiredFields(
+  profile: EmployerProfile,
+  verification?: EmployerVerification | null
+): boolean {
+  if (!verification) {
+    return false;
+  }
+
+  const requiredStrings = [
+    verification.companyName || profile.companyName,
+    verification.companyAddress,
+    verification.state,
+    verification.city,
+  ];
+
+  if (profile.type && profile.type !== "INDIVIDUAL") {
+    requiredStrings.push(verification.companySize);
+  }
+
+  const hasDocuments =
+    Array.isArray(verification.documents) && verification.documents.length > 0;
+
+  return requiredStrings.every(hasValue) && hasDocuments;
+}
+
+export function needsJobSeekerProfileCompletion(
+  profile: JobSeekerProfile
+): boolean {
+  if (profile.approvalStatus === ApprovalStatus.NOT_STARTED) {
+    return true;
+  }
+
+  return !hasJobSeekerRequiredFields(profile);
+}
+
+export function needsEmployerProfileCompletion(
+  profile: EmployerProfile,
+  verification?: EmployerVerification | null
+): boolean {
+  if (!verification) {
+    return true;
+  }
+
+  if (verification.status === VerificationStatus.NOT_STARTED) {
+    return true;
+  }
+
+  if (verification.status === VerificationStatus.REJECTED) {
+    return true;
+  }
+
+  return !hasEmployerRequiredFields(profile, verification);
 }

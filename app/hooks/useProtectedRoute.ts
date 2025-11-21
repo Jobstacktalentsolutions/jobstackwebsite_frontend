@@ -79,7 +79,7 @@ function getRedirectPathForRole(role?: UserRole): string {
     case UserRole.EMPLOYER:
       return "/pages/employer/dashboard";
     case UserRole.JOB_SEEKER:
-      return "pages/jobseeker/dashboard";
+      return "/pages/jobseeker/dashboard";
     case UserRole.ADMIN:
       return "/admin/dashboard";
     default:
@@ -90,12 +90,12 @@ function getRedirectPathForRole(role?: UserRole): string {
 function getLoginPathForRole(role?: UserRole): string {
   switch (role) {
     case UserRole.EMPLOYER:
-      return " /pages/employer/auth/login";
+      return "/pages/employer/auth/login";
     case UserRole.JOB_SEEKER:
       return "/pages/jobseeker/auth/login";
     case UserRole.ADMIN:
       return "/auth/admin/login";
     default:
-      return " /pages/employer/auth/login";
+      return "/pages/employer/auth/login";
   }
 }
